@@ -134,7 +134,7 @@ export default function Navbar(
                 !isAuthenticated ?
                     (
                         <div className={clsx('flex gap-[10px] items-center justify-center ml-auto mr-10px')}>
-                            <div
+                            <Link href='/auth'
                                 onMouseEnter={() => setSignUpHover(true)}
                                 onMouseLeave={() => setSignUpHover(false)}
                                 className={clsx(
@@ -151,8 +151,9 @@ export default function Navbar(
                                     </label>
                                     <Image src={signUpHover ? brokenEgg : fullEgg} height={30} width={30} alt="egg" />
                                 </div>
-                            </div>
-                            <div className={clsx(
+                            </Link>
+                            <Link href='/auth'
+                                className={clsx(
                                 'h-[55px] w-[170px] bg-[#15897A] rounded-[15px] cursor-pointer'
                             )}>
                                 <div className={clsx(
@@ -166,7 +167,7 @@ export default function Navbar(
                                         Đăng nhập
                                     </label>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                     )
                     :

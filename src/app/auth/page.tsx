@@ -43,8 +43,8 @@ export default function Auth() {
     const [tabIndex, setTabIndex] = useState(TABS.LOG_IN)
     const [loginStep, setLoginStep] = useState(AUTHSTEPS.SELECT_ROLE)
     const [registerStep, setRegisterStep] = useState(AUTHSTEPS.SELECT_ROLE)
-
     const [role, setRole] = useState<number | null>(null)
+    const [errorShow, setErrorShow] = useState(false)
 
     // login request states
     const [email, setEmail] = useState('')
@@ -55,14 +55,47 @@ export default function Auth() {
     const [email2, setEmail2] = useState('')
     const [password2, setPassword2] = useState('')
     const [confPassword, setConfPassword] = useState('')
+    const [fullName, setFullName] = useState('') // only for parent
+
+    const openErrorDialog = () => {
+        setErrorShow(true)
+        setTimeout(() => setErrorShow(false), 5000)
+    }
 
     const onStateChange = (state: boolean) => {
         setPasswordShow(state)
     }
 
+    const canLogin = () => {
+        return email.length > 0 && password.length > 0
+    }
+
+    const canRegister = () => {
+        const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-={}\[\]:;"'<>,.?/]).{8,}$/;
+        const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (role === ROLES.STUDENT)
+            return strongPassword.test(password2) && validEmail.test(email2) && confPassword === password2;
+        else
+            return strongPassword.test(password2) && validEmail.test(email2) && confPassword === password2 && fullName.length > 0;
+    }
+
+    const resetLogin = () => {
+        setEmail('')
+        setPassword('')
+    }
+
+    const resetRegister = () => {
+        setEmail2('')
+        setPassword2('')
+        setFullName('')
+        setConfPassword('')
+    }
+
     useEffect(() => {
         setLoginStep(AUTHSTEPS.SELECT_ROLE)
         setRegisterStep(AUTHSTEPS.SELECT_ROLE)
+        resetLogin()
+        resetRegister()
     }, [tabIndex])
 
     return (
@@ -125,7 +158,7 @@ export default function Auth() {
                 </div>
 
                 {/** Main area */}
-                <div className="flex flex-1">
+                <div className="flex flex-1 relative">
                     { /** Auth container */}
                     <div className="h-full w-1/2 flex flex-col">
                         {tabIndex === TABS.LOG_IN ? (
@@ -165,7 +198,7 @@ export default function Auth() {
                                             <Image src={leftHand} alt='' height={60}
                                                 className={clsx(
                                                     "absolute -translate-y-[290px] transition-all duration-400",
-                                                    { 'translate-x-[100px]': !passwordShow, 'translate-x-[200px]': passwordShow}
+                                                    { 'translate-x-[100px]': !passwordShow, 'translate-x-[200px]': passwordShow }
                                                 )} />
                                             <Image src={rightHand} alt='' height={60}
                                                 className={clsx(
@@ -173,27 +206,39 @@ export default function Auth() {
                                                     { '-translate-x-[100px]': passwordShow }
                                                 )} />
                                         </div>
+                                        <div className={clsx(
+                                            "h-fit w-fit p-[10px] border-[#F1A12E] border-2 rounded-[20px]",
+                                            'flex items-center justify-center text-[#F1A12E] font-medium',
+                                            'absolute -translate-y-[220px] -translate-x-[180px] transition-all duration-200 z-20',
+                                            errorShow ? 'scale-100' : 'scale-0', loginStep !== AUTHSTEPS.LOG_IN ? 'hidden' : ''
+                                        )}>
+                                            <p className="text-wrap w-[120px] text-center">Sai email hoặc mật khẩu ?</p>
+                                        </div>
                                         <h1 className={clsx(roboto.className, 'text-[27px] font-bold text-[#1DA492]')}>Đăng nhập</h1>
                                         <div className="flex flex-col gap-[10px]">
                                             <RoundedTextBox onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                                                placeholder="Email" width="330" />
+                                                placeholder="Email" width="330" value={email} />
                                             <RoundedPasswordBox onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                                                onStateChange={onStateChange}
+                                                onStateChange={onStateChange} value={password}
                                                 placeholder="Password" width="330" />
                                         </div>
                                         <Link className={clsx(
                                             "font-medium cursor-pointer hover:text-[#1DA492] hover:underline",
                                             'mr-[150px]'
                                         )} href=''>Quên mật khẩu ?</Link>
-                                        <button disabled={email.length === 0 || password.length === 0} className={clsx(
+                                        <button disabled={!canLogin()} className={clsx(
                                             'h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium',
                                             'disabled:bg-gray-300 cursor-not-allowed',
                                             { 'cursor-pointer hover:opacity-90': email.length > 0 && password.length > 0 },
-                                        )}>Đăng nhập</button>
+                                        )} onClick={() => openErrorDialog()}>Đăng nhập</button>
                                         <div className={clsx(
                                             "flex flex-col gap-[5px] items-center justify-center",
                                             'cursor-pointer group hover:text-[#23BEAA]'
-                                        )} onClick={() => setLoginStep(AUTHSTEPS.SELECT_ROLE)}>
+                                        )}
+                                            onClick={() => {
+                                                setLoginStep(AUTHSTEPS.SELECT_ROLE)
+                                                resetLogin()
+                                            }}>
                                             <div className={clsx(
                                                 "aspect-square h-[80px] flex items-center justify-center",
                                                 'rounded-[20px] border-2 border-[rgba(0,0,0,0.2)]',
@@ -235,7 +280,7 @@ export default function Auth() {
                                         </div>
                                     </div>
                                     {/** Sign up step container */}
-                                    <div className="flex items-center justify-center gap-[40px] flex-col h-full w-1/2 bg-white">
+                                    <div className="flex items-center justify-center gap-[20px] flex-col h-full w-1/2 bg-white">
                                         <div className="flex flex-col gap-[2px] items-center justify-center">
                                             <Image src={logo} height={80} width={80} alt="" />
                                             <h1 className={clsx(roboto.className, 'text-[27px] font-bold text-[#1DA492]')}>Đăng ký</h1>
@@ -244,22 +289,33 @@ export default function Auth() {
                                             </p>
                                         </div>
                                         <div className="flex flex-col gap-[10px]">
+                                            {role === ROLES.PARENT &&
+                                                <RoundedTextBox onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
+                                                    placeholder="Họ và tên" width="330" value={fullName} />
+                                            }
                                             <RoundedTextBox onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail2(e.target.value)}
-                                                placeholder="Email" width="330" />
+                                                placeholder="Email" width="330" value={email2} />
                                             <RoundedPasswordBox onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword2(e.target.value)}
-                                                placeholder="Password" width="330" />
+                                                placeholder="Password" width="330" value={password2} />
                                             <RoundedPasswordBox onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfPassword(e.target.value)}
-                                                placeholder="Confirm password" width="330" />
+                                                placeholder="Confirm password" width="330" value={confPassword} />
                                         </div>
-                                        <button disabled={email2.length === 0 || password2.length === 0 || password2 !== confPassword} className={clsx(
+                                        <p className="text-amber-500 w-[260px] font-medium text-wrap text-center ml-auto mr-auto italic text-[15px]">
+                                            *Mật khẩu phải ≥8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt
+                                        </p>
+                                        <button disabled={!canRegister()} className={clsx(
                                             'h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium',
                                             'disabled:bg-gray-300 cursor-not-allowed',
-                                            { 'cursor-pointer hover:opacity-90': email2.length > 0 && password2.length > 0 && password2 === confPassword},
+                                            { 'cursor-pointer hover:opacity-90': email2.length > 0 && password2.length > 0 && password2 === confPassword },
                                         )}>Tạo tài khoản</button>
                                         <div className={clsx(
                                             "flex flex-col gap-[5px] items-center justify-center",
                                             'cursor-pointer group hover:text-[#23BEAA]'
-                                        )} onClick={() => setRegisterStep(AUTHSTEPS.SELECT_ROLE)}>
+                                        )}
+                                            onClick={() => {
+                                                setRegisterStep(AUTHSTEPS.SELECT_ROLE)
+                                                resetRegister()
+                                            }}>
                                             <div className={clsx(
                                                 "aspect-square h-[80px] flex items-center justify-center",
                                                 'rounded-[20px] border-2 border-[rgba(0,0,0,0.2)]',
@@ -274,8 +330,13 @@ export default function Auth() {
                         )}
                     </div>
                     { /** Mascot 3D */}
-                    <div>
-                        <Image className="absolute -translate-x-[150px] translate-y-[20px]" src={mascot} alt='' height={700} />
+                    <div className="absolute right-10 bottom-10 flex items-end justify-center h-full w-1/2 overflow-hidden pointer-events-none">
+                        <Image
+                            className="max-h-[150%] w-auto object-contain select-none"
+                            src={mascot}
+                            alt=""
+                            priority
+                        />
                     </div>
                 </div>
             </div>

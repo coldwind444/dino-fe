@@ -5,8 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import clsx from "clsx"
 import { useState } from "react"
 
-export default function RoundedPasswordBox({ width = '400', onChange, onStateChange, placeholder }:
+export default function RoundedPasswordBox({ value, width = '400', onChange, onStateChange, placeholder }:
     {
+        value: string
         width?: string
         onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
         onStateChange?: (state: boolean) => void
@@ -29,6 +30,7 @@ export default function RoundedPasswordBox({ width = '400', onChange, onStateCha
             <input className="h-full w-[80%] pl-[30px] border-none outline-none text-[17px]"
                 placeholder={placeholder}
                 onChange={onChange}
+                value={value}
                 type={show ? 'text' : 'password'} />
             <FontAwesomeIcon className="text-[rgba(0,0,0,0.7)] cursor-pointer"
                 icon={show ? faEyeSlash : faEye}

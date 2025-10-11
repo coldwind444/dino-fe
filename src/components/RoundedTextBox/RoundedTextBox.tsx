@@ -2,8 +2,9 @@
 
 import clsx from "clsx"
 
-export default function RoundedTextBox({ width = '400', onChange, placeholder } : 
+export default function RoundedTextBox({ value, width = '400', onChange, placeholder } : 
     {
+        value: string
         width?: string
         onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
         placeholder: string
@@ -16,7 +17,7 @@ export default function RoundedTextBox({ width = '400', onChange, placeholder } 
         )}  style={{ width: `${width}px`}}>
             <input className="h-full w-[90%] pl-[30px] border-none outline-none text-[17px]" 
                     placeholder={placeholder} 
-                    onChange={onChange}/>
+                    onChange={onChange} value={value}/>
         </div>
     )
 }

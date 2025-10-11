@@ -38,21 +38,20 @@ const AUTHSTEPS = {
     SIGN_UP: 3
 }
 
-const studentSignUpSteps = [AUTHSTEPS.SELECT_ROLE, AUTHSTEPS.SIGN_UP]
-const parentsSignUpSteps = [AUTHSTEPS.SELECT_ROLE, AUTHSTEPS.PERSONAL_INFO, AUTHSTEPS.SIGN_UP]
-
 export default function Auth() {
+    // UI states
     const [tabIndex, setTabIndex] = useState(TABS.LOG_IN)
     const [loginStep, setLoginStep] = useState(AUTHSTEPS.SELECT_ROLE)
     const [registerStep, setRegisterStep] = useState(AUTHSTEPS.SELECT_ROLE)
+
     const [role, setRole] = useState<number | null>(null)
 
-    // login
+    // login request states
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordShow, setPasswordShow] = useState(false)
 
-    // register
+    // register request states
     const [email2, setEmail2] = useState('')
     const [password2, setPassword2] = useState('')
     const [confPassword, setConfPassword] = useState('')
@@ -166,12 +165,12 @@ export default function Auth() {
                                             <Image src={leftHand} alt='' height={60}
                                                 className={clsx(
                                                     "absolute -translate-y-[290px] transition-all duration-400",
-                                                    !passwordShow ? 'translate-x-[200px]' : 'translate-x-[100px]'
+                                                    { 'translate-x-[100px]': !passwordShow, 'translate-x-[200px]': passwordShow}
                                                 )} />
                                             <Image src={rightHand} alt='' height={60}
                                                 className={clsx(
                                                     "absolute -translate-y-[290px] transition-all duration-400",
-                                                    !passwordShow ? '-translate-x-[100px]' : ''
+                                                    { '-translate-x-[100px]': passwordShow }
                                                 )} />
                                         </div>
                                         <h1 className={clsx(roboto.className, 'text-[27px] font-bold text-[#1DA492]')}>Đăng nhập</h1>

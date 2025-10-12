@@ -133,8 +133,8 @@ export default function Onboarding() {
         setMessage(messageMap[step]);
         setPose('WRITING');
 
-        const talkingTimer = setTimeout(() => setPose('TALKING'), 3000);
-        const idleTimer = setTimeout(() => setPose('IDLE'), 6000);
+        const talkingTimer = setTimeout(() => setPose('TALKING'), 1300);
+        const idleTimer = setTimeout(() => setPose('IDLE'), 4300);
 
         return () => {
             clearTimeout(talkingTimer);

@@ -1,102 +1,56 @@
 import Image from "next/image";
+import Navbar from "@/components/Navbar/Navbar";
+import Link from "next/link";
+
+import plane from '../../public/assets/landing/paper-plane.png'
+import geometry from '../../public/assets/landing/geometry.svg'
+import things from '../../public/assets/landing/things.svg'
+
+import { Bricolage_Grotesque, Roboto } from "next/font/google";
+import clsx from "clsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
+
+const BG = Bricolage_Grotesque()
+const roboto = Roboto()
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="flex flex-col h-screen w-screen overflow-hidden">
+      <header className="top-0 h-fit w-fit fixed">
+        <Navbar isAuthenticated={false} />
+      </header>
+      <div className="h-[calc(100vh - 80px)] w-screen flex flex-col items-center">
+        <div className="relative mt-[20px]">
+          <iframe src="https://cdn.lottielab.com/l/ALwZUaUV549Cdr.html" width="900" height="508"></iframe>
+          <div className="bg-white h-[100px] w-[300px] -translate-y-[150px] right-0 absolute"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        <div className="flex items-center flex-col -translate-y-[150px]">
+          <h1 className={clsx(BG.className, 'font-bold text-[50px] text-[rgba(0,0,0,0.7)]')}>Học mà chơi, chơi mà học !</h1>
+          <p className={clsx(roboto.className, 'font-medium text-[20px] text-[rgba(0,0,0,0.5)] text-center')}>Dino là nền tảng web trực tuyến giúp việc học Toán tư duy <br /> trở nên thú vị hơn dành cho học sinh Tiểu học !</p>
+        </div>
+        <div className="flex flex-col items-center -translate-y-[120px] z-10">
+          <Image src={plane} height={120} width={120} alt="" />
+          <Link href='/auth' className={clsx(
+            'h-[60px] w-[290px] rounded-[35px] bg-[#AF7522] cursor-pointer',
+            '-translate-y-[10px] hover:opacity-90'
+          )}>
+            <div className={clsx(
+              'h-[60px] w-[290px] rounded-[35px] bg-[#F1A12E]',
+              'flex flex-row gap-[20px] items-center justify-center text-white -translate-y-[6px]',
+              'hover:-translate-y-[3px] transition-all duration-200'
+            )}>
+              <label className={clsx(roboto.className, 'text-[20px] ml-[20px] font-medium cursor-pointer')}>Bắt đầu ngay</label>
+              <FontAwesomeIcon className={clsx('h-[30px] w-[30px] ml-[20px]')} icon={faPlay} />
+            </div>
+          </Link>
+        </div>
+        <div className="flex flex-row justify-between w-screen overflow-hidden -translate-y-[380px] z-0">
+          <Image className="bottom-0 left-0 select-none" src={geometry} height={300} width={300} alt="" />
+          <Image className="right-0 translate-x-[90px] select-none" src={things} height={400} width={400} alt="" />
+        </div>
+      </div>
+      <footer>
       </footer>
     </div>
   );

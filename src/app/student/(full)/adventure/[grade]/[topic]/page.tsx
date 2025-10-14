@@ -85,9 +85,9 @@ const Milestones: FC<MilestonesPageProps> = async ({ params }) => {
                             </label>
                         </div>
                         {/** Detail */}
-                        <div className="flex flex-col items-center">
-                            <label>{`Khu vực: $}`}</label>
-                            <label></label>
+                        <div className="flex flex-col items-center text-white font-medium text-[18px] mt-[50px]">
+                            <label>{`Mức độ: `}</label>
+                            <label>{`Khu vực: `}</label>
                         </div>
                         <div></div>
                     </div>

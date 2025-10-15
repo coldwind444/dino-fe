@@ -54,7 +54,7 @@ export default function LectureSlider({
             </h1>
 
             {/* Slider */}
-            <div ref={containerRef} className="relative w-full overflow-hidden">
+            <div ref={containerRef} className="relative -mt-[20px] mb-[20px] w-full overflow-hidden">
                 <div
                     className={clsx(
                         "flex flex-row gap-[20px] h-fit w-fit transition-transform duration-500 ease-in-out"
@@ -107,16 +107,19 @@ export default function LectureSlider({
                     icon={faArrowLeft}
                     onClick={backward}
                 />
-                <div
-                    className="h-[60px] w-[200px] rounded-[20px] bg-[#1DA492] cursor-pointer hover:opacity-90"
-                    onClick={doExercise}
-                >
-                    <div className="h-full w-full flex items-center justify-center gap-[10px] relative bg-[#23BEAA] rounded-tl-[50px] rounded-br-[50px] rounded-tr-[20px] rounded-bl-[20px]">
-                        <label className="text-white font-semibold text-[20px] select-none cursor-pointer">
-                            Làm bài nào !
-                        </label>
-                        <span className="h-[15px] aspect-square rounded-full bg-[rgba(255,255,255,0.5)] absolute right-0 top-0 mt-[7px] mr-[10px]"></span>
-                        <span className="h-[5px] aspect-square rounded-full bg-[rgba(255,255,255,0.5)] absolute right-0 top-0 mt-[20px] mr-[25px]"></span>
+                <div className="overflow-hidden h-[60px]">
+                    <iframe className="absolute -translate-y-[90px] -translate-x-[20px]" src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html" height={200}/>
+                    <div
+                        className="h-[60px] w-[200px] rounded-[20px] bg-[#1DA492] cursor-pointer hover:opacity-90"
+                        onClick={doExercise}
+                    >
+                        <div className="h-full w-full flex items-center justify-center gap-[10px] relative bg-[#23BEAA] rounded-tl-[50px] rounded-br-[50px] rounded-tr-[20px] rounded-bl-[20px]">
+                            <label className="text-white font-semibold text-[20px] select-none cursor-pointer">
+                                Làm bài nào !
+                            </label>
+                            <span className="h-[15px] aspect-square rounded-full bg-[rgba(255,255,255,0.5)] absolute right-0 top-0 mt-[7px] mr-[10px]"></span>
+                            <span className="h-[5px] aspect-square rounded-full bg-[rgba(255,255,255,0.5)] absolute right-0 top-0 mt-[20px] mr-[25px]"></span>
+                        </div>
                     </div>
                 </div>
                 <FontAwesomeIcon

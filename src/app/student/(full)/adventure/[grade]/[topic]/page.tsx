@@ -10,6 +10,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useRouter } from "next/navigation";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
+import Loader from "@/components/Loader/Loader";
 
 interface MilestonesPageProps {
     params: Promise<{
@@ -92,9 +93,7 @@ const Milestones: FC<MilestonesPageProps> = ({ params }) => {
     // Show loading state until data ready
     if (loading || !world || lectures.length === 0) {
         return (
-            <div className="h-screen w-screen flex items-center justify-center bg-black text-white text-xl">
-                Đang tải dữ liệu...
-            </div>
+            <Loader/>
         );
     }
 
@@ -154,7 +153,7 @@ const Milestones: FC<MilestonesPageProps> = ({ params }) => {
                         {/* Back button */}
                         <div
                             className={clsx(
-                                "h-[60px] w-[220px] rounded-[20px] bg-[#1DA492] cursor-pointer hover:opacity-90"
+                                "h-[60px] ml-[20px] w-[220px] rounded-[20px] bg-[#1DA492] cursor-pointer hover:opacity-90"
                             )}
                         >
                             <div

@@ -33,7 +33,7 @@ export default function Volume() {
   }
 
   return (
-    <div className="flex flex-row items-center gap-[5px] w-full max-w-[400px]">
+    <div className="flex flex-row items-center gap-[5px] w-fit">
       {/* Icon button */}
       <div onClick={() => setMuted(prev => !prev )}
         className={clsx(

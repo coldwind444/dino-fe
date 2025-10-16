@@ -76,10 +76,11 @@ const Milestones: FC<MilestonesPageProps> = ({ params }) => {
 
                 const worldData = await worldRes.json();
                 const lectureData = await lectureRes.json();
-                console.log(lectureData)
-
-                setWorld(worldData[grade]);
-                setLectures(lectureData);
+                setTimeout(() => {
+                    setWorld(worldData[grade]);
+                    setLectures(lectureData);
+                }, 5000)
+                
             } catch (err) {
                 console.error("Failed to fetch data:", err);
             } finally {

@@ -7,30 +7,34 @@ import helmet from '../../../../../public/assets/arena/helmet.png';
 import rank from '../../../../../public/scalable_assets/shared/ranks/Badge_07.svg'
 import avt from '../../../../../public/avt_01.svg'
 
-import { Baloo_2, Roboto } from 'next/font/google';
+import { Baloo_2, Patrick_Hand, Patrick_Hand_SC, Roboto } from 'next/font/google';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretLeft, faCaretRight, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { RankRecord } from './page';
+import { faArrowLeftLong, faArrowRightLong, faCaretLeft, faCaretRight, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { Rank, RankRecord } from './page';
 import { useState } from 'react';
 
 const roboto = Roboto()
 const baloo = Baloo_2()
+const patrick = Patrick_Hand({ weight: '400' })
+const patrick_sc = Patrick_Hand_SC({ weight: '400' })
 
 interface ArenaClientProps {
     records: RankRecord[]
+    userRank: Rank
 }
 
-export default function ArenaClient({ records }: ArenaClientProps) {
+export default function ArenaClient({ records, userRank }: ArenaClientProps) {
     const [pageIdx, setPageIdx] = useState(0)
+    const [rulesShow, setRulesShow] = useState(true)
 
     return (
         <div className='w-full h-full flex flex-row gap-[15px] p-[15px]'>
             {/** Rule panel */}
             <div className="h-full w-fit flex flex-col relative">
-                <div className='w-[324px] flex-1 bg-[#965C5A] rounded-tl-[20px] rounded-tr-[20px]'></div>
-                <Image src={arena} alt='' className='rounded-br-[20px] rounded-bl-[20px]' width={324} />
-                <div className='absolute top-0 flex flex-col items-center text-white w-full'>
+                <div className='w-[324px] flex-1 bg-[#965C5A] rounded-tl-[20px] rounded-tr-[20px] z-10'></div>
+                <Image src={arena} alt='' className='rounded-br-[20px] rounded-bl-[20px] z-10' width={324} />
+                <div className='absolute top-0 flex flex-col items-center text-white w-full z-10'>
                     <h1 className={clsx(roboto.className, 'text-[27px] font-bold mt-[20px]')}>ĐẤU TRƯỜNG</h1>
                     <p className='text-center text-wrap mt-[10px] leading-tight'>
                         Dùng kinh nghiệm và kiến thức <br /> tích lũy được để cạnh tranh với <br /> những thí sinh khác !
@@ -47,9 +51,63 @@ export default function ArenaClient({ records }: ArenaClientProps) {
                         <FontAwesomeIcon className='text-[35px]' icon={faCircleQuestion} />
                     </div>
                 </div>
+                <div className={clsx(
+                    'h-full absolute bg-[#F5DEB3] rounded-[20px] z-0 pl-[354px]',
+                    'flex flex-col',
+                    rulesShow ? 'w-[98vw]' : 'w-full', 'transition-all duration-200'
+                )}>
+                    <div className='flex flex-row items-center justify-center gap-[150px]'>
+                        {/* Left button */}
+                        <div
+                            className={clsx(
+                                'flex flex-row items-center justify-center text-[18px] gap-[10px]',
+                                patrick.className,
+                                'font-bold cursor-pointer transition-all duration-150 group'
+                            )}
+                        >
+                            <FontAwesomeIcon
+                                icon={faArrowLeftLong}
+                                className='group-hover:-translate-x-2 transition-transform duration-150'
+                            />
+                            <label className='cursor-pointer group-hover:translate-x-2 transition-transform duration-150'>
+                                TRANG TRƯỚC
+                            </label>
+                        </div>
+                        {/* Center title */}
+                        <div
+                            className={clsx(
+                                'h-[100px] w-[400px] bg-[#C13501] text-white font-bold text-[40px]',
+                                'flex items-center justify-center rounded-bl-[20px] rounded-br-[20px]',
+                                'shadow-[0_4px_10px_rgba(0,0,0,0.25)]'
+                            )}
+                        >
+                            <label className={patrick_sc.className}>THỂ LỆ ĐẤU TRƯỜNG</label>
+                        </div>
+
+                        {/* Right button */}
+                        <div
+                            className={clsx(
+                                'flex flex-row items-center justify-center text-[18px] gap-[10px]',
+                                patrick.className,
+                                'font-bold cursor-pointer transition-all duration-150 group'
+                            )}
+                        >
+                            <label className='cursor-pointer group-hover:-translate-x-2 transition-transform duration-150'>
+                                TRANG SAU
+                            </label>
+                            <FontAwesomeIcon
+                                icon={faArrowRightLong}
+                                className='group-hover:translate-x-2 transition-transform duration-150'
+                            />
+                        </div>
+                    </div>
+                    <div className='flex-1 flex flex-row gap-[100px] w-full'>
+
+                    </div>
+                </div>
             </div>
             {/** Arena content */}
-            <div className='flex flex-1 flex-col gap-[15px]'>
+            <div className={clsx('flex flex-1 flex-col gap-[15px] transition-all duration-200', { 'hidden': rulesShow })}>
                 {/** Top section */}
                 <div className='flex w-full flex-row gap-[15px]'>
                     {/** Join border */}
@@ -113,20 +171,21 @@ export default function ArenaClient({ records }: ArenaClientProps) {
                 <div className='flex flex-1 flex-row gap-[15px]'>
                     {/** Ranking border */}
                     <div className={clsx(
-                        'w-[350px] bg-[#8A2BE2] rounded-[20px]'
-                    )}>
+                        'w-[350px] rounded-[20px]'
+                    )} style={{ backgroundColor: userRank.color }}>
                         <div className={clsx(
-                            'h-[99%] w-[345px] bg-white border-3 border-[#8A2BE2] rounded-[20px]',
-                            'flex flex-col items-center p-[20px]'
-                        )}>
+                            'h-[99%] w-[345px] bg-white border-3 rounded-[20px]',
+                            'flex flex-col items-center p-[20px]',
+                        )} style={{ borderColor: userRank.color }}>
                             <h1 className='text-[23px] font-bold text-[rgba(0,0,0,0.8)]'>Xếp hạng của bạn</h1>
-                            <Image src={rank} alt='' className='mt-[15px] h-[170px] w-[170px]' /> {/** Rank image */}
+                            <Image src={userRank.badge} alt='' className='mt-[15px] h-[170px] w-[170px]' width={170} height={170} /> {/** Rank image */}
                             {/** Ribbon */}
                             <div className="relative flex justify-center items-center w-full">
                                 <svg
                                     viewBox="-25 -5 50 10"
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="w-full h-auto max-w-[600px] fill-[#8A2BE2]"
+                                    className="w-full h-auto max-w-[600px]"
+                                    style={{ fill: userRank.color }}
                                     preserveAspectRatio="xMidYMid meet"
                                 >
                                     <path
@@ -144,9 +203,9 @@ export default function ArenaClient({ records }: ArenaClientProps) {
 
                                 <span className={clsx(
                                     baloo.className,
-                                    "absolute text-white text-[clamp(1rem,2vw,1.5rem)] font-bold"
+                                    "absolute text-white text-[18px] font-bold"
                                 )}>
-                                    Nhà thông thái
+                                    {userRank.title}
                                 </span>
                             </div>
                             {/** Rank info */}
@@ -155,7 +214,7 @@ export default function ArenaClient({ records }: ArenaClientProps) {
                                     <label className={clsx(roboto.className)}>Battle Points:</label>
                                     <label className={clsx(roboto.className)}>Vị trí hiện tại:</label>
                                 </div>
-                                <div className='flex flex-col font-bold text-[#8A2BE2] text-[17px] gap-[10px]'>
+                                <div className='flex flex-col font-bold text-[17px] gap-[10px]' style={{ color: userRank.color }}>
                                     <label className={clsx(roboto.className)}>32000 BP</label>
                                     <label className={clsx(roboto.className)}>50</label>
                                 </div>

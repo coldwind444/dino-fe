@@ -31,6 +31,6 @@ export default async function Arena() {
     const ranksData = await ranksRes.json() as Rank[]
 
     return (
-        <ArenaClient records={recordsData} userRank={ranksData[6]}/>
+        <ArenaClient records={recordsData} userRank={ranksData[8]}/>
     )
 }

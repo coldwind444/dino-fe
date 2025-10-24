@@ -4,7 +4,7 @@ import './Loader.css'
 
 export default function Loader() {
     return (
-        <div className="h-screen w-screen bg-[azure] gap-[20px] flex flex-col items-center justify-center">
+        <div className="z-50 absolute h-screen w-screen bg-[azure] gap-[20px] flex flex-col items-center justify-center">
             <div className="loader">
                 <div></div>
                 <div></div>

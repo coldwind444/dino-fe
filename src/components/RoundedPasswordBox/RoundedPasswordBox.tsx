@@ -23,7 +23,7 @@ export default function RoundedPasswordBox({ value, width = '400', onChange, onS
 
     return (
         <div className={clsx(
-            'h-[50px] border-2 border-[rgba(0,0,0,0.15)] rounded-full',
+            'h-[50px] border-2 border-[rgba(0,0,0,0.15)] rounded-full overflow-hidden',
             'focus-within:border-[#23BEAA] transition-all duration-150',
             'flex flex-row gap-[20px] items-center'
         )} style={{ width: `${width}px` }}>

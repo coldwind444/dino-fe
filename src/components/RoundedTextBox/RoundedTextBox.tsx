@@ -12,7 +12,7 @@ export default function RoundedTextBox({ value, width = '400', onChange, placeho
 {
     return (
         <div className={clsx(
-            'h-[50px] border-2 border-[rgba(0,0,0,0.15)] rounded-full',
+            'h-[50px] border-2 border-[rgba(0,0,0,0.15)] rounded-full overflow-hidden',
             'focus-within:border-[#23BEAA] transition-all duration-150'
         )}  style={{ width: `${width}px`}}>
             <input className="h-full w-[90%] pl-[30px] border-none outline-none text-[17px]" 

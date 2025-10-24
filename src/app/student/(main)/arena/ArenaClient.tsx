@@ -36,7 +36,7 @@ interface ArenaClientProps {
 
 export default function ArenaClient({ records, userRank }: ArenaClientProps) {
     const [pageIdx, setPageIdx] = useState(0)
-    const [rulesShow, setRulesShow] = useState(true)
+    const [rulesShow, setRulesShow] = useState(false)
     const [rulesPage, setRulesPage] = useState(0)
 
     return (
@@ -65,7 +65,7 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                 <div
                     className={clsx(
                         'h-full absolute bg-[#F5DEB3] rounded-[20px] z-0 pl-[374px]',
-                        'flex flex-col transition-all duration-500 ease-in-out overflow-hidden',
+                        'flex flex-col transition-all duration-300 ease-in-out overflow-hidden',
                         rulesShow
                             ? 'w-[98vw] opacity-100 overflow-x-hidden'
                             : 'w-0 opacity-0'
@@ -152,7 +152,10 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                         >
                             {/* PAGE 1 */}
                             <div className={clsx('flex flex-row h-full flex-1', rulesPage !== 0 && 'hidden')}>
-                                <div className="flex flex-col gap-[20px]">
+                                <div className={clsx(
+                                    "flex flex-col gap-[20px]", rulesShow ? 'opacity-100' : 'opacity-0',
+                                    'transition-opacity duration-1000'
+                                )}>
                                     <label className={clsx(patrick_sc.className, 'text-[45px] text-[#C03601]')}>I. Mục đích</label>
                                     <ul className="list-disc pl-[30px] text-[30px] text-[#5E4630] flex flex-col gap-[20px]">
                                         <li className={patrick.className}>
@@ -314,7 +317,10 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                             'rounded-tl-[20px] rounded-bl-[20px] flex items-center justify-center text-[white] text-[40px]',
                             'shadow-[-4px_0_10px_rgba(0,0,0,0.25)]'
                         )}
-                        onClick={() => setRulesShow(false)}
+                        onClick={() => {
+                            setRulesShow(false)
+                            setRulesPage(0)
+                        }}
                     >
                         <FontAwesomeIcon className="group-hover:scale-125 transition-all duration-150" icon={faCaretLeft} />
                     </div>

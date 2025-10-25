@@ -1,10 +1,15 @@
+"use client";
+
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
+import { useState } from "react";
+import ProfilePopup from "@/components/ProfilePopup/ProfilePopup";
 
 export default function StudentHome() {
   const username = "Tân";
   const egg = "assets/landing/egg_normal";
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const topics = [
     { id: 1, title: "Các số đếm 10 và các phép tính cơ bản" },
@@ -199,6 +204,20 @@ export default function StudentHome() {
           </div>
         </main>
       </div>
+
+      {/* Add a button to open profile popup for testing */}
+      <button
+        onClick={() => setIsProfileOpen(true)}
+        className="fixed bottom-4 right-4 bg-[#1ABC9C] text-white p-4 rounded-full shadow-lg hover:bg-[#16A085] transition-colors"
+      >
+        👤 Profile
+      </button>
+
+      {/* Profile Popup */}
+      <ProfilePopup
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
     </div>
   );
 }

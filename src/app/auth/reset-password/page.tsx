@@ -84,7 +84,7 @@ export default function ResetPassword() {
             <div className="w-1/4 h-full border-2 border-[rgba(0,0,0,0.1)] rounded-[20px] flex flex-col justify-between">
                 {steps.map((val, idx) => (
                     // Steps
-                    <div className="flex flex-col">
+                    <div className="flex flex-col" key={idx}>
                         <div className="flex flex-row gap-[15px] p-[30px] items-center relative" key={idx}>
                             {/** Step Circle */}
                             <div className={clsx(

@@ -36,11 +36,11 @@ export default async function MilestonesPage({ params }: MilestonesPageProps) {
     // Server-side data fetching (no useEffect)
     const [worldRes, topicRes, lectureRes] = await Promise.all([
         fetch(
-            "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/worlds.json",
+            "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/worlds_v2.json",
             { cache: "no-store" }
         ),
         fetch(
-            "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/lessons.json",
+            "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/lessons_v2.json",
             { cache: "no-store" }
         ),
         fetch(

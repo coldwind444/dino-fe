@@ -5,6 +5,7 @@ import { Lecture } from "@/app/student/(full)/adventure/[grade]/[topic]/page"
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { useLectureStore } from "@/stores/lectureStore";
 import clsx from "clsx";
 
 export default function LectureSlider({
@@ -15,7 +16,7 @@ export default function LectureSlider({
     onLectureSelectionChange: (index: number) => void,
     milestone: string
 }) {
-    const [idx, setIdx] = useState(0);
+    const { lectureIdx: idx, setLectureIdx: setIdx } = useLectureStore();
     const [translate, setTranslate] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
 

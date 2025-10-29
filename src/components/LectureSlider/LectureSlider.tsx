@@ -111,7 +111,7 @@ export default function LectureSlider({
                 <div className="overflow-hidden h-[60px]">
                     <iframe className="absolute -translate-y-[90px] -translate-x-[20px]" src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html" height={200}/>
                     <div
-                        className="h-[60px] w-[200px] rounded-[20px] bg-[#1DA492] cursor-pointer hover:opacity-90"
+                        className="h-[60px] w-[200px] rounded-[20px] bg-[#1DA492] cursor-pointer hover:brightness-110 transition-all duration-200"
                         onClick={doExercise}
                     >
                         <div className="h-full w-full flex items-center justify-center gap-[10px] relative bg-[#23BEAA] rounded-tl-[50px] rounded-br-[50px] rounded-tr-[20px] rounded-bl-[20px]">

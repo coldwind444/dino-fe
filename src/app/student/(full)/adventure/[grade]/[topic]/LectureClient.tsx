@@ -107,9 +107,12 @@ export default function LectureClient({
                                     "bg-[rgba(0,0,0,0.7)] rounded-tr-[20px] rounded-br-[20px] h-full w-[400px] flex flex-col pt-[10px]"
                                 )}
                             >
-                                <div className="h-[60px] ml-[20px] w-[220px] bg-[#1DA492] rounded-[20px] flex items-center justify-center cursor-pointer hover:opacity-90">
-                                    <FontAwesomeIcon icon={faArrowLeft} className="text-white mr-2" />
-                                    <span className="text-white font-medium text-[20px]">Quay lại</span>
+                                <div className="h-[60px] ml-[20px] w-[220px] bg-[#1DA492] rounded-[20px] flex items-center justify-center cursor-pointer overflow-hidden hover:brightness-110 transition-all duration-200">
+                                    <div className="h-full w-full rounded-tl-[50px] rounded-br-[50px] flex flex-row gap-[10px] items-center justify-center bg-[#23BEAA] relative">
+                                        <FontAwesomeIcon icon={faArrowLeft} className="text-white mr-2" />
+                                        <span className="text-white font-medium text-[20px]">Quay lại</span>
+                                        <span className="h-[15px] aspect-square rounded-full bg-[rgba(255,255,255,0.5)] top-0 right-0 mt-[10px] mr-[10px] absolute"></span>
+                                    </div>
                                 </div>
 
                                 <div className="flex flex-col items-center justify-center mt-7 gap-[20px]">
@@ -162,7 +165,7 @@ export default function LectureClient({
                                 <div className={clsx(
                                     "h-[40px] w-[120px] items-center relative cursor-pointer",
                                     "bg-[#C7434C] rounded-[15px] overflow-hidden",
-                                    "hover:opacity-90"
+                                    "hover:brightness-110 transition-all duration-200"
                                 )} onClick={() => setMode(MODE.LECTURE)}>
                                     <div className={clsx(
                                         "h-full w-full flex flex-row items-center justify-center bg-[#FF5964] text-white",
@@ -203,12 +206,12 @@ export default function LectureClient({
                                 </div>
                                 <div className={clsx(
                                     'h-[60px] w-[230px] bg-amber-700 rounded-[15px] cursor-pointer',
-                                    'hover:opacity-90 overflow-hidden',
+                                    'hover:brightness-110 transition-all duration-200 overflow-hidden',
                                     'font-bold text-white mt-[100px]'
                                 )}>
                                     <div className={clsx(
                                         'h-full w-full bg-amber-600 cursor-pointer relative',
-                                        'flex items-center justify-center hover:opacity-90',
+                                        'flex items-center justify-center',
                                         'font-bold text-white text-[20px]', 'rounded-tl-[40px] rounded-br-[40px]'
                                     )}>
                                         Nộp bài
@@ -241,12 +244,12 @@ export default function LectureClient({
                                 <div className="flex flex-row gap-[20px] w-full justify-center">
                                     <div className={clsx(
                                         'h-[50px] w-[150px] bg-[#1DA492] rounded-[15px] cursor-pointer',
-                                        'hover:opacity-90 overflow-hidden',
+                                        'hover:brightness-110 transition-all duration-200 overflow-hidden',
                                         'font-bold text-white'
                                     )}>
                                         <div className={clsx(
                                             'h-full w-full bg-[#23BEAA] cursor-pointer relative',
-                                            'flex items-center justify-center hover:opacity-90',
+                                            'flex items-center justify-center',
                                             'font-bold text-white text-[16px]', 'rounded-tl-[40px] rounded-br-[40px]'
                                         )}>
                                             Trả lời

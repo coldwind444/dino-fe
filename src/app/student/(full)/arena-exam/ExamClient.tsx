@@ -4,6 +4,7 @@ import { faArrowLeftLong, faArrowRightLong, faClose } from "@fortawesome/free-so
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import clsx from "clsx"
 import { Righteous } from "next/font/google"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 interface ExamClientProps {
@@ -13,6 +14,8 @@ interface ExamClientProps {
 const righteous = Righteous({ weight: '400' })
 
 export default function ExamClient({ questions }: ExamClientProps) {
+    const router = useRouter()
+
     const [currSection, setCurrSection] = useState(0)
     const [currQuestion, setCurrQuestion] = useState(0)
 
@@ -26,8 +29,8 @@ export default function ExamClient({ questions }: ExamClientProps) {
                     <div className={clsx(
                         "h-[55px] w-[160px] bg-[#DE4B54] ml-auto mr-auto",
                         'rounded-[20px] overflow-hidden -translate-y-[15px] cursor-pointer',
-                        'hover:opacity-90'
-                    )}>
+                        'hover:brightness-110 transition-all duration-200'
+                    )} onClick={() => router.push('/student/arena')}>
                         <div className={clsx(
                             "h-full w-full rounded-tl-[50px] rounded-br-[40px] bg-[#FF5964] relative",
                             'flex flex-row gap-[10px] text-white text-[18px] items-center justify-center font-medium'
@@ -57,7 +60,7 @@ export default function ExamClient({ questions }: ExamClientProps) {
                                                 "h-[40px] cursor-pointer aspect-square rounded-[10px] flex items-center justify-center text-[18px] relative",
                                                 globalIdx === currQuestion ? 'bg-[#FF9600] text-white' : 'bg-[#C5DCFF] text-[#3B84F2]',
                                                 'hover:opacity-90'
-                                            )} onClick={() => setCurrQuestion(idx)}>
+                                            )} onClick={() => setCurrQuestion(globalIdx)}>
                                             <label className={clsx(
                                                 "cursor-pointer font-bold", righteous.className
                                             )}>
@@ -113,7 +116,7 @@ export default function ExamClient({ questions }: ExamClientProps) {
                     </div>
                     <div className={clsx(
                         "bg-[#1DA492] h-[60px] w-full rounded-[20px] overflow-hidden",
-                        'cursor-pointer hover:opacity-90'
+                        'cursor-pointer hover:brightness-110 transition-all duration-200'
                     )}>
                         <div className={clsx(
                             'h-full w-full flex items-center justify-center text-white text-[18px]',
@@ -134,7 +137,7 @@ export default function ExamClient({ questions }: ExamClientProps) {
                     <p className="w-full h-fit text-wrap ml-[20px] text-[18px] font-medium">{questions[currQuestion]}</p>
                 </div>
                 <div className="flex-1 flex flex-row gap-[20px]">
-                    <div className="h-[50px] w-[170px] bg-[#8A2BE2] rounded-full ml-auto mr-[10px] flex flex-row gap-[15px] relative text-white text-[18px] font-medium items-center justify-center cursor-pointer hover:opacity-90"
+                    <div className="h-[50px] w-[170px] bg-[#8A2BE2] rounded-full ml-auto mr-[10px] flex flex-row gap-[15px] relative text-white text-[18px] font-medium items-center justify-center cursor-pointer hover:brightness-110 transition-all duration-200"
                         onClick={() => {
                             if (currQuestion > 0) {
                                 const target = currQuestion - 1
@@ -146,7 +149,7 @@ export default function ExamClient({ questions }: ExamClientProps) {
                         <label className="cursor-pointer">Câu trước</label>
                         <span className="h-[15px] absolute aspect-square bg-[rgba(255,255,255,0.3)] rounded-full top-0 right-0 mt-[8px] mr-[10px]"></span>
                     </div>
-                    <div className="h-[50px] w-[170px] bg-[#8A2BE2] rounded-full mr-0 flex flex-row gap-[15px] relative text-white text-[18px] font-medium items-center justify-center cursor-pointer hover:opacity-90"
+                    <div className="h-[50px] w-[170px] bg-[#8A2BE2] rounded-full mr-0 flex flex-row gap-[15px] relative text-white text-[18px] font-medium items-center justify-center cursor-pointer hover:brightness-110 transition-all duration-200"
                         onClick={() => {
                             if (currQuestion < 99) {
                                 const target = currQuestion + 1

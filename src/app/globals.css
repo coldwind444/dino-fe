@@ -20,3 +20,11 @@ input[type="password"]::-ms-clear {
 label {
   user-select: none;
 }
+
+img {
+  user-select: none;
+}
+
+iframe {
+  user-select: none;
+}

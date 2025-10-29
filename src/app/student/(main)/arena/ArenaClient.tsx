@@ -344,7 +344,7 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                                 </h2>
                                 <div className={clsx(
                                     'h-[70px] w-full rounded-[20px] bg-[#E1690A] overflow-hidden cursor-pointer',
-                                    'hover:opacity-90 group'
+                                    'hover:brightness-110 transition-all duration-200'
                                 )}>
                                     <div className={clsx(
                                         'flex items-center justify-center',
@@ -352,7 +352,7 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                                         'rounded-tl-[50px] rounded-br-[60px] relative'
                                     )}>
                                         Tham gia ngay
-                                        <span className='absolute top-0 right-0 mt-[7px] mr-[10px] h-[25px] aspect-square bg-[rgba(255,255,255,0.5)] rounded-full' />
+                                        <span className='absolute top-0 right-0 mt-[7px] mr-[10px] h-[25px] aspect-square bg-[rgba(255,255,255,0.3)] rounded-full' />
                                     </div>
                                 </div>
                             </div>

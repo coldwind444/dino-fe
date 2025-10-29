@@ -69,7 +69,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
           <div className="w-96 p-6 space-y-4">
             {/* Profile Card */}
             <div className="relative">
-              <div className="absolute inset-0 bg-[#1ABC9C] rounded-2xl translate-x-[6px] translate-y-[6px]" />
+              <div className="absolute inset-0 bg-[#1ABC9C] rounded-2xl translate-x-[4px] translate-y-[4px]" />
               <div className="relative bg-[#E8F8F5] rounded-2xl p-6 border-2 border-[#1ABC9C]">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-16 h-16 bg-[#1ABC9C] rounded-full flex items-center justify-center">

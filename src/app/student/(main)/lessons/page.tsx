@@ -121,7 +121,7 @@ export default function StudentHome() {
         <main className="flex-1">
           {/* Featured Topic */}
           <div className="relative mb-6">
-            <div className="absolute inset-0 bg-[#1ABC9C] rounded-2xl translate-x-[6px] translate-y-[6px]" />
+            <div className="absolute inset-0 bg-[#1ABC9C] rounded-2xl translate-x-[4px] translate-y-[4px]" />
             <div className="relative bg-gradient-to-br from-[#E8F8F5] to-[#D5F4EC] rounded-2xl border-2 border-[#1ABC9C] p-8">
               <div className="flex items-center gap-6">
                 <div className="flex gap-2"></div>

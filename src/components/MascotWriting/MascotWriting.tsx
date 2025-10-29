@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Lottie, { ILottie } from "@lottielab/lottie-player/react";
+import dynamic from "next/dynamic";
 import clsx from "clsx";
+
+// ✅ Dynamically import Lottie only on the client
+const LottiePlayer = dynamic(() => import("@lottielab/lottie-player/react"), {
+  ssr: false,
+});
 
 export const POSES = {
   IDLE: "https://cdn.lottielab.com/l/2xXzcy2MJtHM3K.json",
@@ -17,34 +22,35 @@ interface MascotProps {
 }
 
 export default function MascotWriting({ pose }: MascotProps) {
-  const refs: Record<PoseKey, React.RefObject<ILottie|null>> = {
-    IDLE: useRef<ILottie>(null),
-    TALKING: useRef<ILottie>(null),
-    WRITING: useRef<ILottie>(null),
+  const refs = {
+    IDLE: useRef<any>(null),
+    TALKING: useRef<any>(null),
+    WRITING: useRef<any>(null),
   };
 
-  // Ensure correct animation plays after mount and when pose changes
   useEffect(() => {
-    const playPose = () => {
-      (Object.entries(refs) as [PoseKey, React.RefObject<ILottie>][]).forEach(
-        ([key, ref]) => {
-          const instance = ref.current;
-          if (!instance) return;
-          if (key === pose) {
-            instance.seek(0)
-            instance.play();
-          }
-          else instance.pause();
+    // Only run in browser
+    if (typeof window === "undefined") return;
+
+    (Object.entries(refs) as [PoseKey, React.RefObject<any>][]).forEach(
+      ([key, ref]) => {
+        const instance = ref.current;
+        if (!instance) return;
+
+        if (key === pose) {
+          instance.seek?.(0);
+          instance.play?.();
+        } else {
+          instance.pause?.();
         }
-      );
-    };
-    playPose()
+      }
+    );
   }, [pose]);
 
   return (
     <div className="relative w-[320px] h-[320px] ml-[50px]">
       {(Object.entries(POSES) as [PoseKey, string][]).map(([key, src]) => (
-        <Lottie
+        <LottiePlayer
           key={key}
           ref={refs[key]}
           src={src}

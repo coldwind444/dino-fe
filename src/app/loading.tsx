@@ -1,5 +1,5 @@
-import Loader from "@/components/Loader/Loader";
+import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 
 export default function Loading() {
-    return <Loader />;
+    return <ScreenLoader />;
 }

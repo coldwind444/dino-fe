@@ -17,13 +17,15 @@ import logo from '../../../public/assets/logo.svg'
 import RoundedTextBox from "@/components/RoundedTextBox/RoundedTextBox";
 import RoundedPasswordBox from "@/components/RoundedPasswordBox/RoundedPasswordBox";
 import Link from "next/link";
+import { login, register } from "@/apis";
+import Loader from "@/components/Loader/Loader";
 
 const roboto = Roboto()
 const fredoka = Fredoka()
 
 const ROLES = {
-    STUDENT: 0,
-    PARENT: 1
+    STUDENT: 'student',
+    PARENT: 'parent'
 }
 
 const TABS = {
@@ -43,20 +45,25 @@ export default function Auth() {
     const [tabIndex, setTabIndex] = useState(TABS.LOG_IN)
     const [loginStep, setLoginStep] = useState(AUTHSTEPS.SELECT_ROLE)
     const [registerStep, setRegisterStep] = useState(AUTHSTEPS.SELECT_ROLE)
-    const [role, setRole] = useState<number | null>(null)
+    const [role, setRole] = useState<string>(ROLES.STUDENT)
     const [errorShow, setErrorShow] = useState(false)
+    const [loginLoading, setLoginLoading] = useState(false)
+    const [regLoading, setRegLoading] = useState(false)
 
     // login request states
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordShow, setPasswordShow] = useState(false)
+    const [loginErrorMessage, setLoginErrorMessage] = useState('')
 
     // register request states
     const [email2, setEmail2] = useState('')
     const [password2, setPassword2] = useState('')
     const [confPassword, setConfPassword] = useState('')
     const [fullName, setFullName] = useState('') // only for parent
+    const [regErrorMessage, setRegErrorMessage] = useState('')
 
+    // helper function
     const openErrorDialog = () => {
         setErrorShow(true)
         setTimeout(() => setErrorShow(false), 5000)
@@ -79,6 +86,37 @@ export default function Auth() {
             return strongPassword.test(password2) && validEmail.test(email2) && confPassword === password2 && fullName.length > 0;
     }
 
+    const handleLogin = async () => {
+        try {
+            setLoginLoading(true)
+            const res = await login({ email, password })
+        } catch (err: any) {
+            setLoginErrorMessage(err.message)
+            openErrorDialog()
+        } finally {
+            setLoginLoading(false)
+        }
+    }
+
+    const handleRegister = async () => {
+        try {
+            setLoginLoading(true)
+            const res = await register({
+                email: email2,
+                password: password2,
+                role: role,
+                name: fullName,
+                avatarUrl: '',
+                familyId: ''
+            })
+        } catch (err: any) {
+            setRegErrorMessage(err.message)
+            openErrorDialog()
+        } finally {
+            setLoginLoading(false)
+        }
+    }
+
     const resetLogin = () => {
         setEmail('')
         setPassword('')
@@ -91,6 +129,7 @@ export default function Auth() {
         setConfPassword('')
     }
 
+    // effects
     useEffect(() => {
         setLoginStep(AUTHSTEPS.SELECT_ROLE)
         setRegisterStep(AUTHSTEPS.SELECT_ROLE)
@@ -228,9 +267,12 @@ export default function Auth() {
                                         )} href=''>Quên mật khẩu ?</Link>
                                         <button disabled={!canLogin()} className={clsx(
                                             'h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium',
-                                            'disabled:bg-gray-300 cursor-not-allowed',
+                                            'disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center',
                                             { 'cursor-pointer hover:opacity-90': email.length > 0 && password.length > 0 },
-                                        )} onClick={() => openErrorDialog()}>Đăng nhập</button>
+                                        )} onClick={() => openErrorDialog()}>
+                                            Đăng nhập
+                                            <div className="absolute right-0 aspect-square h-[30px] mr-[15px]"><Loader isLoading={false} /></div>
+                                        </button>
                                         <div className={clsx(
                                             "flex flex-col gap-[5px] items-center justify-center",
                                             'cursor-pointer group hover:text-[#23BEAA]'

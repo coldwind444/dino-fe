@@ -236,12 +236,12 @@ export default function Auth() {
                                                 className="-translate-x-[12px] translate-y-[20px] z-0" />
                                             <Image src={leftHand} alt='' height={60}
                                                 className={clsx(
-                                                    "absolute -translate-y-[290px] transition-all duration-400",
+                                                    "absolute -translate-y-[290px] transition-all duration-400 z-[1]",
                                                     { 'translate-x-[100px]': !passwordShow, 'translate-x-[200px]': passwordShow }
                                                 )} />
                                             <Image src={rightHand} alt='' height={60}
                                                 className={clsx(
-                                                    "absolute -translate-y-[290px] transition-all duration-400",
+                                                    "absolute -translate-y-[290px] transition-all duration-400 z-[1]",
                                                     { '-translate-x-[100px]': passwordShow }
                                                 )} />
                                         </div>

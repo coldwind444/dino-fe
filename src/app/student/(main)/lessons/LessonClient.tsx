@@ -183,7 +183,7 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
             {currentTopics.map((topic, index) => {
               const globalIndex = currentPage * TOPICS_PER_PAGE + index;
               return (
-                <div key={index} className="relative h-[320px]" onClick={() => navigateToLecture((index + 1).toString())}>
+                <div key={index} className="relative h-[320px]" onClick={() => navigateToLecture((globalIndex + 1).toString())}>
                   <div
                     className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px]"
                     style={{ backgroundColor: getRandomColor(index) }}

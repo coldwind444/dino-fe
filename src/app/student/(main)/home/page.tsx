@@ -18,7 +18,7 @@ export default async function Home() {
     ])
 
     const lessonsData = await lessonsRes.json() as LessonsData;
-    console.log("Fetched lessons data:", lessonsData);
+    
     return (
         <StudentHome lessons={lessonsData} />
     )

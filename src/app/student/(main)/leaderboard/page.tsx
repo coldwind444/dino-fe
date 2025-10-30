@@ -76,7 +76,7 @@ export default function LeaderboardContent() {
               <div className="flex justify-center mb-4 mt-6">
                 <div className="relative w-20 h-30 flex items-center justify-center">
                   <Image
-                    src={crown}
+                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
                     alt="crown"
                     width={80}
                     height={64}
@@ -137,8 +137,8 @@ export default function LeaderboardContent() {
                 <Image
                   src={poly4}
                   alt="polygon 4"
-                  width={64}
-                  height={64}
+                  width={48}
+                  height={48}
                   className="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 />
               </div>
@@ -187,8 +187,8 @@ export default function LeaderboardContent() {
                 <Image
                   src={poly5}
                   alt="polygon 5"
-                  width={64}
-                  height={64}
+                  width={48}
+                  height={48}
                   className="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 />
               </div>

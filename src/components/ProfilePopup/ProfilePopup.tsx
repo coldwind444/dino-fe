@@ -61,9 +61,11 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
 
   if (!isOpen) return null;
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-white rounded-3xl max-w-4xl w-full mx-4 relative overflow-hidden">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[30]">
+      <div className="bg-white rounded-3xl max-w-4xl w-full mx-4 relative overflow-hidden shadow-2xl">
         <div className="flex">
           {/* Left Sidebar */}
           <div className="w-96 p-6 space-y-4">

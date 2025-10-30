@@ -16,11 +16,11 @@ export default function MissionPage() {
   return (
     <div className="min-h-screen bg-white  flex-col">
       {/* BODY */}
-      <main className="flex flex-1 p-8 space-x-8 max-h-[700px]">
+      <main className="flex flex-1 p-8 space-x-8 max-h-[800px]">
         <div className="w-[400px] flex flex-col">
           <div
-            className="rounded-t-2xl px-[40px] py-6 text-white flex flex-col items-center justify-center"
-            style={{ backgroundColor: "#1B2657" }}
+            className="rounded-t-2xl px-[40px] py-6 text-white flex flex-col items-center justify-center border-[3px]"
+            style={{ backgroundColor: "#1B2657", borderColor: "#1B2657" }}
           >
             <h2 className="font-roboto text-[25px] font-bold text-center">
               NHIỆM VỤ HÀNG NGÀY
@@ -32,7 +32,7 @@ export default function MissionPage() {
           </div>
 
           <div
-            className="rounded-b-2xl h-[600px] flex items-center justify-center bg-cover bg-center"
+            className="rounded-b-2xl h-[800px] flex items-center justify-center bg-cover bg-top"
             style={{ backgroundImage: `url(${mission.src})` }}
           ></div>
         </div>
@@ -78,7 +78,12 @@ export default function MissionPage() {
                   </p>
 
                   <div className="flex items-center justify-center space-x-2">
-                    <Image src={trophy} alt="Trophy" width={28} height={28} />
+                    <Image
+                      src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                      alt="Trophy"
+                      width={28}
+                      height={28}
+                    />
                     <p
                       className="text-3xl font-bold"
                       style={{ color: "#FFE566" }}

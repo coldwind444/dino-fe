@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useState } from "react";
 import ProfilePopup from "@/components/ProfilePopup/ProfilePopup";
+import { useLessonStore } from "@/stores/lessonStore";
+import { useRouter } from "next/navigation";
 
 interface Topic {
   name: string;
@@ -16,18 +18,20 @@ interface LessonsData {
 }
 
 interface LessonClientProps {
-  lessons?: LessonsData;
+  lessons: LessonsData;
+  grades: Record<string, { image: string }>
 }
 
-export default function LessonClient({ lessons }: LessonClientProps) {
+export default function LessonClient({ lessons, grades }: LessonClientProps) {
+  const { gradeId, setTopicId, setLectureIdx } = useLessonStore()
+  const router = useRouter()
+
   const username = "Tân";
-  const egg = "assets/landing/egg_normal";
+  const src = grades[gradeId].image
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [selectedGrade, setSelectedGrade] = useState("1");
   const [currentPage, setCurrentPage] = useState(0);
 
-  const topics = lessons?.[selectedGrade] || [];
-  const SAMPLE_THUMB_PATH = "/assets/landing/egg_normal.png";
+  const topics = lessons[gradeId];
   const TOPICS_PER_PAGE = 4;
   const totalPages = Math.ceil(topics.length / TOPICS_PER_PAGE);
   const currentTopics = topics.slice(
@@ -41,6 +45,12 @@ export default function LessonClient({ lessons }: LessonClientProps) {
     return colors[index % colors.length];
   };
 
+  const navigateToLecture = (topicId: string) => {
+    setTopicId(topicId)
+    setLectureIdx(0)
+    router.push(`/student/adventure/${gradeId}/${topicId}`)
+  }
+
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(0, prev - 1));
   };
@@ -50,7 +60,7 @@ export default function LessonClient({ lessons }: LessonClientProps) {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-50">
+    <div className="w-full min-h-screen">
       <div className="flex gap-6 p-6">
         <aside className="w-64 flex-shrink-0">
           <div className="bg-gradient-to-br from-[#1ABC9C] to-[#16A085] rounded-2xl p-6 text-white mb-6 relative overflow-hidden flex items-center justify-center">
@@ -59,7 +69,7 @@ export default function LessonClient({ lessons }: LessonClientProps) {
             <div className="absolute -top-2 -left-2 w-10 h-10 bg-[#E6FCF9] bg-opacity-20 rounded-full"></div>
 
             <h3 className="text-lg font-semibold relative z-10 text-center ml-6">
-              Chương trình lớp {selectedGrade}
+              Chương trình lớp {gradeId}
             </h3>
           </div>
 
@@ -68,7 +78,7 @@ export default function LessonClient({ lessons }: LessonClientProps) {
             <div className="mb-4 bg-white rounded-[20px] border-[1px] border-[#23BEAA] p-4 -translate-x-[3px] w-full">
               <div className="flex flex-col items-center">
                 <Image
-                  src={`/${egg}.png`}
+                  src={src}
                   alt="egg progress"
                   width={80}
                   height={80}
@@ -142,7 +152,7 @@ export default function LessonClient({ lessons }: LessonClientProps) {
                 <div className="flex-1 flex justify-start pl-8">
                   <div className="w-40 h-40 flex items-center justify-center">
                     <Image
-                      src={topics[0]?.brand || SAMPLE_THUMB_PATH}
+                      src={topics[0].brand}
                       alt="featured topic"
                       width={120}
                       height={120}
@@ -173,7 +183,7 @@ export default function LessonClient({ lessons }: LessonClientProps) {
             {currentTopics.map((topic, index) => {
               const globalIndex = currentPage * TOPICS_PER_PAGE + index;
               return (
-                <div key={index} className="relative h-[320px]">
+                <div key={index} className="relative h-[320px]" onClick={() => navigateToLecture((index + 1).toString())}>
                   <div
                     className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px]"
                     style={{ backgroundColor: getRandomColor(index) }}
@@ -184,7 +194,7 @@ export default function LessonClient({ lessons }: LessonClientProps) {
                   >
                     <div className="w-32 h-32 mb-6 flex items-center justify-center">
                       <Image
-                        src={topic.brand || SAMPLE_THUMB_PATH}
+                        src={topic.brand}
                         alt={topic.name}
                         width={120}
                         height={120}

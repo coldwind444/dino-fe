@@ -26,9 +26,9 @@ export default function MissionPage() {
             <h2 className="font-roboto text-[25px] font-bold text-center">
               NHIỆM VỤ HÀNG NGÀY
             </h2>
-            <p className="font-roboto text-[15px]  font-bold text-center mt-2">
-              Làm nhiệm vụ <br />
-              và thu thập thật nhiều thạch anh nào!
+            <p className="font-roboto text-[15px] font-medium text-center mt-2">
+              Làm nhiệm vụ và thu thập <br />
+               thật nhiều thạch anh nào!
             </p>
           </div>
 

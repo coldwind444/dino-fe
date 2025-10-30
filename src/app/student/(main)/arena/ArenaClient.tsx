@@ -23,6 +23,7 @@ import {
 
 import { Rank, RankRecord } from './page';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const roboto = Roboto()
 const baloo = Baloo_2()
@@ -38,6 +39,8 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
     const [pageIdx, setPageIdx] = useState(0)
     const [rulesShow, setRulesShow] = useState(false)
     const [rulesPage, setRulesPage] = useState(0)
+
+    const router = useRouter()
 
     return (
         <div className='w-full h-full flex flex-row gap-[15px] p-[15px]'>
@@ -350,7 +353,7 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                                         'flex items-center justify-center',
                                         'h-full w-full relative bg-[#F9740B] text-white text-[22px] font-medium',
                                         'rounded-tl-[50px] rounded-br-[60px] relative'
-                                    )}>
+                                    )} onClick={() => router.push('/student/arena-exam')}>
                                         Tham gia ngay
                                         <span className='absolute top-0 right-0 mt-[7px] mr-[10px] h-[25px] aspect-square bg-[rgba(255,255,255,0.3)] rounded-full' />
                                     </div>

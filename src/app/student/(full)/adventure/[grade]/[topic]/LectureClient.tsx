@@ -12,7 +12,8 @@ import { World, Lecture, Topic } from "../[topic]/page";
 
 import Volume from "@/components/Volume/Volume";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
-import { useLectureStore } from "@/stores/lectureStore";
+import { useLessonStore } from "@/stores/lessonStore";
+import { useRouter } from "next/navigation";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
@@ -37,7 +38,8 @@ export default function LectureClient({
     topic,
     lectures,
 }: LectureClientProps) {
-    const { lectureIdx, setLectureIdx } = useLectureStore();
+    const { lectureIdx, setLectureIdx } = useLessonStore();
+    const router = useRouter()
     const [mode, setMode] = useState(MODE.LECTURE);
 
     const currentLecture = lectures[lectureIdx];
@@ -107,7 +109,8 @@ export default function LectureClient({
                                     "bg-[rgba(0,0,0,0.7)] rounded-tr-[20px] rounded-br-[20px] h-full w-[400px] flex flex-col pt-[10px]"
                                 )}
                             >
-                                <div className="h-[60px] ml-[20px] w-[220px] bg-[#1DA492] rounded-[20px] flex items-center justify-center cursor-pointer overflow-hidden hover:brightness-110 transition-all duration-200">
+                                <div className="h-[60px] ml-[20px] w-[220px] bg-[#1DA492] rounded-[20px] flex items-center justify-center cursor-pointer overflow-hidden hover:brightness-110 transition-all duration-200"
+                                    onClick={() => router.back()}>
                                     <div className="h-full w-full rounded-tl-[50px] rounded-br-[50px] flex flex-row gap-[10px] items-center justify-center bg-[#23BEAA] relative">
                                         <FontAwesomeIcon icon={faArrowLeft} className="text-white mr-2" />
                                         <span className="text-white font-medium text-[20px]">Quay lại</span>

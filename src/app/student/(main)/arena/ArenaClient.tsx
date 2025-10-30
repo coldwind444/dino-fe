@@ -4,7 +4,6 @@ import Image from 'next/image';
 import clsx from 'clsx';
 import arena from '../../../../../public/assets/arena/arena.png';
 import helmet from '../../../../../public/assets/arena/helmet.png';
-import avt from '../../../../../public/avt_01.svg'
 import r1 from '../../../../../public/assets/arena/rule_1.png'
 import r2 from '../../../../../public/assets/arena/rule_2.png'
 import r3 from '../../../../../public/assets/arena/rule_3.png'
@@ -476,7 +475,8 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                                             { 'text-[#23BEAA]': record.rank > 3 },
                                         )}>
                                             <div className='h-[50px] aspect-square overflow-hidden rounded-full'>
-                                                <Image src={avt} alt='' height={50} width={50} />
+                                                <Image src='https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540867/avt_01_uteagr.svg'
+                                                    alt='' height={50} width={50} />
                                             </div>
                                             <label className='min-w-[250px]'>{record.fullName}</label>
                                             <label className='min-w-[90px]'>{record.points}</label>

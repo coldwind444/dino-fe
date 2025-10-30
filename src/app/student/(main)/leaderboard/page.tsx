@@ -8,7 +8,7 @@ const roboto = Roboto({
   subsets: ["latin"],
 });
 
-const avatar = "/avt_01.svg";
+const avatar = "https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540871/avt_04_aqs4zn.svg";
 const poly4 = "/assets/leaderboard/Polygon 4.svg";
 const poly5 = "/assets/leaderboard/Polygon 5.svg";
 const crown = "/assets/leaderboard/image 68.png";

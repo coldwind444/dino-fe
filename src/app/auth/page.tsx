@@ -88,34 +88,43 @@ export default function Auth() {
 
     const handleLogin = async () => {
         try {
-            setLoginLoading(true)
-            const res = await login({ email, password })
-        } catch (err: any) {
-            setLoginErrorMessage(err.message)
-            openErrorDialog()
+            setLoginLoading(true);
+            const res = await login({ email, password });
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setLoginErrorMessage(err.message);
+            } else {
+                setLoginErrorMessage('Đã xảy ra lỗi không xác định.');
+            }
+            openErrorDialog();
         } finally {
-            setLoginLoading(false)
+            setLoginLoading(false);
         }
-    }
+    };
 
     const handleRegister = async () => {
         try {
-            setLoginLoading(true)
+            setLoginLoading(true);
             const res = await register({
                 email: email2,
                 password: password2,
-                role: role,
+                role,
                 name: fullName,
                 avatarUrl: '',
                 familyId: ''
-            })
-        } catch (err: any) {
-            setRegErrorMessage(err.message)
-            openErrorDialog()
+            });
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setRegErrorMessage(err.message);
+            } else {
+                setRegErrorMessage('Đã xảy ra lỗi không xác định.');
+            }
+            openErrorDialog();
         } finally {
-            setLoginLoading(false)
+            setLoginLoading(false);
         }
-    }
+    };
+
 
     const resetLogin = () => {
         setEmail('')

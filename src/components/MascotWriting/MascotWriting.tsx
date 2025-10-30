@@ -1,10 +1,8 @@
-"use client";
-
 import { useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import clsx from "clsx";
+import type { ILottie } from "@lottielab/lottie-player/react"; // ✅ this is key
 
-// ✅ Dynamically import Lottie only on the client
 const LottiePlayer = dynamic(() => import("@lottielab/lottie-player/react"), {
   ssr: false,
 });
@@ -22,17 +20,17 @@ interface MascotProps {
 }
 
 export default function MascotWriting({ pose }: MascotProps) {
-  const refs = {
-    IDLE: useRef<any>(null),
-    TALKING: useRef<any>(null),
-    WRITING: useRef<any>(null),
+  // ✅ Correct type — matches LottiePlayer's expected ref type
+  const refs: Record<PoseKey, React.RefObject<ILottie | null>> = {
+    IDLE: useRef<ILottie>(null),
+    TALKING: useRef<ILottie>(null),
+    WRITING: useRef<ILottie>(null),
   };
 
   useEffect(() => {
-    // Only run in browser
     if (typeof window === "undefined") return;
 
-    (Object.entries(refs) as [PoseKey, React.RefObject<any>][]).forEach(
+    (Object.entries(refs) as [PoseKey, React.RefObject<ILottie | null>][]).forEach(
       ([key, ref]) => {
         const instance = ref.current;
         if (!instance) return;
@@ -52,7 +50,7 @@ export default function MascotWriting({ pose }: MascotProps) {
       {(Object.entries(POSES) as [PoseKey, string][]).map(([key, src]) => (
         <LottiePlayer
           key={key}
-          ref={refs[key]}
+          ref={refs[key]} // ✅ fully type-safe now
           src={src}
           loop
           autoplay={key === pose}

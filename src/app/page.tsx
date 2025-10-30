@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Navbar from "@/components/Navbar/Navbar";
+import Link from "next/link";
 
 import plane from '../../public/assets/landing/paper-plane.png'
 import geometry from '../../public/assets/landing/geometry.svg'
@@ -30,7 +31,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col items-center -translate-y-[120px] z-10">
           <Image src={plane} height={120} width={120} alt="" />
-          <div className={clsx(
+          <Link href='/auth' className={clsx(
             'h-[60px] w-[290px] rounded-[35px] bg-[#AF7522] cursor-pointer',
             '-translate-y-[10px] hover:opacity-90'
           )}>
@@ -42,7 +43,7 @@ export default function Home() {
               <label className={clsx(roboto.className, 'text-[20px] ml-[20px] font-medium cursor-pointer')}>Bắt đầu ngay</label>
               <FontAwesomeIcon className={clsx('h-[30px] w-[30px] ml-[20px]')} icon={faPlay} />
             </div>
-          </div>
+          </Link>
         </div>
         <div className="flex flex-row justify-between w-screen overflow-hidden -translate-y-[380px] z-0">
           <Image className="bottom-0 left-0 select-none" src={geometry} height={300} width={300} alt="" />

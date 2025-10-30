@@ -10,3 +10,21 @@ body {
   width: 100vw;
   background-color: white;
 }
+
+/* Disable Edge/IE password reveal and clear buttons */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+label {
+  user-select: none;
+}
+
+img {
+  user-select: none;
+}
+
+iframe {
+  user-select: none;
+}

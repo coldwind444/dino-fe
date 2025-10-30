@@ -21,7 +21,6 @@ import { useState } from "react";
 import brand from "../../../public/assets/brand.svg";
 import fullEgg from "../../../public/assets/landing/egg_normal.png";
 import brokenEgg from "../../../public/assets/landing/egg_break.png";
-import avt from "../../../public/avt_01.svg";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { usePathname } from "next/navigation";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons/faSignOut";
@@ -76,78 +75,78 @@ export default function Navbar({
         <div className="flex gap-[20px] items-center ml-auto mr-auto">
           {role === "student"
             ? studentLinks.map((item, key) => (
-                <Link
-                  href={item.pathname}
-                  key={key}
+              <Link
+                href={item.pathname}
+                key={key}
+                className={clsx(
+                  "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[10px] transition-all duration-300 group cursor-pointer",
+                  pathname.startsWith(item.pathname)
+                    ? "bg-[#23BEAA] w-[150px]"
+                    : "bg-[rgba(0,0,0,0.1)] w-[50px] hover:bg-[#23BEAA] hover:w-[150px]"
+                )}
+              >
+                {/* ICON */}
+                <FontAwesomeIcon
                   className={clsx(
-                    "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[10px] transition-all duration-300 group cursor-pointer",
+                    "text-[20px] flex-shrink-0 transition-colors duration-300",
                     pathname.startsWith(item.pathname)
-                      ? "bg-[#23BEAA] w-[150px]"
-                      : "bg-[rgba(0,0,0,0.1)] w-[50px] hover:bg-[#23BEAA] hover:w-[150px]"
+                      ? "text-white"
+                      : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
                   )}
-                >
-                  {/* ICON */}
-                  <FontAwesomeIcon
-                    className={clsx(
-                      "text-[20px] flex-shrink-0 transition-colors duration-300",
-                      pathname.startsWith(item.pathname)
-                        ? "text-white"
-                        : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
-                    )}
-                    icon={item.icon}
-                  />
+                  icon={item.icon}
+                />
 
-                  {/* LABEL CONTAINER — flex center aligns text */}
-                  <div className="flex justify-center items-center flex-1 overflow-hidden">
-                    <span
-                      className={clsx(
-                        "block whitespace-nowrap overflow-hidden text-ellipsis font-medium transition-all duration-300 text-center",
-                        pathname.startsWith(item.pathname)
-                          ? "opacity-100 text-white"
-                          : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
-                      )}
-                    >
-                      {item.name}
-                    </span>
-                  </div>
-                </Link>
-              ))
-            : parentLinks.map((item, key) => (
-                <div
-                  key={key}
-                  className={clsx(
-                    "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[10px] transition-all duration-300 group cursor-pointer",
-                    pathname.startsWith(item.pathname)
-                      ? "bg-[#23BEAA] w-[150px]"
-                      : "bg-[rgba(0,0,0,0.1)] w-[50px] hover:bg-[#23BEAA] hover:w-[150px]"
-                  )}
-                >
-                  {/* ICON */}
-                  <FontAwesomeIcon
+                {/* LABEL CONTAINER — flex center aligns text */}
+                <div className="flex justify-center items-center flex-1 overflow-hidden">
+                  <span
                     className={clsx(
-                      "text-[20px] flex-shrink-0 transition-colors duration-300",
+                      "block whitespace-nowrap overflow-hidden text-ellipsis font-medium transition-all duration-300 text-center",
                       pathname.startsWith(item.pathname)
-                        ? "text-white"
-                        : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
+                        ? "opacity-100 text-white"
+                        : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
                     )}
-                    icon={item.icon}
-                  />
-
-                  {/* LABEL CONTAINER — flex center aligns text */}
-                  <div className="flex justify-center items-center flex-1 overflow-hidden">
-                    <span
-                      className={clsx(
-                        "block whitespace-nowrap overflow-hidden text-ellipsis font-medium transition-all duration-300 text-center",
-                        pathname.startsWith(item.pathname)
-                          ? "opacity-100 text-white"
-                          : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
-                      )}
-                    >
-                      {item.name}
-                    </span>
-                  </div>
+                  >
+                    {item.name}
+                  </span>
                 </div>
-              ))}
+              </Link>
+            ))
+            : parentLinks.map((item, key) => (
+              <div
+                key={key}
+                className={clsx(
+                  "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[10px] transition-all duration-300 group cursor-pointer",
+                  pathname.startsWith(item.pathname)
+                    ? "bg-[#23BEAA] w-[150px]"
+                    : "bg-[rgba(0,0,0,0.1)] w-[50px] hover:bg-[#23BEAA] hover:w-[150px]"
+                )}
+              >
+                {/* ICON */}
+                <FontAwesomeIcon
+                  className={clsx(
+                    "text-[20px] flex-shrink-0 transition-colors duration-300",
+                    pathname.startsWith(item.pathname)
+                      ? "text-white"
+                      : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
+                  )}
+                  icon={item.icon}
+                />
+
+                {/* LABEL CONTAINER — flex center aligns text */}
+                <div className="flex justify-center items-center flex-1 overflow-hidden">
+                  <span
+                    className={clsx(
+                      "block whitespace-nowrap overflow-hidden text-ellipsis font-medium transition-all duration-300 text-center",
+                      pathname.startsWith(item.pathname)
+                        ? "opacity-100 text-white"
+                        : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
+                    )}
+                  >
+                    {item.name}
+                  </span>
+                </div>
+              </div>
+            ))}
         </div>
       )}
       {!isAuthenticated ? (
@@ -224,7 +223,8 @@ export default function Navbar({
           >
             <FontAwesomeIcon icon={faBell} />
           </div>
-          <Image src={avt} alt="avatar" height={60} width={60} />
+          <Image src='https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540867/avt_01_uteagr.svg'
+            alt="avatar" height={60} width={60} />
           <div className={clsx("flex flex-col justify-center mt-[5px]")}>
             <label className={clsx(righteous.className, "select-none")}>
               Xin chào,

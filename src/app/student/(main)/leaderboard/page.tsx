@@ -56,7 +56,7 @@ export default function LeaderboardContent() {
       className={`${roboto.className} flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100`}
     >
       {/* LEFT SIDEBAR */}
-      <div className="w-64 relative h-[600px] mt-6 ml-6">
+      <div className="w-64 relative h-[660px] mt-2 ml-6">
         <div className="bg-gradient-to-b from-teal-400 to-teal-500 rounded-3xl h-full relative">
           <div
             className="absolute bottom-0 left-0 right-0 h-12 bg-gray-50"
@@ -169,7 +169,7 @@ export default function LeaderboardContent() {
                 />
               </div>
               <p className="text-white font-bold mb-2">{topThree[0]?.name}</p>
-              <div className="bg-yellow-400 rounded-full px-5 py-1 text-gray-800 text-base font-bold">
+              <div className="bg-yellow-500 rounded-full px-5 py-1 text-white text-base font-bold">
                 1
               </div>
             </div>

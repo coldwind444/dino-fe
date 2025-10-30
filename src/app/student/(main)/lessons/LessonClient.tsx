@@ -56,16 +56,16 @@ export default function LessonClient({ lessons }: LessonClientProps) {
           <div className="bg-gradient-to-br from-[#1ABC9C] to-[#16A085] rounded-2xl p-6 text-white mb-6 relative overflow-hidden flex items-center justify-center">
             <div className="absolute -top-8 -left-8 w-24 h-24 bg-[#5ED9C6] bg-opacity-10 rounded-full"></div>
             <div className="absolute -top-4 -left-4 w-16 h-16 bg-[#A8EDEA] bg-opacity-15 rounded-full"></div>
-            <div className="absolute top-2 left-2 w-8 h-8 bg-[#E6FCF9] bg-opacity-20 rounded-full"></div>
+            <div className="absolute -top-2 -left-2 w-10 h-10 bg-[#E6FCF9] bg-opacity-20 rounded-full"></div>
 
             <h3 className="text-lg font-semibold relative z-10 text-center ml-6">
               Chương trình lớp {selectedGrade}
             </h3>
           </div>
 
-          <div className="bg-[#5ED9C6] rounded-3xl  relative">
+          <div className="bg-[#23BEAA] rounded-3xl relative">
             {/* Progress Card */}
-            <div className="mb-4 bg-white rounded-[20px] border-[1px] border-[#1ABC9C] p-4 -translate-x-[3px]  w-full">
+            <div className="mb-4 bg-white rounded-[20px] border-[1px] border-[#23BEAA] p-4 -translate-x-[3px] w-full">
               <div className="flex flex-col items-center">
                 <Image
                   src={`/${egg}.png`}
@@ -74,15 +74,15 @@ export default function LessonClient({ lessons }: LessonClientProps) {
                   height={80}
                   className="w-20 h-20 object-contain mb-2"
                 />
-                <div className="text-xs text-gray-700 font-medium mb-1">
+                <div className="text-[14px] text-gray-700 font-medium mb-1">
                   Tiến trình hiện tại
                 </div>
-                <div className="text-4xl font-bold text-[#1ABC9C] mb-3">
+                <div className="text-4xl font-bold text-[#23BEAA] mb-3">
                   40%
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-[#1ABC9C] h-2 rounded-full transition-all"
+                    className="bg-[#23BEAA] h-2 rounded-full transition-all"
                     style={{ width: "40%" }}
                   ></div>
                 </div>
@@ -90,8 +90,8 @@ export default function LessonClient({ lessons }: LessonClientProps) {
             </div>
 
             {/* Achievement Card */}
-            <div className="mb-4 bg-white rounded-[20px] border-[1px] border-[#1ABC9C] p-5 -translate-x-[3px] -translate-y-[3px] w-full">
-              <div className="text-center text-sm text-gray-700 font-medium mb-4">
+            <div className="mb-4 flex items-center flex-col justify-center gap-[15px] bg-white rounded-[20px] border-[1px] border-[#1ABC9C] p-5 -translate-x-[3px] -translate-y-[3px] w-full h-[170px]">
+              <div className="text-center text-[15px] text-gray-700 font-medium mb-4">
                 Đã tích lũy được từ lớp học này
               </div>
               <div className="flex items-center justify-center gap-3">
@@ -99,16 +99,16 @@ export default function LessonClient({ lessons }: LessonClientProps) {
                   <Image
                     src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
                     alt="crystal"
-                    width={60}
-                    height={60}
+                    width={70}
+                    height={70}
                     className="w-full h-full object-contain"
                   />
                 </div>
                 <div className="flex flex-col items-center">
-                  <div className="text-5xl font-bold text-[#F39C12] leading-none mb-1">
+                  <div className="text-4xl font-bold text-[#FF9600] leading-none mb-1">
                     202
                   </div>
-                  <div className="text-xs text-[#F39C12] font-bold uppercase tracking-wide">
+                  <div className="text-xs text-[#FF9600] font-bold uppercase tracking-wide">
                     Tinh thể thạch anh
                   </div>
                 </div>
@@ -116,7 +116,7 @@ export default function LessonClient({ lessons }: LessonClientProps) {
             </div>
 
             {/* Stats Card */}
-            <div className=" rounded-3xl p-5">
+            <div className=" rounded-3xl p-5 h-[150px]">
               <div className="space-y-2 text-sm text-white font-bold">
                 <div>
                   Số chủ đề đã học: <strong>4</strong>
@@ -136,8 +136,8 @@ export default function LessonClient({ lessons }: LessonClientProps) {
         <main className="flex-1">
           {/* Featured Topic */}
           <div className="relative mb-6">
-            <div className="absolute inset-0 bg-[#1ABC9C] rounded-3xl translate-x-[4px] translate-y-[4px]" />
-            <div className="relative bg-gradient-to-br from-[#E8F8F5] to-[#D5F4EC] rounded-3xl border-[3px] border-[#1ABC9C] p-6">
+            <div className="absolute inset-0 bg-[#23BEAA] rounded-3xl translate-x-[4px] translate-y-[4px]" />
+            <div className="relative bg-[#F3FFFD] rounded-3xl border-[3px] border-[#23BEAA] p-6">
               <div className="flex items-center justify-between gap-6">
                 <div className="flex-1 flex justify-start pl-8">
                   <div className="w-40 h-40 flex items-center justify-center">
@@ -151,13 +151,13 @@ export default function LessonClient({ lessons }: LessonClientProps) {
                   </div>
                 </div>
                 <div className="flex flex-col items-center text-center flex-1">
-                  <div className="inline-block bg-[#A7F3D0] text-[#059669] px-5 py-2 rounded-full text-sm font-medium mb-4">
+                  <div className="inline-block bg-[#C4F1EB] text-[#1DA492] text-[18px] font-bold px-5 py-2 rounded-full text-sm mb-4">
                     Chủ đề 1
                   </div>
                   <h2 className="text-xl font-bold text-[#1ABC9C] mb-6 px-4">
                     {topics[0]?.name || "Chủ đề đầu tiên"}
                   </h2>
-                  <button className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative">
+                  <button className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative cursor-pointer">
                     <span className="absolute top-2 right-4 w-2 h-2 rounded-full bg-white/40" />
                     Bắt đầu
                     <FontAwesomeIcon icon={faPlay} className="text-sm" />
@@ -173,13 +173,13 @@ export default function LessonClient({ lessons }: LessonClientProps) {
             {currentTopics.map((topic, index) => {
               const globalIndex = currentPage * TOPICS_PER_PAGE + index;
               return (
-                <div key={index} className="relative">
+                <div key={index} className="relative h-[320px]">
                   <div
                     className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px]"
                     style={{ backgroundColor: getRandomColor(index) }}
                   />
                   <div
-                    className="relative bg-gradient-to-br from-white to-gray-50 rounded-3xl border-[3px] flex flex-col items-center justify-center cursor-pointer transition-all hover:shadow-lg p-6 h-full"
+                    className="relative h-full bg-[#F3FFFD] rounded-3xl border-[3px] flex flex-col items-center justify-center cursor-pointer transition-all hover:shadow-lg p-6"
                     style={{ borderColor: getRandomColor(index) }}
                   >
                     <div className="w-32 h-32 mb-6 flex items-center justify-center">

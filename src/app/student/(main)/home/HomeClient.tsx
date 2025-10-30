@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import clsx from "clsx";
-import { Roboto, Righteous, Chewy } from "next/font/google";
+import { Roboto, Righteous, Chewy, Fredoka } from "next/font/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookOpen,
@@ -19,6 +19,7 @@ import {
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 const chewy = Chewy({ subsets: ["latin"], weight: "400" });
+const fredoka = Fredoka()
 
 const trophy = "/assets/home/trophy.png";
 const SAMPLE_THUMB_PATH = "/assets/landing/egg_normal.png";
@@ -125,7 +126,7 @@ export function TimeCard({ username }: { username: string }) {
       <div
         className={clsx(
           "relative",
-          "rounded-[15px] shadow-sm border",
+          "rounded-[15px]",
           "w-full h-full"
         )}
         style={{
@@ -147,7 +148,7 @@ export function TimeCard({ username }: { username: string }) {
         <div
           className={clsx(
             roboto.className,
-            "absolute top-[100px] right-[37px] text-[19px]"
+            "absolute top-[100px] right-[37px] text-[19px] font-medium"
           )}
           style={{ color: colors.textColor }}
         >
@@ -197,38 +198,43 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
               <div className="w-60 h-60 flex-shrink-0 flex items-center justify-center pb-4 pl-6">
                 <Image src={trophy} alt="trophy" width={300} height={300} />
               </div>
-              <div className="flex-1 pl-10">
-                <h3 className="text-2xl font-bold text-[#23BEAA] pt-0px">
+              <div className="flex-1 pl-10 flex flex-col gap-[20px]">
+                <h3 className="text-3xl font-medium text-[#23BEAA]">
                   Luôn nỗ lực mỗi ngày để trở nên giỏi hơn !
                 </h3>
                 <div className="mt-4 flex items-center gap-4">
-                  <div className="relative inline-block p-[4px] rounded-[40px] shadow-md bg-[#1DA492]">
+                  <div className="relative inline-block h-[90px] w-[180px] rounded-[30px] bg-[#1DA492] overflow-hidden">
                     <span className="absolute top-6 left-6 w-2 h-2 rounded-full bg-white/40" />
                     <span className="absolute bottom-6 right-6 w-3 h-3 rounded-full bg-white/30" />
-
-                    <button
+                    <div
                       className={clsx(
-                        "px-8 py-5 rounded-[25px] shadow-md",
-                        "bg-[#23BEAA] text-white"
+                        "h-full w-full rounded-tl-[50px] rounded-bl-[50px] rounded-br-[50px]",
+                        "bg-[#23BEAA] text-[20px] text-white font-bold flex items-center justify-center"
                       )}
                     >
                       CHỌN LỚP
-                    </button>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-5 ml-[30px]">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button
                         key={n}
                         className={clsx(
-                          "relative w-14 h-14 rounded-full flex items-center justify-center",
-                          "font-bold text-xl transition-all hover:scale-105",
-                          "bg-[#C4F1EC] text-[#23BEAA] hover:bg-[#23BEAA] hover:text-white group"
+                          "relative aspect-square h-20 rounded-full flex items-center justify-center",
+                          "font-bold text-3xl transition-all hover:scale-105 group cursor-pointer",
+                          "bg-[#C4F1EC] text-[#23BEAA] hover:bg-[#23BEAA] hover:text-white group",
+                          fredoka.className
                         )}
                       >
-                        <span className="absolute top-2 right-3 w-1.5 h-1.5 rounded-full bg-white transition-colors group-hover:bg-white/40" />
-                        <span className="absolute bottom-3 left-2 w-2.5 h-2.5 rounded-full bg-white transition-colors group-hover:bg-white/30" />
-                        <span className="absolute bottom-2 right-2 w-3 h-3 rounded-full bg-white/80 transition-colors group-hover:bg-white/20" />
+                        <span className={clsx(
+                          "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[15px] w-[30px]",
+                          'bg-[rgba(255,255,255)] bottom-0 right-0 mb-[13px] mr-[5px] -rotate-45 group-hover:bg-[rgba(255,255,255,0.5)]'
+                        )}></span>
+                        <span className={clsx(
+                          "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[10px] w-[20px]",
+                          'bg-[rgba(255,255,255)] left-0 rotate-90 group-hover:bg-[rgba(255,255,255,0.5)]'
+                        )}></span>
                         {n}
                       </button>
                     ))}
@@ -241,10 +247,10 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
       </div>
 
       {/* Main Area */}
-      <div className="mt-8 mb-[50px] grid grid-cols-1 lg:grid-cols-12 gap-6 items-start max-w-[900px] w-full">
+      <div className="mt-8 mb-[50px] grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
         {/* Lesson Card */}
-        <div className="lg:col-span-8">
-          <div className="relative h-[300px]">
+        <div className="lg:col-span-5">
+          <div className="relative h-[400px]">
             <div className="absolute inset-0 bg-[#9B5DE5] rounded-[15px] translate-x-[4px] translate-y-[4px]" />
 
             <div
@@ -309,19 +315,19 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
         </div>
 
         {/* Review Section */}
-        <aside className="lg:col-span-4 w-full lg:w-[590px] h-fit">
+        <aside className="lg:col-span-4 w-fit h-fit">
           <div>
             <h5 className="font-semibold">Ôn lại kiến thức</h5>
-            <div className="mt-3 flex flex-col gap-3 h-[300px] overflow-y-auto pr-2">
+            <div className="mt-3 flex flex-col gap-3 h-[360px] w-[830px] overflow-y-auto pr-2">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={`review-${i}`}
                   className={clsx(
                     "flex items-center justify-between p-4 rounded-[20px]",
-                    "bg-[#FFF0F0] border-2 border-[#FF9292] min-h-[90px]"
+                    "bg-[#FFF6F6] border-2 border-[#FF9292] min-h-[80px] pl-[50px]"
                   )}
                 >
-                  <div className="text-xl text-[#FF9292]">
+                  <div className="text-xl text-[#FF9292] font-medium">
                     {lessons?.["1"]?.[i]?.name || `Bài học ${i + 1}`}
                   </div>
                   <button

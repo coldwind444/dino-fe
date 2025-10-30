@@ -8,6 +8,7 @@ const missions = [
   { id: 2, progress: 230, goal: 500, reward: 1200 },
   { id: 3, progress: 230, goal: 500, reward: 1200 },
   { id: 4, progress: 230, goal: 500, reward: 1200 },
+  { id: 5, progress: 230, goal: 500, reward: 1200 },
 ];
 
 export default function MissionPage() {
@@ -32,14 +33,14 @@ export default function MissionPage() {
           </div>
 
           <div
-            className="rounded-b-2xl h-[800px] flex items-center justify-center bg-cover bg-top"
-            style={{ backgroundImage: `url(${mission.src})` }}
+            className="rounded-b-2xl h-[500px] flex items-center justify-center bg-cover bg-top"
+            style={{ backgroundImage: `url(${mission.src})`, backgroundSize: 'contain' }}
           ></div>
         </div>
 
         <div className="flex-1 flex flex-col">
           <h3 className="text-xl font-semibold mb-4">DANH SÁCH NHIỆM VỤ</h3>
-          <div className="space-y-4">
+          <div className="space-y-2 h-[550px]">
             {missions.map((m) => (
               <div
                 key={m.id}
@@ -95,7 +96,7 @@ export default function MissionPage() {
 
                 <div className="relative z-10 flex items-center justify-end">
                   <button
-                    className="relative text-white font-bold w-[100px] py-3 rounded-[30px] transition uppercase shadow-lg"
+                    className="relative text-white font-bold w-[100px] py-3 rounded-[30px] transition uppercase shadow-lg cursor-pointer"
                     style={{ backgroundColor: "#FF7F50" }}
                     onMouseEnter={(e) =>
                       (e.currentTarget.style.backgroundColor = "#FFA76B")
@@ -114,7 +115,7 @@ export default function MissionPage() {
           </div>
 
           {/* PAGINATION */}
-          <div className="flex justify-center space-x-4 mt-8">
+          <div className="flex justify-center space-x-4 mt-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               className="px-4 py-2 bg-purple-100 rounded-full hover:bg-purple-200 hover:scale-105 hover:shadow-md transition transform"

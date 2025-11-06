@@ -195,7 +195,7 @@ export default function DashBoardClient() {
                         ))}
                     </div>
                     {/** Pagination */}
-                    <div className="flex flex-row justify-between px-[20px]">
+                    <div className="flex flex-row justify-between px-[20px] items-center">
                         <label className="text-[rgba(0,0,0,0.5)] font-medium">Hiển thị 1-6 trên 12 kết quả</label>
                         <div className="flex flex-row gap-[10px]">
                             <div className="h-[50px] w-[180px] text-white flex items-center justify-center bg-[#23BEAA] cursor-pointer

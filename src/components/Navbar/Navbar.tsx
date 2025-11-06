@@ -12,11 +12,13 @@ import {
   faBarsProgress,
   faGamepad,
   faUser,
+  faChartColumn,
+  faHandsHoldingChild,
 } from "@fortawesome/free-solid-svg-icons";
 import { Roboto } from "next/font/google";
 import { Righteous } from "next/font/google";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import brand from "../../../public/assets/brand.svg";
 import fullEgg from "../../../public/assets/landing/egg_normal.png";
@@ -41,7 +43,10 @@ const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   ];
 
 const parentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
-  [];
+  [
+    { name: "Thống kê", icon: faChartColumn, pathname: "/parent/dashboard" },
+    { name: "Học cùng con", icon: faHandsHoldingChild, pathname: "/parent/learning" },
+  ];
 
 export default function Navbar({
   isAuthenticated = false,
@@ -58,10 +63,18 @@ export default function Navbar({
 }) {
   const [signUpHover, setSignUpHover] = useState(false);
   const [popupShow, setPopupShow] = useState(false);
+  const [urls, setUrls] = useState<{ name: string, icon: IconDefinition, pathname: string }[]>([]);
   const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
-
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (role === "student") {
+      setUrls(studentLinks);
+    } else if (role === "parent") {
+      setUrls(parentLinks);
+    }
+  }, [role])
 
   return (
     <div
@@ -73,80 +86,40 @@ export default function Navbar({
       <Image src={brand} height={20} width={100} alt="dino-brand" />
       {isAuthenticated && (
         <div className="flex gap-[20px] items-center ml-auto mr-auto">
-          {role === "student"
-            ? studentLinks.map((item, key) => (
-              <Link
-                href={item.pathname}
-                key={key}
+          {urls.map((item, key) => (
+            <Link
+              href={item.pathname}
+              key={key}
+              className={clsx(
+                "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[16px] transition-all duration-500 group cursor-pointer",
+                pathname.startsWith(item.pathname)
+                  ? "bg-[#23BEAA] max-w-[250px]"
+                  : "bg-[rgba(0,0,0,0.1)] max-w-[50px] hover:bg-[#23BEAA] hover:max-w-[250px]"
+              )}
+            >
+              <FontAwesomeIcon
                 className={clsx(
-                  "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[10px] transition-all duration-300 group cursor-pointer",
+                  "text-[20px] flex-shrink-0 transition-colors duration-300 mr-[10px]",
                   pathname.startsWith(item.pathname)
-                    ? "bg-[#23BEAA] w-[150px]"
-                    : "bg-[rgba(0,0,0,0.1)] w-[50px] hover:bg-[#23BEAA] hover:w-[150px]"
+                    ? "text-white"
+                    : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
+                )}
+                icon={item.icon}
+              />
+
+              <span
+                className={clsx(
+                  "whitespace-nowrap font-medium transition-all duration-300 text-center",
+                  pathname.startsWith(item.pathname)
+                    ? "opacity-100 text-white"
+                    : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
                 )}
               >
-                {/* ICON */}
-                <FontAwesomeIcon
-                  className={clsx(
-                    "text-[20px] flex-shrink-0 transition-colors duration-300",
-                    pathname.startsWith(item.pathname)
-                      ? "text-white"
-                      : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
-                  )}
-                  icon={item.icon}
-                />
+                {item.name}
+              </span>
+            </Link>
 
-                {/* LABEL CONTAINER — flex center aligns text */}
-                <div className="flex justify-center items-center flex-1 overflow-hidden">
-                  <span
-                    className={clsx(
-                      "block whitespace-nowrap overflow-hidden text-ellipsis font-medium transition-all duration-300 text-center",
-                      pathname.startsWith(item.pathname)
-                        ? "opacity-100 text-white"
-                        : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
-                    )}
-                  >
-                    {item.name}
-                  </span>
-                </div>
-              </Link>
-            ))
-            : parentLinks.map((item, key) => (
-              <div
-                key={key}
-                className={clsx(
-                  "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[10px] transition-all duration-300 group cursor-pointer",
-                  pathname.startsWith(item.pathname)
-                    ? "bg-[#23BEAA] w-[150px]"
-                    : "bg-[rgba(0,0,0,0.1)] w-[50px] hover:bg-[#23BEAA] hover:w-[150px]"
-                )}
-              >
-                {/* ICON */}
-                <FontAwesomeIcon
-                  className={clsx(
-                    "text-[20px] flex-shrink-0 transition-colors duration-300",
-                    pathname.startsWith(item.pathname)
-                      ? "text-white"
-                      : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
-                  )}
-                  icon={item.icon}
-                />
-
-                {/* LABEL CONTAINER — flex center aligns text */}
-                <div className="flex justify-center items-center flex-1 overflow-hidden">
-                  <span
-                    className={clsx(
-                      "block whitespace-nowrap overflow-hidden text-ellipsis font-medium transition-all duration-300 text-center",
-                      pathname.startsWith(item.pathname)
-                        ? "opacity-100 text-white"
-                        : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
-                    )}
-                  >
-                    {item.name}
-                  </span>
-                </div>
-              </div>
-            ))}
+          ))}
         </div>
       )}
       {!isAuthenticated ? (

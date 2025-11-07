@@ -10,6 +10,7 @@ import { Roboto } from "next/font/google"
 import { completeProfile } from "@/apis"
 import { Toaster, toast } from "react-hot-toast"
 import Loader from "@/components/Loader/Loader"
+import { useRouter } from "next/navigation"
 
 const roboto = Roboto()
 
@@ -34,6 +35,7 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const containerRef = useRef<HTMLDivElement | null>(null);
     const isFirstRender = useRef(true)
+    const router = useRouter()
 
     // UI states
     const [pose, setPose] = useState<keyof typeof POSES>("IDLE");
@@ -98,6 +100,8 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
                 name: name,
                 avatarUrl: previewAvt
             })
+            toast.success('Hoàn thành hồ sơ thành công ! Đang chuyển hướng ...')
+            router.push('/student/home')
         } catch (error: unknown) {
             if (error instanceof Error) {
                 toast.error(error.message);

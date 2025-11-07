@@ -24,7 +24,6 @@ export interface UserResponse {
     role: string;
     name: string;
     avatarUrl: string;
-    familyId?: string;
 }
 
 export interface RegisterResponse {

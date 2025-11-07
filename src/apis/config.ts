@@ -1,58 +1,49 @@
-import axios, {
-  AxiosInstance,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 // =========================
 // 🔧 Base URL
 // =========================
-export const baseURL =
-  process.env.NEXT_PUBLIC_API_URL ;
+export const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 // =========================
-// 🧠 Token Management (in-memory + sessionStorage)
+// 🧠 Token Management (sessionStorage only, SSR-safe)
 // =========================
-let accessToken: string | null =
-  typeof window !== "undefined" ? sessionStorage.getItem("accessToken") : null;
-
 export const setAccessToken = (token: string) => {
-  accessToken = token;
   if (typeof window !== "undefined") {
     sessionStorage.setItem("accessToken", token);
   }
 };
 
 export const getAccessToken = (): string | null => {
-  return accessToken;
+  if (typeof window !== "undefined") {
+    return sessionStorage.getItem("accessToken");
+  }
+  return null;
 };
 
 export const clearAccessToken = () => {
-  accessToken = null;
   if (typeof window !== "undefined") {
     sessionStorage.removeItem("accessToken");
   }
 };
 
 // =========================
-// 🧠 UserId Management (in-memory + sessionStorage)
+// 🧠 UserId Management (sessionStorage only, SSR-safe)
 // =========================
-let userId: string | null =
-  typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
-
 export const setUserId = (id: string) => {
-  userId = id;
   if (typeof window !== "undefined") {
     sessionStorage.setItem("userId", id);
   }
 };
 
 export const getUserId = (): string | null => {
-  return userId;
+  if (typeof window !== "undefined") {
+    return sessionStorage.getItem("userId");
+  }
+  return null;
 };
 
 export const clearUserId = () => {
-  accessToken = null;
   if (typeof window !== "undefined") {
     sessionStorage.removeItem("userId");
   }
@@ -72,7 +63,7 @@ export const api: AxiosInstance = axios.create({
 });
 
 // =========================
-// 🛡️ Request Interceptor
+// 🛡️ Request Interceptor (adds token automatically)
 // =========================
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -86,7 +77,7 @@ api.interceptors.request.use(
 );
 
 // =========================
-// ⚠️ Response Interceptor
+// ⚠️ Response Interceptor (redirect on 401)
 // =========================
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
@@ -94,8 +85,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       console.warn("Unauthorized: Token may be invalid or expired.");
       clearAccessToken();
+      clearUserId();
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        window.location.href = "/auth";
       }
     }
     return Promise.reject(error);

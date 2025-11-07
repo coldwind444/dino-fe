@@ -88,7 +88,7 @@ export default function Auth() {
             if (res.user.role === ROLES.PARENT) {
                 router.push('/parent/dashboard')
             } else if (res.user.role === ROLES.STUDENT) {
-                if (res.user.familyId && res.user.familyId.length > 0) {
+                if (res.user.name && res.user.name.length > 0) {
                     router.push('/student/home')
                 } else {
                     router.push('/onboarding')

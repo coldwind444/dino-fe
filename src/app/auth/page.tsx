@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { Roboto, Fredoka } from "next/font/google";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { Toaster, toast } from "react-hot-toast";
 
 import mascot from '../../../public/assets/auth/dino_3d.svg'
 import student from '../../../public/assets/auth/student.png'
@@ -19,6 +20,7 @@ import RoundedPasswordBox from "@/components/RoundedPasswordBox/RoundedPasswordB
 import Link from "next/link";
 import { login, register } from "@/apis";
 import Loader from "@/components/Loader/Loader";
+import { useRouter } from "next/navigation";
 
 const roboto = Roboto()
 const fredoka = Fredoka()
@@ -41,12 +43,12 @@ const AUTHSTEPS = {
 }
 
 export default function Auth() {
+    const router = useRouter()
+
     // UI states
     const [tabIndex, setTabIndex] = useState(TABS.LOG_IN)
-    const [loginStep, setLoginStep] = useState(AUTHSTEPS.SELECT_ROLE)
     const [registerStep, setRegisterStep] = useState(AUTHSTEPS.SELECT_ROLE)
     const [role, setRole] = useState<string>(ROLES.STUDENT)
-    const [errorShow, setErrorShow] = useState(false)
     const [loginLoading, setLoginLoading] = useState(false)
     const [regLoading, setRegLoading] = useState(false)
 
@@ -54,20 +56,12 @@ export default function Auth() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordShow, setPasswordShow] = useState(false)
-    const [loginErrorMessage, setLoginErrorMessage] = useState('')
 
     // register request states
     const [email2, setEmail2] = useState('')
     const [password2, setPassword2] = useState('')
     const [confPassword, setConfPassword] = useState('')
     const [fullName, setFullName] = useState('') // only for parent
-    const [regErrorMessage, setRegErrorMessage] = useState('')
-
-    // helper function
-    const openErrorDialog = () => {
-        setErrorShow(true)
-        setTimeout(() => setErrorShow(false), 5000)
-    }
 
     const onStateChange = (state: boolean) => {
         setPasswordShow(state)
@@ -90,13 +84,22 @@ export default function Auth() {
         try {
             setLoginLoading(true);
             const res = await login({ email, password });
+            resetLogin()
+            if (res.user.role === ROLES.PARENT) {
+                router.push('/parent/dashboard')
+            } else if (res.user.role === ROLES.STUDENT) {
+                if (res.user.familyId && res.user.familyId.length > 0) {
+                    router.push('/student/home')
+                } else {
+                    router.push('/onboarding')
+                }
+            }
         } catch (err: unknown) {
             if (err instanceof Error) {
-                setLoginErrorMessage(err.message);
+                toast.error(err.message);
             } else {
-                setLoginErrorMessage('Đã xảy ra lỗi không xác định.');
+                toast.error('Đã xảy ra lỗi không xác định.');
             }
-            openErrorDialog();
         } finally {
             setLoginLoading(false);
         }
@@ -104,24 +107,25 @@ export default function Auth() {
 
     const handleRegister = async () => {
         try {
-            setLoginLoading(true);
+            setRegLoading(true);
             const res = await register({
                 email: email2,
                 password: password2,
                 role,
-                name: fullName,
-                avatarUrl: '',
+                name: role === ROLES.PARENT ? fullName : '',
+                avatarUrl: role === ROLES.PARENT ? 'https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540872/avt_05_hq86rj.svg' : '',
                 familyId: ''
             });
+            toast.success('Đăng ký thành công !');
+            resetRegister()
         } catch (err: unknown) {
             if (err instanceof Error) {
-                setRegErrorMessage(err.message);
+                toast.error(err.message);
             } else {
-                setRegErrorMessage('Đã xảy ra lỗi không xác định.');
+                toast.error('Đã xảy ra lỗi không xác định.');
             }
-            openErrorDialog();
         } finally {
-            setLoginLoading(false);
+            setRegLoading(false);
         }
     };
 
@@ -140,7 +144,6 @@ export default function Auth() {
 
     // effects
     useEffect(() => {
-        setLoginStep(AUTHSTEPS.SELECT_ROLE)
         setRegisterStep(AUTHSTEPS.SELECT_ROLE)
         resetLogin()
         resetRegister()
@@ -148,6 +151,7 @@ export default function Auth() {
 
     return (
         <div className="w-screen h-screen bg-[#F6F6F6] flex items-center justify-center">
+            <Toaster position="top-center" reverseOrder={false} />
             { /** Container card */}
             <div className={clsx(
                 "flex flex-row h-[90%] w-[95%] bg-white rounded-[70px]",
@@ -213,31 +217,8 @@ export default function Auth() {
                             <div className="h-full w-full overflow-hidden">
                                 { /** Login slider */}
                                 <div className={clsx(
-                                    "flex flex-row h-full w-[200%] transition-all duration-200",
-                                    { 'translate-x-[-50%]': loginStep === AUTHSTEPS.LOG_IN }
+                                    "flex flex-row h-full w-full justify-center",
                                 )}>
-                                    {/** Select role step container */}
-                                    <div className="flex items-center justify-center gap-[40px] flex-col h-full w-1/2 bg-white">
-                                        <h1 className={clsx(
-                                            "text-[25px] text-[#1DA492] font-bold", roboto.className
-                                        )}>
-                                            Đăng nhập với vai trò:
-                                        </h1>
-                                        <div className={clsx(
-                                            "flex flex-row items-center pl-[20px] gap-[100px] h-[120px] w-[450px] rounded-[20px] border-3 cursor-pointer border-[rgba(0,0,0,0.2)]",
-                                            'group text-[rgba(0,0,0,0.7)] hover:border-[#23BEAA] hover:text-[#23BEAA] transition-all duration-200'
-                                        )} onClick={() => { setRole(ROLES.STUDENT); setLoginStep(AUTHSTEPS.LOG_IN) }}>
-                                            <Image className="group-hover:scale-150 transition-all duration-200" src={student} height={100} alt="" />
-                                            <label className={clsx('text-[25px] font-bold select-none cursor-pointer', roboto.className)}>Học sinh</label>
-                                        </div>
-                                        <div className={clsx(
-                                            "flex flex-row items-center pl-[20px] gap-[100px] h-[120px] w-[450px] rounded-[20px] border-3 cursor-pointer border-[rgba(0,0,0,0.2)]",
-                                            'group text-[rgba(0,0,0,0.7)] hover:border-[#23BEAA] hover:text-[#23BEAA] transition-all duration-200'
-                                        )} onClick={() => { setRole(ROLES.PARENT); setLoginStep(AUTHSTEPS.LOG_IN) }}>
-                                            <Image className="group-hover:scale-150 transition-all duration-200" src={parents} height={100} alt="" />
-                                            <label className={clsx('text-[25px] font-bold select-none cursor-pointer', roboto.className)}>Phụ huynh</label>
-                                        </div>
-                                    </div>
                                     {/** Log in step container */}
                                     <div className="flex items-center justify-center gap-[20px] flex-col h-full w-1/2 bg-white">
                                         <div className="relative aspect-square h-[180px] border-2 border-[#1DA492] rounded-full overflow-hidden">
@@ -254,14 +235,6 @@ export default function Auth() {
                                                     { '-translate-x-[100px]': passwordShow }
                                                 )} />
                                         </div>
-                                        <div className={clsx(
-                                            "h-fit w-fit p-[10px] border-[#F1A12E] border-2 rounded-[20px]",
-                                            'flex items-center justify-center text-[#F1A12E] font-medium',
-                                            'absolute -translate-y-[220px] -translate-x-[180px] transition-all duration-200 z-20',
-                                            errorShow ? 'scale-100' : 'scale-0', loginStep !== AUTHSTEPS.LOG_IN ? 'hidden' : ''
-                                        )}>
-                                            <p className="text-wrap w-[120px] text-center">Sai email hoặc mật khẩu ?</p>
-                                        </div>
                                         <h1 className={clsx(roboto.className, 'text-[27px] font-bold text-[#1DA492]')}>Đăng nhập</h1>
                                         <div className="flex flex-col gap-[10px]">
                                             <RoundedTextBox onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
@@ -273,31 +246,15 @@ export default function Auth() {
                                         <Link className={clsx(
                                             "font-medium cursor-pointer hover:text-[#1DA492] hover:underline",
                                             'mr-[150px]'
-                                        )} href=''>Quên mật khẩu ?</Link>
+                                        )} href='/auth/reset-password'>Quên mật khẩu ?</Link>
                                         <button disabled={!canLogin()} className={clsx(
                                             'h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium',
                                             'disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center',
                                             { 'cursor-pointer hover:opacity-90': email.length > 0 && password.length > 0 },
-                                        )} onClick={() => openErrorDialog()}>
+                                        )} onClick={() => handleLogin()}>
                                             Đăng nhập
-                                            <div className="absolute right-0 aspect-square h-[30px] mr-[15px]"><Loader isLoading={false} /></div>
+                                            <div className="absolute right-0 aspect-square h-[30px] mr-[15px]"><Loader isLoading={loginLoading} /></div>
                                         </button>
-                                        <div className={clsx(
-                                            "flex flex-col gap-[5px] items-center justify-center",
-                                            'cursor-pointer group hover:text-[#23BEAA]'
-                                        )}
-                                            onClick={() => {
-                                                setLoginStep(AUTHSTEPS.SELECT_ROLE)
-                                                resetLogin()
-                                            }}>
-                                            <div className={clsx(
-                                                "aspect-square h-[80px] flex items-center justify-center",
-                                                'rounded-[20px] border-2 border-[rgba(0,0,0,0.2)]',
-                                            )}>
-                                                <FontAwesomeIcon className="group-hover:scale-150 transition-all duration-200" icon={faArrowLeft} />
-                                            </div>
-                                            <label className="font-medium cursor-pointer select-none">Quay lại</label>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -356,9 +313,12 @@ export default function Auth() {
                                         </p>
                                         <button disabled={!canRegister()} className={clsx(
                                             'h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium',
-                                            'disabled:bg-gray-300 cursor-not-allowed',
+                                            'disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center',
                                             { 'cursor-pointer hover:opacity-90': email2.length > 0 && password2.length > 0 && password2 === confPassword },
-                                        )}>Tạo tài khoản</button>
+                                        )} onClick={() => handleRegister()}>
+                                            Tạo tài khoản
+                                            <div className="absolute right-0 aspect-square h-[30px] mr-[15px]"><Loader isLoading={regLoading} /></div>
+                                        </button>
                                         <div className={clsx(
                                             "flex flex-col gap-[5px] items-center justify-center",
                                             'cursor-pointer group hover:text-[#23BEAA]'

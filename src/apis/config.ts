@@ -8,7 +8,7 @@ import axios, {
 // 🔧 Base URL
 // =========================
 export const baseURL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+  process.env.NEXT_PUBLIC_API_URL ;
 
 // =========================
 // 🧠 Token Management (in-memory + sessionStorage)
@@ -31,6 +31,30 @@ export const clearAccessToken = () => {
   accessToken = null;
   if (typeof window !== "undefined") {
     sessionStorage.removeItem("accessToken");
+  }
+};
+
+// =========================
+// 🧠 UserId Management (in-memory + sessionStorage)
+// =========================
+let userId: string | null =
+  typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
+
+export const setUserId = (id: string) => {
+  userId = id;
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem("userId", id);
+  }
+};
+
+export const getUserId = (): string | null => {
+  return userId;
+};
+
+export const clearUserId = () => {
+  accessToken = null;
+  if (typeof window !== "undefined") {
+    sessionStorage.removeItem("userId");
   }
 };
 

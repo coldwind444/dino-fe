@@ -4,9 +4,12 @@ import Image from "next/image"
 
 import dinoWizard from '../../../public/assets/onboarding/wizard.svg'
 import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting"
-import { useEffect, useRef, useState } from "react"
+import { use, useEffect, useRef, useState } from "react"
 import clsx from "clsx"
 import { Roboto } from "next/font/google"
+import { completeProfile } from "@/apis"
+import { Toaster, toast } from "react-hot-toast"
+import Loader from "@/components/Loader/Loader"
 
 const roboto = Roboto()
 
@@ -39,6 +42,7 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
     const [option, setOption] = useState(AVATAR_OPTIONS.SYSTEM)
     const [sysAvtIndex, setSystemAvtIndex] = useState(0)
     const [userSelectedAvt, setUserSelectedAvt] = useState('')
+    const [loading, setLoading] = useState(false)
 
     // Request data state
     const [name, setName] = useState('')
@@ -83,6 +87,25 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
         if (target === STEPS.CODE) {
             if (previewAvt.length > 0 && name.length > 0) setStep(target);
             return
+        }
+    }
+
+    const handleCompleteProfile = async () => {
+        try {
+            setLoading(true);
+            await completeProfile({
+                inviteCode: code,
+                name: name,
+                avatarUrl: previewAvt
+            })
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Lỗi không xác định xảy ra.');
+            }
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -140,6 +163,7 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
 
     return (
         <div className="flex flex-row w-screen h-screen">
+            <Toaster position="bottom-left" reverseOrder={false} />
             <div className="w-[55%] h-full">
                 {/** Mascot area */}
                 <div className="flex flex-row h-[250px] pl-[20px] pt-[20px] relative overflow-hidden">
@@ -339,9 +363,10 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
                                 <div className={clsx(
                                     "h-full w-full bg-[#23BEAA] text-white font-medium text-[18px]",
                                     'rounded-bl-[50px] rounded-tr-[50px] rounded-tl-[10px] rounded-br-[10px]',
-                                    'flex items-center justify-center'
-                                )}>
+                                    'flex flex-row items-center justify-center relative'
+                                )} onClick={() => handleCompleteProfile()}>
                                     Hoàn thành
+                                    <div className="absolute right-0 translate-y-[3px] mr-[50px]"><Loader isLoading={loading}/></div>
                                 </div>
                             </button>
                         </div>

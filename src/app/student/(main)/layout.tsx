@@ -8,7 +8,7 @@ export default function MainLayout({
   return (
     <div className="flex flex-col w-full h-full">
       <div className="fixed top-0 h-fit w-fit z-50">
-        <Navbar isAuthenticated={true} role={"student"} username={"Admin"} />
+        <Navbar isAuthenticated={true} role={"student"}/>
       </div>
       <div className="w-screen overflow-hidden flex-1 mt-[80px]">
         {children}

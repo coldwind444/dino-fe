@@ -68,7 +68,7 @@ export default function Navbar({
   const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
   const [username, setUsername] = useState('');
-  const [avatar, setAvatar] = useState('');
+  const [avatar, setAvatar] = useState<string|null>(null);
 
   const pathname = usePathname();
 
@@ -223,8 +223,7 @@ export default function Navbar({
           >
             <FontAwesomeIcon icon={faUserOutlined} />
           </div>
-          <Image src={avatar}
-            alt="avatar" height={60} width={60} />
+          {avatar&&<Image src={avatar} alt="avatar" height={60} width={60} />}
           <div className={clsx("flex flex-col justify-center mt-[5px]")}>
             <label className={clsx(righteous.className, "select-none")}>
               Xin chào,

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell } from "@fortawesome/free-regular-svg-icons";
+import { faBell, faUser as faUserOutlined } from "@fortawesome/free-regular-svg-icons";
 import {
   faCaretDown,
   faHouse,
@@ -24,10 +24,12 @@ import brand from "../../../public/assets/brand.svg";
 import fullEgg from "../../../public/assets/landing/egg_normal.png";
 import brokenEgg from "../../../public/assets/landing/egg_break.png";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons/faSignOut";
 import Link from "next/link";
 import ProfilePopup from "../ProfilePopup/ProfilePopup";
+import { getUserProfile } from "@/apis/userApis";
+import { logout } from "@/apis/authApis";
 
 const roboto = Roboto({ subsets: ["latin"] });
 const righteous = Righteous({ weight: "400" });
@@ -50,9 +52,7 @@ const parentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
 
 export default function Navbar({
   isAuthenticated = false,
-  username = null,
   role = null,
-  avatarUrl = "",
   notifications = [],
 }: {
   isAuthenticated: boolean;
@@ -61,20 +61,39 @@ export default function Navbar({
   avatarUrl?: string;
   notifications?: { title: string; content: string }[];
 }) {
+  const router = useRouter()
   const [signUpHover, setSignUpHover] = useState(false);
   const [popupShow, setPopupShow] = useState(false);
   const [urls, setUrls] = useState<{ name: string, icon: IconDefinition, pathname: string }[]>([]);
   const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
+  const [username, setUsername] = useState('');
+  const [avatar, setAvatar] = useState('');
+
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (role === "student") {
-      setUrls(studentLinks);
-    } else if (role === "parent") {
-      setUrls(parentLinks);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/auth');
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
-  }, [role])
+  }
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const fetchUserProfile = async () => {
+      try {
+        const res = await getUserProfile();
+        setUsername(res.name.split(' ').pop() || '');
+        setAvatar(res.avatarUrl);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    }
+    fetchUserProfile();
+  }, [])
 
   return (
     <div
@@ -196,7 +215,15 @@ export default function Navbar({
           >
             <FontAwesomeIcon icon={faBell} />
           </div>
-          <Image src='https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540867/avt_01_uteagr.svg'
+          <div
+            className={clsx(
+              "h-[30px] aspect-square rounded-full hover:bg-[#D9D9D9] cursor-pointer",
+              "flex items-center justify-center"
+            )} onClick={() => setProfilePopupShow(true)}
+          >
+            <FontAwesomeIcon icon={faUserOutlined} />
+          </div>
+          <Image src={avatar}
             alt="avatar" height={60} width={60} />
           <div className={clsx("flex flex-col justify-center mt-[5px]")}>
             <label className={clsx(righteous.className, "select-none")}>
@@ -208,57 +235,14 @@ export default function Navbar({
                 "text-[22px] select-none font-bold"
               )}
             >
-              Tân
+              {username}
             </label>
           </div>
           <FontAwesomeIcon
-            onClick={() => setPopupShow((prev) => !prev)}
-            className={clsx("cursor-pointer transition-all duration-300", {
-              "rotate-180": popupShow,
-            })}
-            icon={faCaretDown}
+            onClick={() => handleLogout()}
+            className={clsx("cursor-pointer text-rose-500")}
+            icon={faSignOut}
           />
-        </div>
-      )}
-      {popupShow && (
-        <div
-          className={clsx(
-            "absolute h-[100px] w-[195px] rounded-[10px] bg-white right-0 mr-[20px] mt-[200px]",
-            "flex flex-col gap-[15px] justify-center",
-            "shadow-[0_0_15px_rgba(0,0,0,0.15)]"
-          )}
-        >
-          <div
-            onClick={() => setProfilePopupShow(true)}
-            className={clsx(
-              "flex gap-[20px] items-center pl-[20px] pt-[5px] pb-[5px] cursor-pointer hover:bg-[rgba(0,0,0,0.05)]"
-            )}
-          >
-            <FontAwesomeIcon icon={faUser} />
-            <label
-              className={clsx(
-                "font-bold cursor-pointer select-none",
-                roboto.className
-              )}
-            >
-              Hồ sơ
-            </label>
-          </div>
-          <div
-            className={clsx(
-              "flex gap-[20px] items-center pl-[20px] pt-[5px] pb-[5px] cursor-pointer hover:bg-[rgba(0,0,0,0.05)]"
-            )}
-          >
-            <FontAwesomeIcon className="text-[#FF5964]" icon={faSignOut} />
-            <label
-              className={clsx(
-                "text-[#FF5964] font-bold cursor-pointer select-none",
-                roboto.className
-              )}
-            >
-              Đăng xuất
-            </label>
-          </div>
         </div>
       )}
       <ProfilePopup

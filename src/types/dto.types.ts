@@ -2,8 +2,8 @@ export interface RegisterRequest {
     email: string;
     password: string;
     role: string;
-    name: string;
-    avatarUrl: string;
+    name?: string;
+    avatarUrl?: string;
     familyId?: string;
 }
 
@@ -12,13 +12,18 @@ export interface LoginRequest {
     password: string;
 }
 
+export interface CompleteProfileRequest {
+    inviteCode: string;
+    name: string;
+    avatarUrl: string;
+}
+
 export interface UserResponse {
     id: string;
     email: string;
     role: string;
     name: string;
     avatarUrl: string;
-    familyId?: string;
 }
 
 export interface RegisterResponse {
@@ -31,3 +36,19 @@ export interface LoginResponse {
     token: string;
     user: UserResponse
 }
+
+export interface UserProfileResponse {
+    settings: {
+        language: string;
+        notifications: boolean;
+    };
+    _id: string;
+    name: string;
+    email: string;
+    avatarUrl: string;
+    role: string; // can be expanded if needed
+    status: string; // optional enumeration
+    students: string[]; // assuming student IDs or empty array
+    createdAt: string; // ISO date string
+    updatedAt: string; // ISO date string
+};

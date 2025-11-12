@@ -16,6 +16,7 @@ import {
   faRotateRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { useLessonStore } from "@/stores/lessonStore";
+import CocosGame from "@/components/GameComponent/CocosComponent";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
@@ -180,6 +181,9 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
 
   return (
     <div className="w-full min-h-screen p-6 sm:p-10 pl-[63px] pr-[69px]">
+      <div>
+        <CocosGame />
+      </div>
       <div className="flex flex-col lg:flex-row gap-[21px]">
         <div className="pt-[32px]">
           <TimeCard username={username} />

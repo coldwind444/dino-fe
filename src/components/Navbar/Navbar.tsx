@@ -82,6 +82,14 @@ export default function Navbar({
   }
 
   useEffect(() => {
+    if (role === "student") {
+      setUrls(studentLinks);
+    } else if (role === "parent") {
+      setUrls(parentLinks);
+    }
+  }, [role])
+
+  useEffect(() => {
     if (!isAuthenticated) return;
     const fetchUserProfile = async () => {
       try {

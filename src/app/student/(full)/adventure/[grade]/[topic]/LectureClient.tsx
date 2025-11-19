@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 
@@ -18,7 +18,7 @@ import Volume from "@/components/Volume/Volume";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
 import { useLessonStore } from "@/stores/lessonStore";
 import { useRouter } from "next/navigation";
-import CocosGame from "@/components/GameComponent/CocosComponent";
+import CocosGameWrapper, { type CocosGameWrapperRef } from "@/components/GameComponent/CocosGameWrapper";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
@@ -46,6 +46,7 @@ export default function LectureClient({
   const { lectureIdx, setLectureIdx } = useLessonStore();
   const router = useRouter();
   const [mode, setMode] = useState(MODE.LECTURE);
+  const cocosGameRef = useRef<CocosGameWrapperRef>(null);
 
   const currentLecture = lectures[lectureIdx];
   const currentDifficulty = currentLecture?.difficultyNo ?? 0;
@@ -76,6 +77,20 @@ export default function LectureClient({
 
   const doExercise = () => {
     setMode(MODE.EXERCISE);
+  };
+
+  // Function để handle click "Trả lời"
+  const handleCheckAnswer = () => {
+    if (cocosGameRef.current) {
+      cocosGameRef.current.checkAnswer();
+    }
+  };
+
+  // Function để handle click "Bỏ qua"
+  const handleNextQuestion = () => {
+    if (cocosGameRef.current) {
+      cocosGameRef.current.nextQuestion();
+    }
   };
 
   return (
@@ -297,7 +312,7 @@ export default function LectureClient({
               </div>
               {/** Interactive area */}
               <div className="min-h-[500px] w-full">
-                <CocosGame />
+                <CocosGameWrapper ref={cocosGameRef} />
               </div>
               {/** Buttons */}
               <div className="flex flex-row gap-[20px] w-full justify-center">
@@ -307,6 +322,7 @@ export default function LectureClient({
                     "hover:brightness-110 transition-all duration-200 overflow-hidden",
                     "font-bold text-white"
                   )}
+                  onClick={handleCheckAnswer}
                 >
                   <div
                     className={clsx(
@@ -325,7 +341,7 @@ export default function LectureClient({
                     ></span>
                   </div>
                 </div>
-                <div className="flex items-center justify-center flex-row gap-[10px] text-white text-[16px] font-bold group cursor-pointer">
+                <div className="flex items-center justify-center flex-row gap-[10px] text-white text-[16px] font-bold group cursor-pointer" onClick={handleNextQuestion}>
                   <label className="select-none cursor-pointer">Bỏ qua</label>
                   <FontAwesomeIcon
                     icon={faAngleDoubleRight}

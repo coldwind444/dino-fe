@@ -71,6 +71,10 @@ export default function LectureClient({
   const [exercises, setExercises] = useState<string[]>([]);
   const [currExIdx, setCurrExIdx] = useState(0);
   const [isLoadingExercises, setIsLoadingExercises] = useState(false);
+  const [gameIndexMap, setGameIndexMap] = useState<Record<number, number>>({});
+  const [questionIndexMap, setQuestionIndexMap] = useState<
+    Record<number, number>
+  >({});
 
   const [showSubmitBanner, setShowSubmitBanner] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(true);
@@ -86,6 +90,22 @@ export default function LectureClient({
         );
         const exercises = await resData.json();
         setExercises(exercises);
+        const gameIndicesWithoutThree = [0, 1, 2, 4, 5];
+        const mapping: Record<number, number> = {};
+        const questionMapping: Record<number, number> = {};
+        exercises.forEach((_: any, idx: number) => {
+          if (idx === 4) {
+            mapping[idx] = 3;
+          } else {
+            mapping[idx] =
+              gameIndicesWithoutThree[
+                Math.floor(Math.random() * gameIndicesWithoutThree.length)
+              ];
+          }
+          questionMapping[idx] = Math.floor(Math.random() * 100);
+        });
+        setGameIndexMap(mapping);
+        setQuestionIndexMap(questionMapping);
       } catch (error) {
         console.error("Error fetching exercises:", error);
       } finally {
@@ -109,6 +129,21 @@ export default function LectureClient({
     setMode(MODE.EXERCISE);
   };
 
+  useEffect(() => {
+    if (
+      mode === MODE.EXERCISE &&
+      cocosGameRef.current &&
+      gameIndexMap[currExIdx] !== undefined
+    ) {
+      const gameIndex = gameIndexMap[currExIdx];
+      const questionIndex = questionIndexMap[currExIdx];
+      console.log(
+        `Switching to game index ${gameIndex}, question ${questionIndex} for exercise ${currExIdx}`
+      );
+      cocosGameRef.current.switchGame(gameIndex, undefined, questionIndex);
+    }
+  }, [currExIdx, mode, gameIndexMap, questionIndexMap]);
+
   const handleCheckAnswer = () => {
     if (cocosGameRef.current) {
       cocosGameRef.current.checkAnswer();
@@ -122,16 +157,11 @@ export default function LectureClient({
       "Score:",
       score
     );
-    console.log("Before setState - showSubmitBanner:", showSubmitBanner);
     setShowSubmitBanner(true);
     setIsAnswerCorrect(isCorrect);
-    console.log("After setState - should be true");
   };
 
   const handleSkipQuestion = () => {
-    if (cocosGameRef.current) {
-      cocosGameRef.current.resetCurrentQuestion();
-    }
     setShowSubmitBanner(false);
     if (currExIdx < exercises.length - 1) {
       setCurrExIdx(currExIdx + 1);

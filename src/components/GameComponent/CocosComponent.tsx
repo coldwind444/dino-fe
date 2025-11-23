@@ -26,7 +26,11 @@ export interface CocosGameRef {
   nextQuestion: () => void;
   restartQuiz: () => void;
   resetCurrentQuestion: () => void;
-  switchGame: (gameIndex: number, questionData?: unknown) => void;
+  switchGame: (
+    gameIndex: number,
+    questionData?: unknown,
+    questionIndex?: number
+  ) => void;
   onAnswerChecked?: (isCorrect: boolean, score: number) => void;
 }
 
@@ -222,7 +226,6 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
       });
     } else {
       const gameData = GAME_QUESTION_MAP[randomIndex];
-      // Random shuffle questions
       const shuffledQuestions = gameData?.questions
         ? [...gameData.questions].sort(() => Math.random() - 0.5)
         : [];
@@ -234,20 +237,40 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
     }
   }, [sendToCocos]);
 
-  // Function để switch game
   const switchGame = useCallback(
-    (gameIndex: number, questionData?: unknown) => {
-      // If no questionData provided, load from map
-      const dataToSend =
-        questionData ||
-        GAME_QUESTION_MAP[gameIndex]?.questions ||
-        GAME_QUESTION_MAP[0]?.questions;
-      sendToCocos("SWITCH_GAME", { gameIndex, questionData: dataToSend });
+    (gameIndex: number, questionData?: unknown, questionIndex?: number) => {
+      if (gameIndex === 3) {
+        sendToCocos("SWITCH_GAME", {
+          gameIndex,
+          questionData: undefined,
+        });
+        return;
+      }
+
+      if (!questionData) {
+        const gameData = GAME_QUESTION_MAP[gameIndex];
+        if (gameData?.questions) {
+          let questionsToSend;
+          if (questionIndex !== undefined) {
+            const idx = questionIndex % gameData.questions.length;
+            questionsToSend = [gameData.questions[idx]];
+          } else {
+            questionsToSend = [...gameData.questions].sort(
+              () => Math.random() - 0.5
+            );
+          }
+          sendToCocos("SWITCH_GAME", {
+            gameIndex,
+            questionData: questionsToSend,
+          });
+        }
+      } else {
+        sendToCocos("SWITCH_GAME", { gameIndex, questionData });
+      }
     },
     [sendToCocos]
   );
 
-  // Expose methods ra ngoài thông qua ref
   useImperativeHandle(
     ref,
     () => ({

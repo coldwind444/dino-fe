@@ -8,7 +8,11 @@ export interface CocosGameWrapperRef {
   nextQuestion: () => void;
   restartQuiz: () => void;
   resetCurrentQuestion: () => void;
-  switchGame: (gameIndex: number, questionData?: unknown) => void;
+  switchGame: (
+    gameIndex: number,
+    questionData?: unknown,
+    questionIndex?: number
+  ) => void;
 }
 
 interface CocosGameWrapperProps {
@@ -43,9 +47,17 @@ const CocosGameWrapper = forwardRef<CocosGameWrapperRef, CocosGameWrapperProps>(
             cocosGameRef.current.resetCurrentQuestion();
           }
         },
-        switchGame: (gameIndex: number, questionData?: unknown) => {
+        switchGame: (
+          gameIndex: number,
+          questionData?: unknown,
+          questionIndex?: number
+        ) => {
           if (cocosGameRef.current) {
-            cocosGameRef.current.switchGame(gameIndex, questionData);
+            cocosGameRef.current.switchGame(
+              gameIndex,
+              questionData,
+              questionIndex
+            );
           }
         },
       }),

@@ -18,7 +18,9 @@ import Volume from "@/components/Volume/Volume";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
 import { useLessonStore } from "@/stores/lessonStore";
 import { useRouter } from "next/navigation";
-import CocosGameWrapper, { type CocosGameWrapperRef } from "@/components/GameComponent/CocosGameWrapper";
+import CocosGameWrapper, {
+  type CocosGameWrapperRef,
+} from "@/components/GameComponent/CocosGameWrapper";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
@@ -79,17 +81,15 @@ export default function LectureClient({
     setMode(MODE.EXERCISE);
   };
 
-  // Function để handle click "Trả lời"
   const handleCheckAnswer = () => {
     if (cocosGameRef.current) {
       cocosGameRef.current.checkAnswer();
     }
   };
 
-  // Function để handle click "Bỏ qua"
-  const handleNextQuestion = () => {
+  const handleSkipQuestion = () => {
     if (cocosGameRef.current) {
-      cocosGameRef.current.nextQuestion();
+      cocosGameRef.current.resetCurrentQuestion();
     }
   };
 
@@ -306,9 +306,9 @@ export default function LectureClient({
                 >
                   {`CÂU ${currExIdx + 1}`}
                 </div>
-                <p className="max-w-full text-center text-wrap text-white text-[18px] font-semibold">
+                {/* <p className="max-w-full text-center text-wrap text-white text-[18px] font-semibold">
                   {exercises[currExIdx]}
-                </p>
+                </p> */}
               </div>
               {/** Interactive area */}
               <div className="min-h-[500px] w-full">
@@ -341,7 +341,10 @@ export default function LectureClient({
                     ></span>
                   </div>
                 </div>
-                <div className="flex items-center justify-center flex-row gap-[10px] text-white text-[16px] font-bold group cursor-pointer" onClick={handleNextQuestion}>
+                <div
+                  className="flex items-center justify-center flex-row gap-[10px] text-white text-[16px] font-bold group cursor-pointer"
+                  onClick={handleSkipQuestion}
+                >
                   <label className="select-none cursor-pointer">Bỏ qua</label>
                   <FontAwesomeIcon
                     icon={faAngleDoubleRight}

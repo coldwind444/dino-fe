@@ -181,7 +181,7 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                                 <div className="relative">
                                     <div
                                         className={clsx(
-                                            'absolute top-1/2 left-1/2 -translate-x-[150px] translate-y-[100px]',
+                                            'absolute top-1/2 left-1/2 -translate-x-[170px] translate-y-[120px]',
                                             'h-[60px] w-[250px] bg-[rgba(0,0,0,0.1)] rounded-full blur-md',
                                             '[clip-path:ellipse(50%_40%_at_50%_50%)]',
                                             'z-[1]'
@@ -235,14 +235,14 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                                 <div className="relative mt-[50px]">
                                     <div
                                         className={clsx(
-                                            'absolute top-1/2 left-1/2 -translate-x-[220px] translate-y-[80px]',
+                                            'absolute top-1/2 left-1/2 -translate-x-[240px] translate-y-[100px]',
                                             'h-[80px] w-[250px] bg-[rgba(0,0,0,0.1)] rounded-full blur-md',
                                             '[clip-path:ellipse(50%_40%_at_50%_50%)] z-[1]'
                                         )}
                                     ></div>
                                     <div
                                         className={clsx(
-                                            'absolute top-1/2 left-1/2 translate-y-[80px]',
+                                            'absolute top-1/2 left-1/2 translate-y-[100px]',
                                             'h-[80px] w-[250px] bg-[rgba(0,0,0,0.1)] rounded-full blur-md',
                                             '[clip-path:ellipse(50%_40%_at_50%_50%)] z-[1]'
                                         )}

@@ -33,7 +33,7 @@ const timeConfig = [
   {
     start: 5,
     end: 12,
-    greeting: "Chúc buổi sáng tốt lành!",
+    greeting: "Chúc bạn buổi sáng tốt lành!",
     image: morning,
     shadow: "#FED876",
     bg: "#FDF1D2",
@@ -43,7 +43,7 @@ const timeConfig = [
   {
     start: 12,
     end: 18,
-    greeting: "Cuối ngày thật đẹp nhé!",
+    greeting: "Buổi chiều thật đẹp nhé!",
     image: afternoon,
     shadow: "#FDBEA1",
     bg: "#FFE5D9",
@@ -53,7 +53,7 @@ const timeConfig = [
   {
     start: 18,
     end: 24,
-    greeting: "Buổi tối vui vẻ!",
+    greeting: "Chúc bạn buổi tối vui vẻ!",
     image: night,
     shadow: "#0D0719",
     bg: "#2D1B4E",
@@ -63,7 +63,7 @@ const timeConfig = [
   {
     start: 0,
     end: 5,
-    greeting: "Buổi tối vui vẻ!",
+    greeting: "Chúc bạn buổi tối vui vẻ!",
     image: night,
     shadow: "#0D0719",
     bg: "#2D1B4E",

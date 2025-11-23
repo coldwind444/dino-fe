@@ -1,102 +1,82 @@
 {
   "questions": [
     {
-      "id": 1,
       "question": "5 + 3 = ?",
       "answer": "8"
     },
     {
-      "id": 2,
       "question": "10 - 4 = ?",
       "answer": "6"
     },
     {
-      "id": 3,
       "question": "6 × 2 = ?",
       "answer": "12"
     },
     {
-      "id": 4,
       "question": "15 ÷ 3 = ?",
       "answer": "5"
     },
     {
-      "id": 5,
       "question": "9 + 7 = ?",
       "answer": "16"
     },
     {
-      "id": 6,
       "question": "20 - 8 = ?",
       "answer": "12"
     },
     {
-      "id": 7,
       "question": "4 × 5 = ?",
       "answer": "20"
     },
     {
-      "id": 8,
       "question": "18 ÷ 2 = ?",
       "answer": "9"
     },
     {
-      "id": 9,
       "question": "7 + 8 = ?",
       "answer": "15"
     },
     {
-      "id": 10,
       "question": "30 - 15 = ?",
       "answer": "15"
     },
     {
-      "id": 11,
       "question": "8 × 3 = ?",
       "answer": "24"
     },
     {
-      "id": 12,
       "question": "24 ÷ 4 = ?",
       "answer": "6"
     },
     {
-      "id": 13,
       "question": "12 + 9 = ?",
       "answer": "21"
     },
     {
-      "id": 14,
       "question": "25 - 10 = ?",
       "answer": "15"
     },
     {
-      "id": 15,
       "question": "6 × 6 = ?",
       "answer": "36"
     },
     {
-      "id": 16,
       "question": "28 ÷ 7 = ?",
       "answer": "4"
     },
     {
-      "id": 17,
       "question": "11 + 13 = ?",
       "answer": "24"
     },
     {
-      "id": 18,
       "question": "40 - 18 = ?",
       "answer": "22"
     },
     {
-      "id": 19,
       "question": "9 × 4 = ?",
       "answer": "36"
     },
     {
-      "id": 20,
       "question": "35 ÷ 5 = ?",
       "answer": "7"
     }

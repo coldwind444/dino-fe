@@ -113,8 +113,19 @@ export default function LectureClient({
     if (cocosGameRef.current) {
       cocosGameRef.current.checkAnswer();
     }
+  };
+
+  const handleAnswerChecked = (isCorrect: boolean, score: number) => {
+    console.log(
+      "handleAnswerChecked called - Answer result:",
+      isCorrect,
+      "Score:",
+      score
+    );
+    console.log("Before setState - showSubmitBanner:", showSubmitBanner);
     setShowSubmitBanner(true);
-    setIsAnswerCorrect(Math.random() > 0.3);
+    setIsAnswerCorrect(isCorrect);
+    console.log("After setState - should be true");
   };
 
   const handleSkipQuestion = () => {
@@ -374,7 +385,10 @@ export default function LectureClient({
                 </div>
                 {/** Interactive area */}
                 <div className="min-h-[440px] w-full">
-                  <CocosGameWrapper ref={cocosGameRef} />
+                  <CocosGameWrapper
+                    ref={cocosGameRef}
+                    onAnswerChecked={handleAnswerChecked}
+                  />
                 </div>
                 {/** Buttons */}
                 <div className="flex flex-1 flex-row w-full items-center justify-center">

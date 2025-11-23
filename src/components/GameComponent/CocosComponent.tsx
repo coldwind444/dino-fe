@@ -27,9 +27,15 @@ export interface CocosGameRef {
   restartQuiz: () => void;
   resetCurrentQuestion: () => void;
   switchGame: (gameIndex: number, questionData?: unknown) => void;
+  onAnswerChecked?: (isCorrect: boolean, score: number) => void;
 }
 
-const CocosGame = forwardRef<CocosGameRef>((_, ref) => {
+interface CocosGameProps {
+  onAnswerChecked?: (isCorrect: boolean, score: number) => void;
+}
+
+const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
+  const { onAnswerChecked } = props;
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isReady, setIsReady] = useState(false);
@@ -73,6 +79,16 @@ const CocosGame = forwardRef<CocosGameRef>((_, ref) => {
           } else {
             console.log("Wrong answer. Score:", payload.score);
           }
+          // Call callback to parent component
+          console.log("onAnswerChecked callback exists?", !!onAnswerChecked);
+          if (onAnswerChecked) {
+            console.log(
+              "Calling onAnswerChecked with:",
+              payload.isCorrect,
+              payload.score
+            );
+            onAnswerChecked(payload.isCorrect, payload.score);
+          }
           break;
         case "QUIZ_RESTARTED":
           console.log("Quiz restarted:", payload);
@@ -87,7 +103,7 @@ const CocosGame = forwardRef<CocosGameRef>((_, ref) => {
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [onAnswerChecked]);
 
   useEffect(() => {
     const calculateScale = () => {

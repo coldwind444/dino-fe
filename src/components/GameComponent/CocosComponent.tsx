@@ -325,7 +325,6 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
             transform: `scale(${scale})`,
             transformOrigin: "top left",
           }}
-          allowTransparency={true}
           frameBorder={0}
           scrolling="no"
         />

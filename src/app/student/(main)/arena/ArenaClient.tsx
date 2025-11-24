@@ -329,28 +329,28 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                 </div>
             </div>
             {/** Arena content */}
-            <div className={clsx('flex flex-1 flex-col gap-[15px] transition-all duration-200', { 'hidden': rulesShow })}>
+            <div className={clsx('flex flex-1 h-full flex-col items-center justify-center gap-[15px] transition-all duration-200 overflow-hidden', { 'hidden': rulesShow })}>
                 {/** Top section */}
-                <div className='flex w-full flex-row gap-[15px]'>
+                <div className='flex w-full min-h-[214px] max-h-[36%] flex-row gap-[15px] flex-shrink-0 px-[15px] pt-[15px]'>
                     {/** Join border */}
-                    <div className='h-[220px] w-1/2 bg-[#F9740B] rounded-[20px]'>
+                    <div className='h-full w-[calc(50%-7.5px)] bg-[#F9740B] rounded-[20px] flex-shrink-0'>
                         <div className={clsx(
-                            'h-[214px] w-[99%] bg-[#FFF5ED] rounded-[20px] border-2',
+                            'h-[98%] w-[99%] bg-[#FFF5ED] rounded-[20px] border-2',
                             'border-[#F9740B] flex flex-row items-center justify-center',
-                            'gap-[60px] p-[15px]'
+                            'gap-16 p-5 overflow-hidden'
                         )}>
-                            <Image src={helmet} alt='' className='h-[180px] w-[180px]' />
-                            <div className='flex flex-col gap-[40px]'>
-                                <h2 className={clsx('text-[#F9740B] text-[27px] font-bold leading-tight', roboto.className)}>
+                            <Image src={helmet} alt='' className='h-auto w-[150px] max-h-[160px] flex-shrink-0' />
+                            <div className='flex flex-col gap-[20px] min-w-0'>
+                                <h2 className={clsx('text-[#F9740B] text-2xl font-bold leading-tight', roboto.className)}>
                                     ĐẤU TRƯỜNG TUẦN 11 <br /> ĐANG MỞ CỬA
                                 </h2>
                                 <div className={clsx(
-                                    'h-[70px] w-full rounded-[20px] bg-[#E1690A] overflow-hidden cursor-pointer',
+                                    'h-[60px] w-full rounded-[20px] bg-[#E1690A] overflow-hidden cursor-pointer',
                                     'hover:brightness-110 transition-all duration-200'
                                 )}>
                                     <div className={clsx(
                                         'flex items-center justify-center',
-                                        'h-full w-full relative bg-[#F9740B] text-white text-[22px] font-medium',
+                                        'h-full w-full relative bg-[#F9740B] text-white text-lg font-medium',
                                         'rounded-tl-[50px] rounded-br-[60px] relative'
                                     )} onClick={() => router.push('/student/arena-exam')}>
                                         Tham gia ngay
@@ -361,46 +361,52 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                         </div>
                     </div>
                     {/** Count down border */}
-                    <div className='h-[220px] w-1/2 bg-[#1DA492] rounded-[20px]'>
+                    <div className='h-full w-[calc(50%-7.5px)] bg-[#1DA492] rounded-[20px] flex-shrink-0'>
                         <div className={clsx(
-                            'h-[214px] w-[99%] bg-[#F3FFFD] rounded-[20px] border-2',
+                            'h-[98%] w-[99%] bg-[#F3FFFD] rounded-[20px] border-2',
                             'border-[#23BEAA] flex flex-col',
                             'overflow-hidden'
                         )}>
-                            <div className='h-[70px] w-full bg-[#23BEAA] flex items-center justify-center text-white text-[22px] font-bold'>
+                            <div className='h-[60px] w-full bg-[#23BEAA] flex items-center justify-center text-white text-lg font-bold flex-shrink-0'>
                                 Đấu trường kết thúc trong:
                             </div>
-                            <div className='flex flex-row gap-[65px] mt-[20px] items-center justify-center'>
+                            <div className='flex flex-row gap-[40px] py-[15px] items-center justify-center flex-1'>
                                 <div className='flex flex-col items-center'>
-                                    <label className='text-[40px] font-bold text-[#1DA492]'>05</label>
-                                    <label className='text-[25px] font-bold text-[#1DA492]'>ngày</label>
+                                    <label className='text-5xl font-bold text-[#1DA492]'>05</label>
+                                    <label className='text-xl font-bold text-[#1DA492]'>ngày</label>
                                 </div>
-                                <div className='h-[100px] w-[2px] bg-[#d9d9d9]'></div>
+                                <div className='h-[80px] w-[2px] bg-[#d9d9d9]'></div>
                                 <div className='flex flex-col items-center'>
-                                    <label className='text-[40px] font-bold text-[#1DA492]'>23</label>
-                                    <label className='text-[25px] font-bold text-[#1DA492]'>giờ</label>
+                                    <label className='text-5xl font-bold text-[#1DA492]'>23</label>
+                                    <label className='text-xl font-bold text-[#1DA492]'>giờ</label>
                                 </div>
-                                <div className='h-[100px] w-[2px] bg-[#d9d9d9]'></div>
+                                <div className='h-[80px] w-[2px] bg-[#d9d9d9]'></div>
                                 <div className='flex flex-col items-center'>
-                                    <label className='text-[40px] font-bold text-[#1DA492]'>15</label>
-                                    <label className='text-[25px] font-bold text-[#1DA492]'>phút</label>
+                                    <label className='text-5xl font-bold text-[#1DA492]'>15</label>
+                                    <label className='text-xl font-bold text-[#1DA492]'>phút</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {/** Body section */}
-                <div className='flex flex-1 flex-row gap-[15px]'>
+                {/** Body section - SCROLLABLE CONTAINER */}
+                <div className='flex flex-1 flex-row gap-[15px] min-h-0 w-full px-[15px] pb-[15px] overflow-hidden'>
                     {/** Ranking border */}
                     <div className={clsx(
-                        'w-[350px] rounded-[20px]'
+                        'w-[350px] rounded-[20px] flex-shrink-0'
                     )} style={{ backgroundColor: userRank.color }}>
                         <div className={clsx(
                             'h-[99%] w-[345px] bg-white border-3 rounded-[20px]',
                             'flex flex-col items-center p-[20px]',
                         )} style={{ borderColor: userRank.color }}>
-                            <h1 className='text-[23px] font-bold text-[rgba(0,0,0,0.8)]'>Xếp hạng của bạn</h1>
-                            <Image src={userRank.badge} alt='' className='mt-[15px] h-[170px] w-[170px]' width={170} height={170} /> {/** Rank image */}
+                            <h1 className='text-xl font-bold text-[rgba(0,0,0,0.8)]'>Xếp hạng của bạn</h1>
+                            <Image
+                                src={userRank.badge}
+                                alt=''
+                                className='mt-[15px] w-auto h-[50%] aspect-square'
+                                width={200}
+                                height={200}
+                            />
                             {/** Ribbon */}
                             <div className="relative flex justify-center items-center w-full">
                                 <svg
@@ -412,54 +418,54 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                                 >
                                     <path
                                         d="M -11 -2 
-                                        L 11 -2 
-                                        C 11 -1 10 -1 9 0 
-                                        C 9.6667 0.6667 11 1 11 2 
-                                        L -13 2 
-                                        C -13 1 -11.6667 0.6667 -11 0 
-                                        C -11.6667 -0.6667 -13 -1 -13 -2 
-                                        L -11 -2"
+                                            L 11 -2 
+                                            C 11 -1 10 -1 9 0 
+                                            C 9.6667 0.6667 11 1 11 2 
+                                            L -13 2 
+                                            C -13 1 -11.6667 0.6667 -11 0 
+                                            C -11.6667 -0.6667 -13 -1 -13 -2 
+                                            L -11 -2"
                                         transform="translate(2,0) scale(2,2)"
                                     />
                                 </svg>
 
                                 <span className={clsx(
                                     baloo.className,
-                                    "absolute text-white text-[18px] font-bold"
+                                    "absolute text-white text-base font-bold"
                                 )}>
                                     {userRank.title}
                                 </span>
                             </div>
                             {/** Rank info */}
                             <div className='flex flex-row mt-auto mb-0 justify-around w-full'>
-                                <div className='flex flex-col font-medium text-[17px] gap-[10px]'>
+                                <div className='flex flex-col font-medium text-base gap-[10px]'>
                                     <label className={clsx(roboto.className)}>Battle Points:</label>
                                     <label className={clsx(roboto.className)}>Vị trí hiện tại:</label>
                                 </div>
-                                <div className='flex flex-col font-bold text-[17px] gap-[10px]' style={{ color: userRank.color }}>
+                                <div className='flex flex-col font-bold text-base gap-[10px]' style={{ color: userRank.color }}>
                                     <label className={clsx(roboto.className)}>32000 BP</label>
                                     <label className={clsx(roboto.className)}>50</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {/** Leaderboard */}
-                    <div className='flex h-full flex-1 flex-col gap-[10px]'>
-                        <h1 className='font-bold text-[18px] text-[rgba(0,0,0,0.8)]'>BẢNG XẾP HẠNG TUẦN 11</h1>
-                        <div className='flex flex-col gap-[10px]'>
+                    {/** Leaderboard - SCROLLABLE */}
+                    <div className='flex h-full flex-1 flex-col gap-[10px] min-w-0 pr-2'>
+                        <h1 className='font-bold text-lg text-[rgba(0,0,0,0.8)] flex-shrink-0'>BẢNG XẾP HẠNG TUẦN 11</h1>
+                        <div className='flex flex-col gap-[10px] flex-shrink-0'>
                             {records.filter((_, idx) => idx >= pageIdx * 4 && idx < (pageIdx + 1) * 4)
                                 .map((record, idx) => (
                                     <div key={idx} className={clsx(
-                                        'h-[80px] w-full rounded-[20px] border-2',
-                                        'flex flex-row items-center',
+                                        'h-[80px] min-h-[80px] w-full rounded-[20px] border-2',
+                                        'flex flex-row items-center flex-shrink-0',
                                         { 'border-[#F1A12E]': record.rank === 1 },
                                         { 'border-[#3B84F2]': record.rank === 2 },
                                         { 'border-[#FF1493]': record.rank === 3 },
                                         { 'border-[#23BEAA]': record.rank > 3 },
                                     )}>
                                         <div className={clsx(
-                                            'h-full w-[70px] rounded-tl-[15px] rounded-bl-[15px]',
-                                            'flex items-center justify-center text-white font-bold text-[22px]',
+                                            'h-full w-[70px] rounded-tl-[15px] rounded-bl-[15px] flex-shrink-0',
+                                            'flex items-center justify-center text-white font-bold text-xl',
                                             { 'bg-[#F1A12E]': record.rank === 1 },
                                             { 'bg-[#3B84F2]': record.rank === 2 },
                                             { 'bg-[#FF1493]': record.rank === 3 },
@@ -468,27 +474,27 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                                             {record.rank}
                                         </div>
                                         <div className={clsx(
-                                            'flex flex-row gap-[35px] items-center justify-center px-[20px] text-[20px] font-bold',
+                                            'flex flex-row gap-[20px] items-center justify-start px-[20px] text-lg font-bold flex-1 min-w-0',
                                             { 'text-[#F1A12E]': record.rank === 1 },
                                             { 'text-[#3B84F2]': record.rank === 2 },
                                             { 'text-[#FF1493]': record.rank === 3 },
                                             { 'text-[#23BEAA]': record.rank > 3 },
                                         )}>
-                                            <div className='h-[50px] aspect-square overflow-hidden rounded-full'>
+                                            <div className='h-[50px] aspect-square overflow-hidden rounded-full flex-shrink-0'>
                                                 <Image src='https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540867/avt_01_uteagr.svg'
                                                     alt='' height={50} width={50} />
                                             </div>
-                                            <label className='min-w-[250px]'>{record.fullName}</label>
-                                            <label className='min-w-[90px]'>{record.points}</label>
-                                            <label className='min-w-[150px]'>{record.duration}</label>
+                                            <label className='flex-1 truncate'>{record.fullName}</label>
+                                            <label className='w-20 text-right flex-shrink-0'>{record.points}</label>
+                                            <label className='w-28 text-right flex-shrink-0'>{record.duration}</label>
                                         </div>
                                     </div>
                                 ))}
                         </div>
-                        <div className="flex flex-row ml-auto mr-auto gap-[50px] py-[5px]">
+                        <div className="flex flex-row ml-auto mr-auto gap-[50px] py-[5px] flex-shrink-0">
                             {/* Previous */}
                             <div
-                                className="flex flex-row gap-[10px] items-center text-[20px] font-medium cursor-pointer group"
+                                className="flex flex-row gap-[10px] items-center text-lg font-medium cursor-pointer group"
                                 onClick={() => {
                                     if (pageIdx > 0) setPageIdx(prev => prev - 1);
                                 }}
@@ -502,7 +508,7 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
 
                             {/* Next */}
                             <div
-                                className="flex flex-row gap-[10px] items-center text-[20px] font-medium cursor-pointer group"
+                                className="flex flex-row gap-[10px] items-center text-lg font-medium cursor-pointer group"
                                 onClick={() => {
                                     if (pageIdx < 4) setPageIdx(prev => prev + 1);
                                 }}

@@ -16,11 +16,12 @@ import {
   faRotateRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { useLessonStore } from "@/stores/lessonStore";
+import CocosGame from "@/components/GameComponent/CocosComponent";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 const chewy = Chewy({ subsets: ["latin"], weight: "400" });
-const fredoka = Fredoka()
+const fredoka = Fredoka();
 
 const trophy = "/assets/home/trophy.png";
 const SAMPLE_THUMB_PATH = "/assets/landing/egg_normal.png";
@@ -125,11 +126,7 @@ export function TimeCard({ username }: { username: string }) {
       />
 
       <div
-        className={clsx(
-          "relative",
-          "rounded-[15px]",
-          "w-full h-full"
-        )}
+        className={clsx("relative", "rounded-[15px]", "w-full h-full")}
         style={{
           backgroundColor: colors.bg,
           borderColor: colors.shadow,
@@ -176,7 +173,7 @@ interface StudentHomeProps {
 export default function StudentHome({ lessons }: StudentHomeProps) {
   const username = "Tân";
 
-  const { gradeId, setGradeId, setTopicId, setLectureIdx } = useLessonStore()
+  const { gradeId, setGradeId, setTopicId, setLectureIdx } = useLessonStore();
 
   return (
     <div className="w-full min-h-screen p-6 sm:p-10 pl-[63px] pr-[69px]">
@@ -222,29 +219,41 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
                   <div className="flex items-center gap-5 ml-[30px]">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button
-                        key={n} onClick={() => {
+                        key={n}
+                        onClick={() => {
                           setGradeId(n.toString());
-                          setTopicId('1');
-                          setLectureIdx(0)
+                          setTopicId("1");
+                          setLectureIdx(0);
                         }}
                         className={clsx(
                           "relative aspect-square h-20 rounded-full flex items-center justify-center",
                           "font-bold text-3xl transition-all hover:scale-105 group cursor-pointer",
                           "bg-[#C4F1EC] text-[#23BEAA] hover:bg-[#23BEAA] hover:text-white group",
-                          n.toString() === gradeId ? 'bg-amber-500 text-white' : '',
+                          n.toString() === gradeId
+                            ? "bg-amber-500 text-white"
+                            : "",
                           fredoka.className
                         )}
                       >
-                        <span className={clsx(
-                          "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[15px] w-[30px]",
-                          'bg-[rgba(255,255,255)] bottom-0 right-0 mb-[13px] mr-[5px] -rotate-45',
-                          'group-hover:bg-[rgba(255,255,255,0.5)]', n.toString() === gradeId ? 'bg-[rgba(255,255,255,0.5)]' : ''
-                        )}></span>
-                        <span className={clsx(
-                          "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[10px] w-[20px]",
-                          'bg-[rgba(255,255,255)] left-0 rotate-90 group-hover:bg-[rgba(255,255,255,0.5)]',
-                          n.toString() === gradeId ? 'bg-[rgba(255,255,255,0.5)]' : ''
-                        )}></span>
+                        <span
+                          className={clsx(
+                            "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[15px] w-[30px]",
+                            "bg-[rgba(255,255,255)] bottom-0 right-0 mb-[13px] mr-[5px] -rotate-45",
+                            "group-hover:bg-[rgba(255,255,255,0.5)]",
+                            n.toString() === gradeId
+                              ? "bg-[rgba(255,255,255,0.5)]"
+                              : ""
+                          )}
+                        ></span>
+                        <span
+                          className={clsx(
+                            "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[10px] w-[20px]",
+                            "bg-[rgba(255,255,255)] left-0 rotate-90 group-hover:bg-[rgba(255,255,255,0.5)]",
+                            n.toString() === gradeId
+                              ? "bg-[rgba(255,255,255,0.5)]"
+                              : ""
+                          )}
+                        ></span>
                         {n}
                       </button>
                     ))}

@@ -36,7 +36,7 @@ export default function PopupModal({ type, action, close }: PopupModalParams) {
                     animate={{ scale: 1, y: 0, opacity: 1 }}
                     exit={{ scale: 0.8, y: 40, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 140, damping: 15 }}
-                    className="h-[40%] w-1/3 bg-white rounded-2xl flex flex-col gap-8 p-7 items-center justify-center"
+                    className="h-[40%] w-1/3 bg-white rounded-2xl flex flex-col gap-8 p-7 items-center justify-center shadow-2xl"
                     style={{ color: MODAL_TYPES[type].themeColor }}
                 >
                     <FontAwesomeIcon className="text-6xl" icon={MODAL_TYPES[type].icon} />

@@ -179,6 +179,12 @@ export default function LectureClient({
     }
   };
 
+  const handleShowCorrectAnswer = () => {
+    if (cocosGameRef.current) {
+      cocosGameRef.current.showCorrectAnswer();
+    }
+  };
+
   return (
     <div className="h-screen w-screen relative overflow-hidden">
       <Confetti
@@ -524,7 +530,10 @@ export default function LectureClient({
                           </div>
                         ) : (
                           <div className="flex flex-col gap-[20px] items-center justify-center ml-auto mr-0">
-                            <div className="h-[50px] w-[200px] text-white text-xl rounded-full bg-red-400 flex items-center justify-center cursor-pointer hover:brightness-105">
+                            <div
+                              className="h-[50px] w-[200px] text-white text-xl rounded-full bg-red-400 flex items-center justify-center cursor-pointer hover:brightness-105"
+                              onClick={handleShowCorrectAnswer}
+                            >
                               Xem đáp án
                             </div>
                             <div

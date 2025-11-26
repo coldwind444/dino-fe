@@ -7,14 +7,14 @@ import {
   useImperativeHandle,
 } from "react";
 
-import MathQuestions from "./MathQuestions.json";
+import MatchQuestions from "./MatchQuestions.json";
 import MultiChoice from "./MultiChoice.json";
 import DragQuestion from "./DragQuestion.json";
 import TrueFalse from "./TrueFasle.json";
 import FillQuestions from "./Fill-questions.json";
 
 const GAME_QUESTION_MAP: Record<number, { questions: any[] }> = {
-  0: MathQuestions,
+  0: MatchQuestions,
   1: MultiChoice,
   2: DragQuestion,
   4: TrueFalse,
@@ -26,6 +26,7 @@ export interface CocosGameRef {
   nextQuestion: () => void;
   restartQuiz: () => void;
   resetCurrentQuestion: () => void;
+  showCorrectAnswer: () => void;
   switchGame: (
     gameIndex: number,
     questionData?: unknown,
@@ -237,6 +238,10 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
     }
   }, [sendToCocos]);
 
+  const showCorrectAnswer = useCallback(() => {
+    sendToCocos("SHOW_CORRECT_ANSWER", {});
+  }, [sendToCocos]);
+
   const switchGame = useCallback(
     (gameIndex: number, questionData?: unknown, questionIndex?: number) => {
       if (gameIndex === 3) {
@@ -278,9 +283,17 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
       nextQuestion,
       restartQuiz,
       resetCurrentQuestion,
+      showCorrectAnswer,
       switchGame,
     }),
-    [checkAnswer, nextQuestion, restartQuiz, resetCurrentQuestion, switchGame]
+    [
+      checkAnswer,
+      nextQuestion,
+      restartQuiz,
+      resetCurrentQuestion,
+      showCorrectAnswer,
+      switchGame,
+    ]
   );
 
   useEffect(() => {

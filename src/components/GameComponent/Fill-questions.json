@@ -1,84 +1,44 @@
 {
   "questions": [
     {
-      "question": "5 + 3 = ?",
-      "answer": "8"
+      "question1": "5 + 3 =",
+      "question2": "6 + 2 =",
+      "question3": "8 + 5 =",
+      "answer1": "8",
+      "answer2": "8",
+      "answer3": "13"
     },
     {
-      "question": "10 - 4 = ?",
-      "answer": "6"
+      "question1": "10 - 4 =",
+      "question2": "12 + 3 =",
+      "question3": "9 - 2 =",
+      "answer1": "6",
+      "answer2": "15",
+      "answer3": "7"
     },
     {
-      "question": "6 × 2 = ?",
-      "answer": "12"
+      "question1": "6 × 2 =",
+      "question2": "8 ÷ 2 =",
+      "question3": "7 + 5 =",
+      "answer1": "12",
+      "answer2": "4",
+      "answer3": "12"
     },
     {
-      "question": "15 ÷ 3 = ?",
-      "answer": "5"
+      "question1": "15 ÷ 3 =",
+      "question2": "4 + 10 =",
+      "question3": "20 - 8 =",
+      "answer1": "5",
+      "answer2": "14",
+      "answer3": "12"
     },
     {
-      "question": "9 + 7 = ?",
-      "answer": "16"
-    },
-    {
-      "question": "20 - 8 = ?",
-      "answer": "12"
-    },
-    {
-      "question": "4 × 5 = ?",
-      "answer": "20"
-    },
-    {
-      "question": "18 ÷ 2 = ?",
-      "answer": "9"
-    },
-    {
-      "question": "7 + 8 = ?",
-      "answer": "15"
-    },
-    {
-      "question": "30 - 15 = ?",
-      "answer": "15"
-    },
-    {
-      "question": "8 × 3 = ?",
-      "answer": "24"
-    },
-    {
-      "question": "24 ÷ 4 = ?",
-      "answer": "6"
-    },
-    {
-      "question": "12 + 9 = ?",
-      "answer": "21"
-    },
-    {
-      "question": "25 - 10 = ?",
-      "answer": "15"
-    },
-    {
-      "question": "6 × 6 = ?",
-      "answer": "36"
-    },
-    {
-      "question": "28 ÷ 7 = ?",
-      "answer": "4"
-    },
-    {
-      "question": "11 + 13 = ?",
-      "answer": "24"
-    },
-    {
-      "question": "40 - 18 = ?",
-      "answer": "22"
-    },
-    {
-      "question": "9 × 4 = ?",
-      "answer": "36"
-    },
-    {
-      "question": "35 ÷ 5 = ?",
-      "answer": "7"
+      "question1": "9 + 7 =",
+      "question2": "18 - 6 =",
+      "question3": "5 × 2 =",
+      "answer1": "16",
+      "answer2": "12",
+      "answer3": "10"
     }
   ]
 }

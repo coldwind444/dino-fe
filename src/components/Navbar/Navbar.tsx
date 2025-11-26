@@ -11,7 +11,7 @@ import {
   faBarsProgress,
   faGamepad,
   faChartColumn,
-  faClock,
+  faHistory,
 } from "@fortawesome/free-solid-svg-icons";
 import { Roboto } from "next/font/google";
 import { Righteous } from "next/font/google";
@@ -40,14 +40,14 @@ const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
     { name: "Xếp hạng", icon: faTrophy, pathname: "/student/leaderboard" },
     { name: "Nhiệm vụ", icon: faBarsProgress, pathname: "/student/missions" },
     { name: "Trò chơi", icon: faGamepad, pathname: "/student/games" },
-    { name: "Lịch sử", icon: faClock, pathname: "/student/history" },
+    { name: "Lịch sử", icon: faHistory, pathname: "/student/history" },
   ];
 
 const parentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   [
     { name: "Thống kê", icon: faChartColumn, pathname: "/parent/dashboard" },
     { name: "Minigames", icon: faGamepad, pathname: "/parent/games" },
-    { name: "Lịch sử", icon: faClock , pathname: "/parent/history" },
+    { name: "Lịch sử", icon: faHistory , pathname: "/parent/history" },
   ];
 
 export default function Navbar({

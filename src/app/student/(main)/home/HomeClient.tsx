@@ -5,9 +5,10 @@ import Image from "next/image";
 import clsx from "clsx";
 import { Fredoka } from "next/font/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faRotateRight } from "@fortawesome/free-solid-svg-icons";
+import { faFlaskVial, faPlay, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { useLessonStore } from "@/stores/lessonStore";
 import { TimeCard } from "@/components/TimeCard/TimeCard";
+import EntranceTestPopup from "@/components/EntranceTestPopup/EntranceTestPopup";
 
 const fredoka = Fredoka();
 const trophy = "/assets/home/trophy.png";
@@ -28,9 +29,24 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
   const username = "Tân";
 
   const { gradeId, setGradeId, setTopicId, setLectureIdx } = useLessonStore();
+  const [isTestPopupClosed, setIsTestPopupClosed] = useState(false)
+
+  const closeTestPopup = () => { setIsTestPopupClosed(true) }
 
   return (
     <div className="w-full min-h-screen p-6 sm:p-10 pl-[63px] pr-[69px]">
+      <div className="absolute h-15 w-15 top-25 right-5 cursor-pointer hover:brightness-110 z-20" 
+        onClick={() => setIsTestPopupClosed(false)}>
+        {/* Ping circle */}
+        <div className="absolute inset-0 m-auto h-12 w-12 bg-amber-500 rounded-full animate-ping z-10"></div>
+        {/* Main circle */}
+        <div className="absolute inset-0 m-auto h-15 w-15 bg-amber-500 rounded-full
+                  flex items-center justify-center text-white shadow-2xl text-xl z-20">
+          <FontAwesomeIcon icon={faFlaskVial} />
+        </div>
+        {/* Red dot */}
+        <div className="absolute top-0 right-0 h-4 w-4 bg-red-600 rounded-full border-2 border-white z-30"></div>
+      </div>
       <div className="flex flex-col lg:flex-row gap-[21px]">
         <div className="pt-[32px]">
           <TimeCard username={username} />
@@ -223,6 +239,7 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
           </div>
         </aside>
       </div>
+      {!isTestPopupClosed && <EntranceTestPopup close={closeTestPopup}/>}
     </div>
   );
 }

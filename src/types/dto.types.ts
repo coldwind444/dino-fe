@@ -48,9 +48,41 @@ export interface UserProfileResponse {
     name: string;
     email: string;
     avatarUrl: string;
-    role: string; // can be expanded if needed
-    status: string; // optional enumeration
-    students: string[]; // assuming student IDs or empty array
-    createdAt: string; // ISO date string
-    updatedAt: string; // ISO date string
+    role: string; 
+    status: string; 
+    students: string[]; 
+    createdAt: string; 
+    updatedAt: string; 
 };
+
+export interface WorldResponse {
+    _id: string,
+    name: string,
+    milestoneUrl: string,
+    __v: number
+}
+
+export interface LandResponse {
+    _id: string,
+    name: string,
+    difficulty: string,
+    imageUrl: string,
+}
+
+export interface LessonResponse {
+    _id: string,
+    title: string,
+    description: string,
+    gradeId: string,
+    termId: string,
+    weekNumbers: number[]
+}
+
+export interface LectureResponse {
+    _id: string,
+    title: string,
+    contentType: string,
+    description: string,
+    difficulty: string,
+    lessonId: string
+}

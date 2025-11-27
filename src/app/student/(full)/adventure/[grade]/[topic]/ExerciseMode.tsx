@@ -174,7 +174,7 @@ export default function ExerciseMode({
           </div>
         </div>
         {/** Interactive area */}
-        <div className="max-h-[440px] w-full">
+        <div className="max-h-[440px] w-full flex items-center justify-center">
           <CocosGameWrapper
             ref={cocosGameRef}
             onAnswerChecked={onAnswerChecked}

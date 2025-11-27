@@ -4,6 +4,8 @@ import Filter from "@/components/Filter/Filter"
 import { faClock, faCalendar } from "@fortawesome/free-regular-svg-icons"
 import { faCheckCircle, faNewspaper, faStar, faVialCircleCheck, faWarning, faXmarkSquare, faCalendar as faCalendarSolid, faClipboardQuestion, faClock as faClockSolid, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { AnswerDetailData } from "@/components/AnswerDetail/AnswerDetail"
+import AnswerDetail from "@/components/AnswerDetail/AnswerDetail"
 import clsx from "clsx"
 import { useState } from "react"
 import Link from "next/link"
@@ -13,6 +15,53 @@ const records = [
     { name: 'Đấu trường', accuracy: 55, date: 'Thứ Năm, 17:00 20-11-2025 ', duration: '15 phút' },
     { name: 'Đấu trường', accuracy: 35, date: 'Thứ Năm, 17:00 20-11-2025 ', duration: '15 phút' },
 ]
+
+export const mockAnswerDetails: AnswerDetailData[] = [
+    {
+        type: "multiple-choice",
+        questionNumber: 1,
+        status: "correct",
+        question: "What is the capital of France?",
+        studentAnswer: "Paris",
+        correctAnswer: "Paris",
+    },
+
+    {
+        type: "true-false",
+        questionNumber: 2,
+        status: "wrong",
+        question: "The Earth is flat.",
+        studentAnswer: "Đúng",
+        correctAnswer: "Sai",
+    },
+
+    {
+        type: "matching",
+        questionNumber: 3,
+        status: "partial",
+        question: "Match each country with its capital.",
+        studentAnswer: [
+            { left: "Japan", right: "Tokyo" },
+            { left: "Italy", right: "Milan" },
+            { left: "Germany", right: "Berlin" },
+        ],
+        correctAnswer: [
+            { left: "Japan", right: "Tokyo" },
+            { left: "Italy", right: "Rome" },
+            { left: "Germany", right: "Berlin" },
+        ],
+    },
+
+    {
+        type: "fill-in-blank",
+        questionNumber: 4,
+        status: "partial",
+        question: "Fill in the missing words: The ___ brown ___ jumps over the ___ dog.",
+        studentAnswer: ["quick", "black", "lazy"],
+        correctAnswer: ["quick", "brown", "lazy"],
+    },
+];
+
 
 const MODES = {
     OVERALL: 0,
@@ -184,6 +233,15 @@ export default function History() {
                                     <label className="ml-auto mr-auto mt-4 text-5xl font-medium">10</label>
                                     <FontAwesomeIcon icon={faXmark} className="absolute top-0 right-0 text-2xl mt-3 mr-3" />
                                 </div>
+                            </div>
+                        </div>
+                        {/** Details */}
+                        <div className="flex flex-col gap-3 flex-1 h-full">
+                            <label className="font-medium text-[17px] text-[rgba(0,0,0,0.5)]">Chi tiết bài làm</label>
+                            <div className="flex flex-col max-h-[550px] w-full pr-10 overflow-y-auto">
+                                {mockAnswerDetails.map((item, index) => (
+                                    <AnswerDetail key={index} data={item} />
+                                ))}
                             </div>
                         </div>
                     </div>

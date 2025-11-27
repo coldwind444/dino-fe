@@ -147,14 +147,14 @@ export default function LectureClient({
     setIsAnswerCorrect(isCorrect);
   };
 
-  const handleSkipQuestion = () => {
-    setShowSubmitBanner(false);
-    if (currExIdx < exercises.length - 1) {
-      setCurrExIdx(currExIdx + 1);
-    } else {
-      setMode(MODE.FINISH);
-    }
-  };
+  // const handleSkipQuestion = () => {
+  //   setShowSubmitBanner(false);
+  //   if (currExIdx < exercises.length - 1) {
+  //     setCurrExIdx(currExIdx + 1);
+  //   } else {
+  //     setMode(MODE.FINISH);
+  //   }
+  // };
 
   const handleContinueAfterAnswer = () => {
     setShowSubmitBanner(false);
@@ -234,9 +234,10 @@ export default function LectureClient({
               cocosGameRef={cocosGameRef}
               onExit={() => setMode(MODE.LECTURE)}
               onExerciseChange={setCurrExIdx}
-              onSubmit={() => setShowSubmitBanner(true)}
+              onSubmit={handleCheckAnswer}
               onContinue={handleContinueAfterAnswer}
               onAnswerChecked={handleAnswerChecked}
+              showCorrectAnswer={handleShowCorrectAnswer}
             />
           )}
           {mode === MODE.FINISH && (

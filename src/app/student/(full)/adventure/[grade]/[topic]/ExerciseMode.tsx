@@ -30,6 +30,7 @@ interface ExerciseModeProps {
   onSubmit: () => void;
   onContinue: () => void;
   onAnswerChecked: (isCorrect: boolean, score: number) => void;
+  showCorrectAnswer: () => void
 }
 
 export default function ExerciseMode({
@@ -45,6 +46,7 @@ export default function ExerciseMode({
   onSubmit,
   onContinue,
   onAnswerChecked,
+  showCorrectAnswer,
 }: ExerciseModeProps) {
   return (
     <motion.div
@@ -172,7 +174,7 @@ export default function ExerciseMode({
           </div>
         </div>
         {/** Interactive area */}
-        <div className="min-h-[440px] w-full">
+        <div className="max-h-[440px] w-full">
           <CocosGameWrapper
             ref={cocosGameRef}
             onAnswerChecked={onAnswerChecked}
@@ -264,7 +266,8 @@ export default function ExerciseMode({
                   </div>
                 ) : (
                   <div className="flex flex-col gap-[20px] items-center justify-center ml-auto mr-0">
-                    <div className="h-[50px] w-[200px] text-white text-xl rounded-full bg-red-400 flex items-center justify-center cursor-pointer hover:brightness-105">
+                    <div className="h-[50px] w-[200px] text-white text-xl rounded-full bg-red-400 flex items-center justify-center cursor-pointer hover:brightness-105"
+                        onClick={showCorrectAnswer}>
                       Xem đáp án
                     </div>
                     <div

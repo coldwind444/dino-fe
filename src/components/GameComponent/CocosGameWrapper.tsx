@@ -8,6 +8,7 @@ export interface CocosGameWrapperRef {
   nextQuestion: () => void;
   restartQuiz: () => void;
   resetCurrentQuestion: () => void;
+  showCorrectAnswer: () => void;
   switchGame: (
     gameIndex: number,
     questionData?: unknown,
@@ -45,6 +46,11 @@ const CocosGameWrapper = forwardRef<CocosGameWrapperRef, CocosGameWrapperProps>(
         resetCurrentQuestion: () => {
           if (cocosGameRef.current) {
             cocosGameRef.current.resetCurrentQuestion();
+          }
+        },
+        showCorrectAnswer: () => {
+          if (cocosGameRef.current) {
+            cocosGameRef.current.showCorrectAnswer();
           }
         },
         switchGame: (

@@ -130,6 +130,12 @@ export default function LectureClient({
     }
   }, [currExIdx, mode, gameIndexMap, questionIndexMap]);
 
+  const handleCheckAnswer = () => {
+    if (cocosGameRef.current) {
+      cocosGameRef.current.checkAnswer();
+    }
+  };
+
   const handleAnswerChecked = (isCorrect: boolean, score: number) => {
     console.log(
       "handleAnswerChecked called - Answer result:",
@@ -141,12 +147,27 @@ export default function LectureClient({
     setIsAnswerCorrect(isCorrect);
   };
 
+  const handleSkipQuestion = () => {
+    setShowSubmitBanner(false);
+    if (currExIdx < exercises.length - 1) {
+      setCurrExIdx(currExIdx + 1);
+    } else {
+      setMode(MODE.FINISH);
+    }
+  };
+
   const handleContinueAfterAnswer = () => {
     setShowSubmitBanner(false);
     if (currExIdx < exercises.length - 1) {
       setCurrExIdx(currExIdx + 1);
     } else {
       setMode(MODE.FINISH);
+    }
+  };
+
+  const handleShowCorrectAnswer = () => {
+    if (cocosGameRef.current) {
+      cocosGameRef.current.showCorrectAnswer();
     }
   };
 

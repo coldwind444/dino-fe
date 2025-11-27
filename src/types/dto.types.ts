@@ -43,6 +43,8 @@ export interface UserProfileResponse {
         notifications: boolean;
     };
     _id: string;
+    quartz: number,
+    battlePoints: number,
     name: string;
     email: string;
     avatarUrl: string;

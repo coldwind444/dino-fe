@@ -63,7 +63,6 @@ export default function Navbar({
 }) {
   const router = useRouter()
   const [signUpHover, setSignUpHover] = useState(false);
-  const [popupShow, setPopupShow] = useState(false);
   const [urls, setUrls] = useState<{ name: string, icon: IconDefinition, pathname: string }[]>([]);
   const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);

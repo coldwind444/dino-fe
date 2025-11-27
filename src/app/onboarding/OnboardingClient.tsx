@@ -31,7 +31,7 @@ const AVATAR_OPTIONS = {
     UPLOAD: 1
 }
 
-export default function OnboardingClient({ systemAvatars } : { systemAvatars: string[] }) {
+export default function OnboardingClient({ systemAvatars }: { systemAvatars: string[] }) {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const containerRef = useRef<HTMLDivElement | null>(null);
     const isFirstRender = useRef(true)
@@ -50,6 +50,7 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
     const [name, setName] = useState('')
     const [code, setCode] = useState('')
     const [previewAvt, setPreviewAvt] = useState('')
+    const [grade, setGrade] = useState('');
 
     const openFileDialog = () => {
         if (fileInputRef) fileInputRef.current?.click()
@@ -210,12 +211,14 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
                             '-translate-x-[calc(0.667*100%)]': step === STEPS.CODE
                         }
                     )}>
-                        {/** Name section */}
-                        <div className="flex flex-col gap-[30px] items-center h-full w-1/3 pl-[70px] pt-[8px]">
+                        {/** Name and Grade Section */}
+                        <div className="flex flex-col gap-[15px] items-center h-full w-1/3 pl-[70px] pt-[8px]">
                             <h1 className={clsx(
                                 "text-[27px] font-bold text-[#1DA492]",
                                 roboto.className
-                            )}>TÊN ĐẦY ĐỦ</h1>
+                            )}>TÊN ĐẦY ĐỦ VÀ LỚP</h1>
+
+                            {/** Name input */}
                             <div className={clsx(
                                 "h-[58px] w-[370px] border-2 border-[rgba(0,0,0,0.15)] rounded-[8px]",
                                 'focus-within:border-[#23BEAA] transition-all duration-150'
@@ -223,6 +226,26 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
                                 <input className="h-full w-[90%] border-none outline-none pl-[20px] text-[20px]"
                                     placeholder="Họ và tên" value={name} onChange={e => setName(e.target.value)} />
                             </div>
+
+                            {/* Grade Selection */}
+                            <div className={clsx(
+                                "h-[58px] w-[370px] border-2 border-[rgba(0,0,0,0.15)] rounded-[8px] cursor-pointer",
+                                'focus-within:border-[#23BEAA] transition-all duration-150 flex items-center pl-[20px]'
+                            )}>
+                                <select
+                                    className="h-full w-[90%] border-none outline-none text-[20px] cursor-pointer"
+                                    value={grade}
+                                    onChange={e => setGrade(e.target.value)}
+                                >
+                                    <option value="" disabled>Chọn lớp</option>
+                                    <option value="1">Lớp 1</option>
+                                    <option value="2">Lớp 2</option>
+                                    <option value="3">Lớp 3</option>
+                                    <option value="4">Lớp 4</option>
+                                    <option value="5">Lớp 5</option>
+                                </select>
+                            </div>
+
                             <button disabled={name.length === 0}
                                 className={clsx(
                                     "h-[60px] w-[370px] rounded-[10px] bg-[#1DA492] cursor-pointer hover:opacity-90",
@@ -237,6 +260,7 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
                                 </div>
                             </button>
                         </div>
+
                         {/** Avatar section */}
                         <div className="flex flex-col gap-[50px] h-full w-1/3 pl-[100px]">
                             {/** Option 1 */}
@@ -370,7 +394,7 @@ export default function OnboardingClient({ systemAvatars } : { systemAvatars: st
                                     'flex flex-row items-center justify-center relative'
                                 )} onClick={() => handleCompleteProfile()}>
                                     Hoàn thành
-                                    <div className="absolute right-0 translate-y-[3px] mr-[50px]"><Loader isLoading={loading}/></div>
+                                    <div className="absolute right-0 translate-y-[3px] mr-[50px]"><Loader isLoading={loading} /></div>
                                 </div>
                             </button>
                         </div>

@@ -71,14 +71,14 @@ export default function Filter({ hasStudentSelectBox = false, hasSearchBox = fal
                     </div>
                 </div>
                 {/** Search box */}
-                <div className="flex flex-col gap-1">
+                {hasSearchBox && <div className="flex flex-col gap-1">
                     <label className={clsx("font-medium text-[rgba(0,0,0,0.5)]", roboto.className)}>Nhập từ khóa tìm kiếm</label>
                     <div className="h-12 w-full border border-[rgba(0,0,0,0.2)] rounded-xl px-3 
                                     flex items-center focus-within:border-[#23BEAA] gap-2">
                         <FontAwesomeIcon icon={faSearch} className="text-[rgba(0,0,0,0.25)]"/>
                         <input type="search" placeholder="Tìm kiếm..."  className="border-none outline-none h-full flex-1" />
                     </div>
-                </div>
+                </div>}
                 {/** Filter button */}
                 <div className="h-12 w-full bg-[#8A2BE2] rounded-xl text-white font-medium cursor-pointer hover:opacity-90
                                 flex items-center justify-center mt-auto mb-0">

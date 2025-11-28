@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useLessonStore } from "@/stores/lessonStore";
 import clsx from "clsx";
+import lock from '../../../public/assets/exercises/lock.png'
 
 export default function LectureSlider({
     lectures, doExercise, onLectureSelectionChange, milestone
@@ -18,6 +19,8 @@ export default function LectureSlider({
 }) {
     const { lectureIdx: idx, setLectureIdx: setIdx } = useLessonStore();
     const [translate, setTranslate] = useState(0);
+    const lastUnlockedMilestoneIdx = 2
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const ITEM_WIDTH = 520; // roughly 280px image + 200px svg + 20px gap
@@ -50,9 +53,12 @@ export default function LectureSlider({
     return (
         <div className="h-full w-full overflow-hidden flex flex-col items-center gap-[100px]">
             {/* Header */}
-            <h1 className="text-white font-bold text-[25px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
-                {lectures[idx]?.title}
-            </h1>
+            {idx <= lastUnlockedMilestoneIdx ?
+                (<h1 className="text-white font-bold text-[25px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
+                    {lectures[idx]?.title}
+                </h1>) : (
+                    <h1 className="text-2xl font-bold text-[#FFAE5F] min-h-[70px]">Bài học đang bị khóa</h1>
+                )}
 
             {/* Slider */}
             <div ref={containerRef} className="relative -mt-[20px] mb-[20px] w-full overflow-hidden">
@@ -66,17 +72,20 @@ export default function LectureSlider({
                 >
                     {lectures.map((lecture, index) => (
                         <div key={index} className="flex flex-row gap-[20px] items-center">
-                            <Image
-                                src={milestone}
-                                alt=""
-                                width={280}
-                                height={280}
-                                className={clsx(
-                                    "aspect-square flex-shrink-0 object-contain",
-                                    index === idx ? "scale-100" : "scale-75 opacity-60",
-                                    "transition-all duration-500"
-                                )}
-                            />
+                            <div className="flex items-center justify-center relative">
+                                <Image
+                                    src={milestone}
+                                    alt=""
+                                    width={280}
+                                    height={280}
+                                    className={clsx(
+                                        "aspect-square flex-shrink-0 object-contain",
+                                        index === idx ? "scale-100" : "scale-75 opacity-60",
+                                        "transition-all duration-500", index > lastUnlockedMilestoneIdx ? 'grayscale-100' : ''
+                                    )}
+                                />
+                                {index > lastUnlockedMilestoneIdx && <Image src={lock} alt="X" width={100} height={100} className="absolute" />}
+                            </div>
                             {index !== lectures.length - 1 && (
                                 <svg
                                     className="mt-[40px]"
@@ -102,29 +111,39 @@ export default function LectureSlider({
             </div>
 
             {/* Footer */}
-            <div className="flex flex-row w-full items-center justify-between px-[30px]">
+            <div className="flex flex-row w-full items-center justify-between px-4 sm:px-6 md:px-8 lg:px-[30px]">
                 <FontAwesomeIcon
-                    className="text-white text-[40px] cursor-pointer hover:scale-125 transition-all duration-150"
+                    className="text-white text-2xl sm:text-3xl md:text-[35px] lg:text-[40px] cursor-pointer hover:scale-125 transition-all duration-150"
                     icon={faArrowLeft}
                     onClick={backward}
                 />
-                <div className="overflow-hidden h-[60px]">
-                    <iframe className="absolute -translate-y-[90px] -translate-x-[20px]" src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html" height={200}/>
-                    <div
-                        className="h-[60px] w-[200px] rounded-[20px] bg-[#1DA492] cursor-pointer hover:brightness-110 transition-all duration-200"
-                        onClick={doExercise}
-                    >
-                        <div className="h-full w-full flex items-center justify-center gap-[10px] relative bg-[#23BEAA] rounded-tl-[50px] rounded-br-[50px] rounded-tr-[20px] rounded-bl-[20px]">
-                            <label className="text-white font-semibold text-[20px] select-none cursor-pointer">
-                                Làm bài nào !
-                            </label>
-                            <span className="h-[15px] aspect-square rounded-full bg-[rgba(255,255,255,0.5)] absolute right-0 top-0 mt-[7px] mr-[10px]"></span>
-                            <span className="h-[5px] aspect-square rounded-full bg-[rgba(255,255,255,0.5)] absolute right-0 top-0 mt-[20px] mr-[25px]"></span>
-                        </div>
-                    </div>
+
+                {/* Fixed height container to maintain footer position */}
+                <div className="h-[50px] sm:h-[55px] md:h-[60px] flex items-center justify-center">
+                    {idx <= lastUnlockedMilestoneIdx ?
+                        (<div className="overflow-hidden h-[50px] sm:h-[55px] md:h-[60px]">
+                            <iframe className="absolute -translate-y-[90px] -translate-x-[20px]" src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html" height={200}/>
+                            <div
+                                className="h-[50px] sm:h-[55px] md:h-[60px] w-[160px] sm:w-[180px] md:w-[200px] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] bg-[#1DA492] cursor-pointer hover:brightness-110 transition-all duration-200"
+                                onClick={doExercise}
+                            >
+                                <div className="h-full w-full flex items-center justify-center gap-[8px] sm:gap-[10px] relative bg-[#23BEAA] rounded-tl-[40px] sm:rounded-tl-[45px] md:rounded-tl-[50px] rounded-br-[40px] sm:rounded-br-[45px] md:rounded-br-[50px] rounded-tr-[15px] sm:rounded-tr-[18px] md:rounded-tr-[20px] rounded-bl-[15px] sm:rounded-bl-[18px] md:rounded-bl-[20px]">
+                                    <label className="text-white font-semibold text-base sm:text-lg md:text-[20px] select-none cursor-pointer">
+                                        Làm bài nào !
+                                    </label>
+                                    <span className="h-[12px] sm:h-[13px] md:h-[15px] aspect-square rounded-full bg-[rgba(255,255,255,0.5)] absolute right-0 top-0 mt-[6px] sm:mt-[6px] md:mt-[7px] mr-[8px] sm:mr-[9px] md:mr-[10px]"></span>
+                                    <span className="h-[4px] sm:h-[4px] md:h-[5px] aspect-square rounded-full bg-[rgba(255,255,255,0.5)] absolute right-0 top-0 mt-[16px] sm:mt-[18px] md:mt-[20px] mr-[20px] sm:mr-[22px] md:mr-[25px]"></span>
+                                </div>
+                            </div>
+                        </div>) : (
+                            <p className="font-medium text-white text-wrap text-center align-middle text-sm sm:text-base md:text-lg lg:text-xl px-2">
+                                Bạn cần hoàn thành các <br className="hidden sm:block" /> bài học trước để mở khóa.
+                            </p>
+                        )}
                 </div>
+
                 <FontAwesomeIcon
-                    className="text-white text-[40px] cursor-pointer hover:scale-125 transition-all duration-150"
+                    className="text-white text-2xl sm:text-3xl md:text-[35px] lg:text-[40px] cursor-pointer hover:scale-125 transition-all duration-150"
                     icon={faArrowRight}
                     onClick={forward}
                 />

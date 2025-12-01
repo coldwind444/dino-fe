@@ -1,28 +1,89 @@
+'use client'
+
+import { useLessonStore } from "@/stores/lessonStore";
 import LessonClient from "./LessonClient";
+import { useEffect, useState } from "react";
+import { GradeProgressResponse, GradeResponse, TopicResponse } from "@/types";
+import { getGradeByLevel, getGradeProgress, getTopicsByGradeId, getUserProfile, getRecentTopics } from "@/apis";
+import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 
-export interface Topic {
-  name: string;
-  brand: string;
-}
+export default function LessonsPage() {
+  const { gradeId } = useLessonStore()
 
-export interface LessonsData {
-  [grade: string]: Topic[];
-}
+  const [grade, setGrade] = useState<GradeResponse | null>(null);
+  const [topics, setTopics] = useState<TopicResponse[]>([])
+  const [userQuartz, setUserQuartz] = useState<number|undefined>();
+  const [gradeProgress, setGradeProgress] = useState<GradeProgressResponse | null>();
+  const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
 
-export default async function LessonsPage() {
-  const [lessonsRes, gradeRes] = await Promise.all([
-    fetch(
-      "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@a5d69549adba4df45bc63545c188730c583ec18d/lessons_v2.json",
-      { cache: "no-store" }
-    ),
-    fetch(
-      "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/grades_assets.json",
-      { cache: "no-store" }
-    ),
-  ]);
+  // Init fetch grade and user data
+  useEffect(() => {
+    const fetchGradeData = async () => {
+      try {
+        const res = await getGradeByLevel(Number(gradeId));
+        setGrade(res[0]);
+      } catch (error) {
+        console.error("Error fetching grade data:", error);
+      }
+    }
 
-  const lessonsData = (await lessonsRes.json()) as LessonsData;
-  const gradeData = (await gradeRes.json()) as Record<string, { image: string }>;
+    const fetchUserData = async () => {
+      try {
+        const res = await getUserProfile()
+        setUserQuartz(res.quartz);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    }
 
-  return <LessonClient lessons={lessonsData} grades={gradeData}/>;
+    fetchUserData();
+    fetchGradeData();
+  }, [])
+
+  // Fetch related data when grade is set
+  useEffect(() => {
+    if (!grade) return;
+
+    // Topics list
+    const fetchTopicsData = async () => {
+      try {
+        const res = await getTopicsByGradeId(grade._id);
+        setTopics(res);
+      } catch (error) {
+        console.error("Error fetching lessons data:", error);
+      }
+    }
+
+    // Grade progress
+    const fetchGradeProgress = async () => {
+      try {
+        const res = await getGradeProgress(grade._id);
+        setGradeProgress(res);
+      } catch (error) {
+        console.error("Error fetching grade progress:", error);
+      }
+    }
+
+    // Recent topics
+    const fetchRecentTopics = async () => {
+      try {
+        const res = await getRecentTopics(1);
+        setRecentTopic(res[0]);
+      } catch (error) {
+        console.error("Error fetching recent topics:", error);
+      }
+    }
+
+    fetchTopicsData();
+    fetchGradeProgress();
+  }, [grade])
+
+  if (!grade || userQuartz === undefined || !topics || !gradeProgress) {
+    return <ScreenLoader/>;
+  }
+
+  return <LessonClient topics={topics}
+    grade={grade!}
+    userQuartz={userQuartz}
+    gradeProgress={gradeProgress!} />;
 }

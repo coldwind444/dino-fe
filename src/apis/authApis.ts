@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { CompleteProfileRequest, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "@/types";
-import { publicApi, api, setAccessToken, clearAccessToken, setUserId, getUserId } from "./config";
+import { publicApi, api, setAccessToken, clearAccessToken } from "./config";
 
 export const register = async (req: RegisterRequest): Promise<RegisterResponse> => {
     try {
@@ -26,7 +26,6 @@ export const login = async (req: LoginRequest): Promise<LoginResponse> => {
         const res = await publicApi.post('/auth/login', req);
         const resData = res.data as LoginResponse;
         if (resData.token) setAccessToken(resData.token);
-        if (resData.user.id) setUserId(resData.user.id);
         return resData;
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
@@ -45,8 +44,7 @@ export const login = async (req: LoginRequest): Promise<LoginResponse> => {
 
 export const completeProfile = async (req: CompleteProfileRequest) => {
     try {
-        const userId = getUserId();
-        const res = await api.post(`/auth/students/${userId}/complete-profile`, req);
+        const res = await api.post(`/auth/students/me/complete-profile`, req);
         return res.data;
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;

@@ -28,28 +28,6 @@ export const clearAccessToken = () => {
 };
 
 // =========================
-// 🧠 UserId Management (sessionStorage only, SSR-safe)
-// =========================
-export const setUserId = (id: string) => {
-  if (typeof window !== "undefined") {
-    sessionStorage.setItem("userId", id);
-  }
-};
-
-export const getUserId = (): string | null => {
-  if (typeof window !== "undefined") {
-    return sessionStorage.getItem("userId");
-  }
-  return null;
-};
-
-export const clearUserId = () => {
-  if (typeof window !== "undefined") {
-    sessionStorage.removeItem("userId");
-  }
-};
-
-// =========================
 // 🧩 Axios Instances
 // =========================
 export const publicApi: AxiosInstance = axios.create({
@@ -85,7 +63,6 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       console.warn("Unauthorized: Token may be invalid or expired.");
       clearAccessToken();
-      clearUserId();
       if (typeof window !== "undefined") {
         window.location.href = "/auth";
       }

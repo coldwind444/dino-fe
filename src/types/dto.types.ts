@@ -48,12 +48,28 @@ export interface UserProfileResponse {
     name: string;
     email: string;
     avatarUrl: string;
-    role: string; 
-    status: string; 
-    students: string[]; 
-    createdAt: string; 
-    updatedAt: string; 
+    role: string;
+    status: string;
+    students: string[];
+    createdAt: string;
+    updatedAt: string;
 };
+
+export interface GradeResponse {
+    _id: string,
+    name: string,
+    level: number,
+    description: string,
+    worldId: string,
+    __v: number
+}
+
+export interface GradeProgressResponse {
+    gradeId: string,
+    total: number,
+    completed: number,
+    percent: number
+}
 
 export interface WorldResponse {
     _id: string,
@@ -69,7 +85,7 @@ export interface LandResponse {
     imageUrl: string,
 }
 
-export interface LessonResponse {
+export interface TopicResponse {
     _id: string,
     title: string,
     description: string,

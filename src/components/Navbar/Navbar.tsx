@@ -4,16 +4,14 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faUser as faUserOutlined } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCaretDown,
   faHouse,
   faCubes,
   faFireFlameCurved,
   faTrophy,
   faBarsProgress,
   faGamepad,
-  faUser,
   faChartColumn,
-  faHandsHoldingChild,
+  faHistory,
 } from "@fortawesome/free-solid-svg-icons";
 import { Roboto } from "next/font/google";
 import { Righteous } from "next/font/google";
@@ -42,12 +40,14 @@ const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
     { name: "Xếp hạng", icon: faTrophy, pathname: "/student/leaderboard" },
     { name: "Nhiệm vụ", icon: faBarsProgress, pathname: "/student/missions" },
     { name: "Trò chơi", icon: faGamepad, pathname: "/student/games" },
+    { name: "Lịch sử", icon: faHistory, pathname: "/student/history" },
   ];
 
 const parentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   [
     { name: "Thống kê", icon: faChartColumn, pathname: "/parent/dashboard" },
-    { name: "Học cùng con", icon: faHandsHoldingChild, pathname: "/parent/learning" },
+    { name: "Minigames", icon: faGamepad, pathname: "/parent/games" },
+    { name: "Lịch sử", icon: faHistory , pathname: "/parent/history" },
   ];
 
 export default function Navbar({

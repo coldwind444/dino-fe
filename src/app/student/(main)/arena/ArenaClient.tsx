@@ -38,6 +38,7 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
     const [pageIdx, setPageIdx] = useState(0)
     const [rulesShow, setRulesShow] = useState(false)
     const [rulesPage, setRulesPage] = useState(0)
+    const [arenaDone, setArenaDone] = useState(false)
 
     const router = useRouter()
 
@@ -333,33 +334,51 @@ export default function ArenaClient({ records, userRank }: ArenaClientProps) {
                 {/** Top section */}
                 <div className='flex w-full min-h-[214px] max-h-[36%] flex-row gap-[15px] flex-shrink-0 px-[15px] pt-[15px]'>
                     {/** Join border */}
-                    <div className='h-full w-[calc(50%-7.5px)] bg-[#F9740B] rounded-[20px] flex-shrink-0'>
-                        <div className={clsx(
-                            'h-[98%] w-[99%] bg-[#FFF5ED] rounded-[20px] border-2',
-                            'border-[#F9740B] flex flex-row items-center justify-center',
-                            'gap-16 p-5 overflow-hidden'
-                        )}>
-                            <Image src={helmet} alt='' className='h-auto w-[150px] max-h-[160px] flex-shrink-0' />
-                            <div className='flex flex-col gap-[20px] min-w-0'>
-                                <h2 className={clsx('text-[#F9740B] text-2xl font-bold leading-tight', roboto.className)}>
-                                    ĐẤU TRƯỜNG TUẦN 11 <br /> ĐANG MỞ CỬA
-                                </h2>
-                                <div className={clsx(
-                                    'h-[60px] w-full rounded-[20px] bg-[#E1690A] overflow-hidden cursor-pointer',
-                                    'hover:brightness-110 transition-all duration-200'
-                                )}>
+                    {!arenaDone ? (
+                        <div className='h-full w-[calc(50%-7.5px)] bg-[#F9740B] rounded-[20px] flex-shrink-0'>
+                            <div className={clsx(
+                                'h-[98%] w-[99%] bg-[#FFF5ED] rounded-[20px] border-2',
+                                'border-[#F9740B] flex flex-row items-center justify-center',
+                                'gap-16 p-5 overflow-hidden',
+                            )}>
+                                <Image src={helmet} alt='' className='h-auto w-[150px] max-h-[160px] flex-shrink-0' />
+                                <div className='flex flex-col gap-[20px] min-w-0'>
+                                    <h2 className={clsx('text-[#F9740B] text-2xl font-bold leading-tight', roboto.className)}>
+                                        ĐẤU TRƯỜNG TUẦN 11 <br /> ĐANG MỞ CỬA
+                                    </h2>
                                     <div className={clsx(
-                                        'flex items-center justify-center',
-                                        'h-full w-full relative bg-[#F9740B] text-white text-lg font-medium',
-                                        'rounded-tl-[50px] rounded-br-[60px] relative'
-                                    )} onClick={() => router.push('/student/arena-exam')}>
-                                        Tham gia ngay
-                                        <span className='absolute top-0 right-0 mt-[7px] mr-[10px] h-[25px] aspect-square bg-[rgba(255,255,255,0.3)] rounded-full' />
+                                        'h-[60px] w-full rounded-[20px] bg-[#E1690A] overflow-hidden cursor-pointer',
+                                        'hover:brightness-110 transition-all duration-200'
+                                    )}>
+                                        <div className={clsx(
+                                            'flex items-center justify-center',
+                                            'h-full w-full relative bg-[#F9740B] text-white text-lg font-medium',
+                                            'rounded-tl-[50px] rounded-br-[60px] relative'
+                                        )} onClick={() => router.push('/student/arena-exam')}>
+                                            Tham gia ngay
+                                            <span className='absolute top-0 right-0 mt-[7px] mr-[10px] h-[25px] aspect-square bg-[rgba(255,255,255,0.3)] rounded-full' />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    ) :
+                        (
+                            <div className='h-full w-[calc(50%-7.5px)] bg-[#3B84F2] rounded-[20px] flex-shrink-0'>
+                                <div className={clsx(
+                                    'h-[98%] w-[99%] bg-[#F2F7FF] rounded-[20px] border-2',
+                                    'border-[#3B84F2] flex flex-col items-center justify-center',
+                                    'gap-5 p-5 overflow-hidden',
+                                )}>
+                                    <h2 className={clsx('text-[#3B84F2] text-xl font-bold leading-tight text-center', roboto.className)}>
+                                        Bạn đã hoàn thành bài thi đấu trường tuần 11. <br /> Hẹn gặp lại ở kỳ tiếp theo !
+                                    </h2>
+                                    <h4 className='text-[rgba(0,0,0,0.5)] font-medium text-center leading-tight'>
+                                        Kết quả sẽ được công bố khi đấu trường kết thúc. <br /> Vui lòng vào mục Lịch sử để xem điểm và chi tiết bài làm nhé.
+                                    </h4>
+                                </div>
+                            </div>
+                        )}
                     {/** Count down border */}
                     <div className='h-full w-[calc(50%-7.5px)] bg-[#1DA492] rounded-[20px] flex-shrink-0'>
                         <div className={clsx(

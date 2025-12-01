@@ -4,7 +4,7 @@ import Image from "next/image"
 
 import dinoWizard from '../../../public/assets/onboarding/wizard.svg'
 import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting"
-import { use, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import clsx from "clsx"
 import { Roboto } from "next/font/google"
 import { completeProfile } from "@/apis"

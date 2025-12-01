@@ -4,7 +4,7 @@ import './ScreenLoader.css'
 
 export default function ScreenLoader() {
     return (
-        <div className="loader-wrapper z-50 absolute h-screen w-screen flex flex-col items-center justify-center">
+        <div className="loader-wrapper z-50 fixed inset-0 h-screen w-screen flex flex-col items-center justify-center">
             <div className="scene h-full w-full">
                 <div className="forest">
                     <div className="tree tree1">

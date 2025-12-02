@@ -7,18 +7,18 @@ import {
   useImperativeHandle,
 } from "react";
 
-import MatchQuestions from "./MatchQuestions.json";
+import MatchQuestions from "./MatchQuestion.json";
 import MultiChoice from "./MultiChoice.json";
 import DragQuestion from "./DragQuestion.json";
-import TrueFalse from "./TrueFasle.json";
+import TrueFalse from "./TrueFalse.json";
 import FillQuestions from "./Fill-questions.json";
 
 const GAME_QUESTION_MAP: Record<number, { questions: any[] }> = {
-  0: MatchQuestions,
-  1: MultiChoice,
-  2: DragQuestion,
-  4: TrueFalse,
-  5: FillQuestions,
+  0: { questions: MatchQuestions.exercises },
+  1: { questions: MultiChoice.exercises },
+  2: { questions: DragQuestion.exercises },
+  4: { questions: TrueFalse.exercises },
+  5: { questions: FillQuestions.exercises },
 };
 
 export interface CocosGameRef {
@@ -44,6 +44,7 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [isGameSwitched, setIsGameSwitched] = useState(false);
   const [scale, setScale] = useState(() => {
     if (typeof window !== "undefined") {
       const initialWidth = Math.min(window.innerWidth * 0.6, 1200);
@@ -70,6 +71,7 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
           break;
         case "GAME_SWITCHED":
           console.log("Game switched:", payload);
+          setIsGameSwitched(true);
           break;
         case "QUESTION_SETUP":
           console.log("Question setup:", payload);
@@ -204,8 +206,17 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
   );
 
   const checkAnswer = useCallback(() => {
+    if (!isReady) {
+      console.warn("Cannot check answer: Cocos game is not ready yet");
+      return;
+    }
+    if (!isGameSwitched) {
+      console.warn("Cannot check answer: No game has been switched yet");
+      return;
+    }
+    console.log("Checking answer...");
     sendToCocos("CHECK_ANSWER", {});
-  }, [sendToCocos]);
+  }, [sendToCocos, isReady, isGameSwitched]);
 
   const nextQuestion = useCallback(() => {
     sendToCocos("NEXT_QUESTION", {});
@@ -299,11 +310,22 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
   useEffect(() => {
     if (isReady) {
       setTimeout(() => {
-        const gameData = GAME_QUESTION_MAP[2] || GAME_QUESTION_MAP[0];
-        sendToCocos("SWITCH_GAME", {
-          gameIndex: 1,
-          questionData: gameData.questions,
-        });
+        // Use gameIndex 1 (MultiChoice) and get the correct data
+        const gameData = GAME_QUESTION_MAP[1]; // MultiChoice
+        if (gameData?.questions) {
+          console.log("Initializing game with MultiChoice questions:", gameData.questions);
+          sendToCocos("SWITCH_GAME", {
+            gameIndex: 1,
+            questionData: gameData.questions,
+          });
+        } else {
+          console.warn("No questions found for gameIndex 1, falling back to gameIndex 0");
+          const fallbackData = GAME_QUESTION_MAP[0];
+          sendToCocos("SWITCH_GAME", {
+            gameIndex: 0,
+            questionData: fallbackData?.questions || [],
+          });
+        }
       }, 100);
     }
   }, [isReady, sendToCocos]);

@@ -1,84 +1,84 @@
 {
-  "questions": [
+  "exercises": [
     {
       "question": "2 + 2 = ?",
-      "answer1": "4",
-      "answer2": "3",
-      "answer3": "5",
-      "answer4": "6",
-      "correctAnswer": 1
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["4", "3", "5", "6"],
+      "correctAnswer": "4",
+      "difficulty": "easy"
     },
     {
       "question": "5 + 3 = ?",
-      "answer1": "7",
-      "answer2": "8",
-      "answer3": "9",
-      "answer4": "6",
-      "correctAnswer": 2
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["7", "8", "9", "6"],
+      "correctAnswer": "8",
+      "difficulty": "easy"
     },
     {
       "question": "10 - 4 = ?",
-      "answer1": "5",
-      "answer2": "7",
-      "answer3": "6",
-      "answer4": "8",
-      "correctAnswer": 3
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["5", "7", "6", "8"],
+      "correctAnswer": "6",
+      "difficulty": "easy"
     },
     {
       "question": "7 + 8 = ?",
-      "answer1": "14",
-      "answer2": "16",
-      "answer3": "13",
-      "answer4": "15",
-      "correctAnswer": 4
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["14", "16", "13", "15"],
+      "correctAnswer": "15",
+      "difficulty": "medium"
     },
     {
       "question": "6 × 2 = ?",
-      "answer1": "10",
-      "answer2": "12",
-      "answer3": "14",
-      "answer4": "8",
-      "correctAnswer": 2
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["10", "12", "14", "8"],
+      "correctAnswer": "12",
+      "difficulty": "medium"
     },
     {
       "question": "15 ÷ 3 = ?",
-      "answer1": "5",
-      "answer2": "4",
-      "answer3": "6",
-      "answer4": "3",
-      "correctAnswer": 1
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["5", "4", "6", "3"],
+      "correctAnswer": "5",
+      "difficulty": "medium"
     },
     {
       "question": "9 + 6 = ?",
-      "answer1": "14",
-      "answer2": "16",
-      "answer3": "15",
-      "answer4": "17",
-      "correctAnswer": 3
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["14", "16", "15", "17"],
+      "correctAnswer": "15",
+      "difficulty": "medium"
     },
     {
       "question": "20 - 8 = ?",
-      "answer1": "11",
-      "answer2": "12",
-      "answer3": "13",
-      "answer4": "14",
-      "correctAnswer": 2
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["11", "12", "13", "14"],
+      "correctAnswer": "12",
+      "difficulty": "medium"
     },
     {
       "question": "4 × 5 = ?",
-      "answer1": "15",
-      "answer2": "25",
-      "answer3": "20",
-      "answer4": "30",
-      "correctAnswer": 3
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["15", "25", "20", "30"],
+      "correctAnswer": "20",
+      "difficulty": "hard"
     },
     {
       "question": "18 ÷ 2 = ?",
-      "answer1": "8",
-      "answer2": "9",
-      "answer3": "10",
-      "answer4": "7",
-      "correctAnswer": 2
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["8", "9", "10", "7"],
+      "correctAnswer": "9",
+      "difficulty": "medium"
     }
   ]
 }

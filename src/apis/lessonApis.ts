@@ -1,4 +1,4 @@
-import { GradeProgressResponse, GradeResponse, LectureResponse, TopicResponse } from "@/types";
+import { ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, TopicResponse } from "@/types";
 import { AxiosError } from "axios";
 import api from "./config";
 
@@ -42,6 +42,25 @@ export const getGradeProgress = async (gradeId: string): Promise<GradeProgressRe
 }
 
 // Topic APIs
+export const getTopicById = async (topicId: string): Promise<TopicResponse> => {
+    try {
+        const res = await api.get(`/topics/${topicId}`)
+        return res.data as TopicResponse
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        let message: string;
+        if (err.response?.status !== 200) {
+            message = 'Bạn không có quyền truy cập !';
+        } else {
+            message =
+                err.response?.data?.message ||
+                err.message ||
+                'Lỗi hệ thống.';
+        }
+        throw new Error(message);
+    }
+}
+
 export const getRecentTopics = async (limit: number): Promise<TopicResponse[]> => {
     try {
         const res = await api.get(`progress/recent?limit=${limit}`)
@@ -81,10 +100,30 @@ export const getTopicsByGradeId = async (gradeId: string): Promise<TopicResponse
 }
 
 // Lecture APIs
-export const getLecturesByLessonId = async (lessonId: string): Promise<LectureResponse[]> => {
+export const getLecturesByTopicId = async (topicId: string): Promise<LectureResponse[]> => {
     try {
-        const res = await api.get(`/worlds?lessonId=${lessonId}}`)
+        const res = await api.get(`/worlds?lessonId=${topicId}}`)
         return res.data.items as LectureResponse[]
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        let message: string;
+        if (err.response?.status !== 200) {
+            message = 'Bạn không có quyền truy cập !';
+        } else {
+            message =
+                err.response?.data?.message ||
+                err.message ||
+                'Lỗi hệ thống.';
+        }
+        throw new Error(message);
+    }
+}
+
+// Exercise APIs
+export const getExercisesByLectureId = async (lectureId: string): Promise<ExerciseResponse[]> => {
+    try {
+        const res = await api.get(`/exercises?lectureId=${lectureId}`)
+        return res.data.items as ExerciseResponse[]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
         let message: string;

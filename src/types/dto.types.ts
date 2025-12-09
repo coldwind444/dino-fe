@@ -108,3 +108,17 @@ export interface LectureResponse {
     difficulty: string,
     lessonId: string
 }
+
+export interface ExerciseResponse {
+    _id: string,
+    question: string,
+    type: string,
+    options: string[],
+    pairs: { left: string, right: string }[],
+    correctAnswer: string,
+    content: string,
+    metadata: Object,
+    difficulty: string,
+    lectureId: string,
+    category: string
+}

@@ -167,7 +167,7 @@ export default function LessonClient({ topics, grade, userQuartz, gradeProgress 
               const globalIndex = currentPage * TOPICS_PER_PAGE + index;
               return (
                 <div key={index} className="relative h-[320px] transition-all hover:scale-105" 
-                    onClick={() => navigateToLecture((globalIndex + 1).toString())}>
+                    onClick={() => navigateToLecture(topic._id)}>
                   <div
                     className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#23BEAA]"
                   />

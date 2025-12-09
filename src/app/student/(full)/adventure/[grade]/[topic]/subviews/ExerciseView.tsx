@@ -1,53 +1,83 @@
-import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAngleDoubleRight,
-  faClose,
-} from "@fortawesome/free-solid-svg-icons";
+import { faAngleDoubleRight, faClose } from "@fortawesome/free-solid-svg-icons";
 import { Roboto, Righteous } from "next/font/google";
+
 import confetti from "../../../../../../../public/assets/exercises/confetti.png";
 import sadFace from "../../../../../../../public/assets/exercises/sad.png";
-import CocosGameWrapper, {
-  type CocosGameWrapperRef,
-} from "@/components/GameComponent/CocosGameWrapper";
-import { Lecture } from "../[topic]/page";
+
+import CocosGameWrapper, { type CocosGameWrapperRef } from "@/components/GameComponent/CocosGameWrapper";
+import { useLessonStore } from "@/stores/lessonStore";
+import { ExerciseResponse, LectureResponse } from "@/types";
+import { getExercisesByLectureId } from "@/apis";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 
 interface ExerciseModeProps {
-  lectureIdx: number;
-  currentLecture: Lecture;
-  exercises: string[];
-  currExIdx: number;
-  showSubmitBanner: boolean;
-  isAnswerCorrect: boolean;
-  cocosGameRef: React.RefObject<CocosGameWrapperRef|null>;
+  currentLecture: LectureResponse;
   onExit: () => void;
-  onExerciseChange: (idx: number) => void;
-  onSubmit: () => void;
-  onContinue: () => void;
-  onAnswerChecked: (isCorrect: boolean, score: number) => void;
-  showCorrectAnswer: () => void
 }
 
-export default function ExerciseMode({
-  lectureIdx,
-  currentLecture,
-  exercises,
-  currExIdx,
-  showSubmitBanner,
-  isAnswerCorrect,
-  cocosGameRef,
-  onExit,
-  onExerciseChange,
-  onSubmit,
-  onContinue,
-  onAnswerChecked,
-  showCorrectAnswer,
-}: ExerciseModeProps) {
+export default function ExerciseMode({ currentLecture, onExit }: ExerciseModeProps) {
+  // Refs
+  const cocosGameRef = useRef<CocosGameWrapperRef>(null);
+
+  // UI states
+  const [showSubmitBanner, setShowSubmitBanner] = useState(false);
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+
+  // Data states
+  const { lectureIdx } = useLessonStore();
+  const [exercises, setExercises] = useState<ExerciseResponse[]>([])
+  const [currExIdx, setCurrExIdx] = useState(0);
+
+  // Functions
+  const handleCheckAnswer = () => {
+    if (cocosGameRef.current) {
+      cocosGameRef.current.checkAnswer();
+    }
+  };
+
+  const handleAnswerChecked = (isCorrect: boolean, score: number) => {
+    console.log(
+      "handleAnswerChecked called - Answer result:",
+      isCorrect,
+      "Score:",
+      score
+    );
+    setShowSubmitBanner(true);
+    setIsAnswerCorrect(isCorrect);
+  };
+
+  const handleContinueAfterAnswer = () => {
+    setShowSubmitBanner(false);
+    if (currExIdx < exercises.length - 1) setCurrExIdx(currExIdx + 1);
+  };
+
+  const handleShowCorrectAnswer = () => {
+    if (cocosGameRef.current) {
+      cocosGameRef.current.showCorrectAnswer();
+    }
+  };
+
+  // Effects
+  useEffect(() => {
+    const fetchExercises = async () => {
+      try {
+        const exs = await getExercisesByLectureId(currentLecture._id);
+        setExercises(exs);
+      } catch (error) {
+        console.error("Error fetching exercises:", error);
+      }
+    }
+    fetchExercises();
+  }, [])
+
   return (
     <motion.div
       key="exercise"
@@ -97,9 +127,8 @@ export default function ExerciseMode({
             roboto.className
           )}
         >
-          <label className="text-[18px] font-semibold">{`Bài ${
-            lectureIdx + 1
-          }`}</label>
+          <label className="text-[18px] font-semibold">{`Bài ${lectureIdx + 1
+            }`}</label>
           <h2 className="max-w-[250px] text-wrap text-[25px] font-bold">
             {currentLecture.title}
           </h2>
@@ -108,7 +137,7 @@ export default function ExerciseMode({
           {exercises.map((ex, idx) => (
             <div
               key={idx}
-              onClick={() => onExerciseChange(idx)}
+              onClick={() => setCurrExIdx(idx)}
               className={clsx(
                 "h-[40px] aspect-square rounded-full cursor-pointer relative font-bold",
                 currExIdx === idx
@@ -177,13 +206,14 @@ export default function ExerciseMode({
         <div className="max-h-[440px] w-full flex items-center justify-center">
           <CocosGameWrapper
             ref={cocosGameRef}
-            onAnswerChecked={onAnswerChecked}
+            onAnswerChecked={handleAnswerChecked}
           />
         </div>
         {/** Buttons */}
         <div className="flex flex-1 flex-row w-full items-center justify-center">
           <AnimatePresence mode="wait">
             {!showSubmitBanner ? (
+              // Check button
               <motion.div
                 key="submit-button"
                 initial={{ opacity: 0, y: 0 }}
@@ -195,7 +225,7 @@ export default function ExerciseMode({
                   "hover:brightness-110 transition-all duration-200 overflow-hidden",
                   "font-bold text-white flex items-center"
                 )}
-                onClick={onSubmit}
+                onClick={handleCheckAnswer}
               >
                 <div
                   className={clsx(
@@ -215,6 +245,7 @@ export default function ExerciseMode({
                 </div>
               </motion.div>
             ) : (
+              // Submit banner
               <motion.div
                 key="submit-banner"
                 initial={{ opacity: 0, y: 30 }}
@@ -257,7 +288,7 @@ export default function ExerciseMode({
                 {isAnswerCorrect ? (
                   <div
                     className="flex flex-row gap-[20px] text-3xl text-white items-center justify-center font-bold ml-auto mr-0 cursor-pointer hover:gap-[40px] hover:mr-[20px] transition-all duration-200"
-                    onClick={onContinue}
+                    onClick={handleContinueAfterAnswer}
                   >
                     <span>
                       TIẾP <br /> TỤC
@@ -267,12 +298,12 @@ export default function ExerciseMode({
                 ) : (
                   <div className="flex flex-col gap-[20px] items-center justify-center ml-auto mr-0">
                     <div className="h-[50px] w-[200px] text-white text-xl rounded-full bg-red-400 flex items-center justify-center cursor-pointer hover:brightness-105"
-                        onClick={showCorrectAnswer}>
+                      onClick={handleShowCorrectAnswer}>
                       Xem đáp án
                     </div>
                     <div
                       className="flex flex-row gap-[10px] text-xl text-white items-center justify-center font-bold cursor-pointer hover:gap-[20px] transition-all duration-200"
-                      onClick={onContinue}
+                      onClick={handleContinueAfterAnswer}
                     >
                       <span>TIẾP TỤC</span>
                       <FontAwesomeIcon icon={faAngleDoubleRight} />

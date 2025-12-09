@@ -1,22 +1,21 @@
 'use client'
 
 import { useState, useRef, useEffect } from "react";
-import { Lecture } from "@/app/student/(full)/adventure/[grade]/[topic]/page"
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useLessonStore } from "@/stores/lessonStore";
 import clsx from "clsx";
 import lock from '../../../public/assets/exercises/lock.png'
+import { LectureResponse } from "@/types";
 
-export default function LectureSlider({
-    lectures, doExercise, onLectureSelectionChange, milestone
-}: {
-    lectures: Lecture[],
+type LectureSliderProps = {
+    lectures: LectureResponse[],
     doExercise: () => void,
-    onLectureSelectionChange: (index: number) => void,
     milestone: string
-}) {
+};
+
+export default function LectureSlider({ lectures, doExercise, milestone }: LectureSliderProps ) {
     const { lectureIdx: idx, setLectureIdx: setIdx } = useLessonStore();
     const [translate, setTranslate] = useState(0);
     const lastUnlockedMilestoneIdx = 2
@@ -38,7 +37,6 @@ export default function LectureSlider({
         if (idx < lectures.length - 1) {
             const newIdx = idx + 1;
             setIdx(newIdx);
-            onLectureSelectionChange(newIdx);
         }
     }
 
@@ -46,7 +44,6 @@ export default function LectureSlider({
         if (idx > 0) {
             const newIdx = idx - 1;
             setIdx(newIdx);
-            onLectureSelectionChange(newIdx);
         }
     }
 

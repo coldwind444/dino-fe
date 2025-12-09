@@ -14,7 +14,7 @@ export const useLessonStore = create<LectureStoreState>()(
     persist(
         (set, get) => ({
             gradeId: '1',
-            topicId: '1',
+            topicId: '',
             lectureIdx: 0,
             setGradeId: (id: string) => set({ gradeId: id }),
             setTopicId: (id: string) => set({ topicId: id }),

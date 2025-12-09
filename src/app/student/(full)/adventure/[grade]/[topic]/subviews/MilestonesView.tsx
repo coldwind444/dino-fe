@@ -1,3 +1,5 @@
+'use client";'
+
 import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
@@ -5,40 +7,28 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { Roboto } from "next/font/google";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
-import { World, Lecture, Topic } from "../[topic]/page";
+import { GradeResponse, WorldResponse, LandResponse, TopicResponse, LectureResponse } from "@/types";
+import { useEffect, useState } from "react";
+import { useLessonStore } from "@/stores/lessonStore";
+import { getLecturesByTopicId, getTopicById } from "@/apis";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 
-interface LectureModeProps {
-  grade: string;
-  topicOrder: string;
-  world: World;
-  topic: Topic;
-  lectures: Lecture[];
-  lectureIdx: number;
-  currentLecture: Lecture;
-  currentLand: any;
+interface MilestonesViewProps {
+  world: WorldResponse;
+  land: LandResponse;
+  topic: TopicResponse;
+  lectures: LectureResponse[];
   onBack: () => void;
   onDoExercise: () => void;
-  onLectureSelectionChange: (idx: number) => void;
 }
 
-export default function LectureMode({
-  grade,
-  topicOrder,
-  world,
-  topic,
-  lectures,
-  lectureIdx,
-  currentLecture,
-  currentLand,
-  onBack,
-  onDoExercise,
-  onLectureSelectionChange,
-}: LectureModeProps) {
+export default function MilestonesView({ world, land, topic, lectures, onBack, onDoExercise }: MilestonesViewProps) {
+  const { lectureIdx } = useLessonStore();
+  
   return (
     <motion.div
-      key="lecture"
+      key="milestones"
       initial={{ opacity: 0, x: -60 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 60 }}
@@ -68,7 +58,7 @@ export default function LectureMode({
         </div>
         <div className="flex flex-col items-center justify-center mt-7 gap-[20px]">
           <Image
-            src={topic?.brand || ""}
+            src={topic?.description || ''}
             alt=""
             height={120}
             width={120}
@@ -79,7 +69,7 @@ export default function LectureMode({
               roboto.className
             )}
           >
-            {`CHỦ ĐỀ ${topicOrder}`}
+            {`CHỦ ĐỀ ${topic?.weekNumbers[0] || ""}`}
           </div>
           <label
             className={clsx(
@@ -87,12 +77,12 @@ export default function LectureMode({
               "text-white text-[22px] font-bold text-center text-wrap max-w-[300px]"
             )}
           >
-            {topic?.name || ""}
+            {topic?.title || ""}
           </label>
         </div>
         <div className="flex flex-col pl-[50px] text-white font-bold text-[18px] mt-[100px]">
-          <label>{`Mức độ: ${currentLecture?.difficultyName || ""}`}</label>
-          <label>{`Khu vực: ${currentLand?.name || ""}`}</label>
+          <label>{`Mức độ: ${lectures[lectureIdx].contentType || ""}`}</label>
+          <label>{`Khu vực: ${land.name || ""}`}</label>
         </div>
       </div>
       {/* Exercises panel */}
@@ -100,8 +90,7 @@ export default function LectureMode({
         <LectureSlider
           lectures={lectures}
           doExercise={onDoExercise}
-          milestone={world.milestone}
-          onLectureSelectionChange={onLectureSelectionChange}
+          milestone={world.milestoneUrl || ''}
         />
       </div>
     </motion.div>

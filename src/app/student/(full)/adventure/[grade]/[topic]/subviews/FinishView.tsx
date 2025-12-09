@@ -1,36 +1,27 @@
-import { motion } from "framer-motion";
-import Image from "next/image";
 import clsx from "clsx";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowRight,
-  faBook,
-  faCoins,
-  faGift,
-  faGraduationCap,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
+import { motion } from "framer-motion";
 import { Roboto, Coiny } from "next/font/google";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faBook, faCoins, faGift, faGraduationCap, faStar } from "@fortawesome/free-solid-svg-icons";
+
 import trophy from "../../../../../../../public/assets/exercises/trophy.png";
 import flags from "../../../../../../../public/assets/exercises/flags.png";
-import { Lecture, Topic } from "../[topic]/page";
+import { LectureResponse, TopicResponse } from "@/types";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const coiny = Coiny({ subsets: ["latin"], weight: ["400"] });
 
 interface FinishModeProps {
   grade: string;
-  topic: Topic;
-  currentLecture: Lecture;
+  topic: TopicResponse;
+  currentLecture: LectureResponse;
+  score: number;
+  reward: number;
   onContinue: () => void;
 }
 
-export default function FinishMode({
-  grade,
-  topic,
-  currentLecture,
-  onContinue,
-}: FinishModeProps) {
+export default function FinishMode({ grade, topic, currentLecture, score, reward, onContinue }: FinishModeProps) {
   return (
     <motion.div
       key="finish-popup"
@@ -92,7 +83,7 @@ export default function FinishMode({
                 <div className={clsx("flex flex-col", roboto.className)}>
                   <label className="text-[#4B5563] text-xs">Chủ đề</label>
                   <label className="text-[#1F2937] text-[16px] font-bold">
-                    {topic?.name || ""}
+                    {topic?.title || ""}
                   </label>
                 </div>
               </div>
@@ -115,7 +106,7 @@ export default function FinishMode({
                   <FontAwesomeIcon className="text-4xl" icon={faCoins} />
                   <label className="text-[16px]">Tổng điểm</label>
                 </div>
-                <div className="font-medium text-3xl">25/25</div>
+                <div className="font-medium text-3xl">{score}</div>
               </div>
               <div className="h-fit w-1/2 rounded-[10px] text-white flex flex-row gap-10 px-5 py-3 items-center bg-gradient-to-br from-0% from-[#EC4899] to-100% to-[#7C3AED]">
                 <div className="flex flex-col items-center justify-center gap-1">
@@ -130,7 +121,7 @@ export default function FinishMode({
                     alt=""
                     className="inline-block mr-2"
                   />
-                  500
+                  {reward}
                 </div>
               </div>
             </div>

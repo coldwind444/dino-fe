@@ -1,69 +1,63 @@
-// client component
-import LectureClient from "./LectureClient";
+'use client';
 
-interface MilestonesPageProps {
+import { useEffect, useState } from "react";
+import LessonView from "./views/LessonView";
+import { getGradeByLevel, getLandsByWorldId, getLecturesByTopicId, getTopicById, getWorldById } from "@/apis";
+import { GradeResponse, LandResponse, TopicResponse, WorldResponse, LectureResponse, ExerciseResponse } from "@/types";
+import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+
+interface LessonsPageProps {
     params: {
-        grade: string;
-        topic: string;
+        grade: string; // gradeLevel: 1 => 5
+        topic: string; // topicId: string
     };
 }
 
-export interface World {
-    world: string;
-    milestone: string;
-    lands: Land[];
-}
+export default function LessonsPage({ params }: LessonsPageProps) {
+    // UI states
+    const [loading, setLoading] = useState(false)
 
-export interface Land {
-    name: string;
-    illustration: string;
-}
+    // Data states
+    const [currGrade, setCurrGrade] = useState<GradeResponse | null>(null);
+    const [currWorld, setCurrWorld] = useState<WorldResponse | null>(null);
+    const [currTopic, setCurrTopic] = useState<TopicResponse | null>(null);
+    const [lectures, setLectures] = useState<LectureResponse[]>([]);
+    const [lands, setLands] = useState<LandResponse[]>([]);
 
-export interface Topic {
-    name: string;
-    brand: string;
-}
+    useEffect(() => {
+        // Get grade level from params
+        const { grade, topic } = params;
+        if (!grade || !topic) return;
 
-export interface Lecture {
-    title: string;
-    difficultyNo: number;
-    difficultyName: string;
-}
+        // Fetch data
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const grades = await getGradeByLevel(Number(grade));
+                const world = await getWorldById(grades[0].worldId);
+                const lands = await getLandsByWorldId(world._id);
+                const topic = await getTopicById(params.topic);
+                const lectures = await getLecturesByTopicId(topic._id);
+                setCurrGrade(grades[0]);
+                setCurrWorld(world);
+                setLands(lands);
+                setCurrTopic(topic);
+                setLectures(lectures);
+            } catch (error){
+                console.error("Error fetching world data:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
 
-export default async function MilestonesPage({ params }: MilestonesPageProps) {
-    const { grade, topic } = await params;
+        fetchData();
+    }, [])
 
-    // Server-side data fetching (no useEffect)
-    const [worldRes, topicRes, lectureRes] = await Promise.all([
-        fetch(
-            "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/worlds_v2.json",
-            { cache: "no-store" }
-        ),
-        fetch(
-            "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/lessons_v2.json",
-            { cache: "no-store" }
-        ),
-        fetch(
-            "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/lectures.json",
-            { cache: "no-store" }
-        )
-    ]);
-
-    const worldData = await worldRes.json() as Record<string, World>;
-    const topicData = await topicRes.json() as Record<string, Topic[]>;
-    const lectureData = await lectureRes.json() as Lecture[];
-
-    const currWorld = worldData[grade];
-    const currTopic = topicData[grade]?.[Number(topic) - 1];
+    // Return loading state if data is not ready
+    if (loading || !currGrade || !currWorld || !currTopic || !lands || !lectures ) return <ScreenLoader/>
 
     // Pass data to client-side component
     return (
-        <LectureClient
-            grade={grade}
-            topicOrder={topic}
-            topic={currTopic}
-            world={currWorld}
-            lectures={lectureData}
-        />
+        <LessonView grade={currGrade} world={currWorld} lands={lands} topic={currTopic} lectures={lectures}/>
     );
 }

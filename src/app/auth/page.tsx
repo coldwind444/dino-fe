@@ -52,25 +52,28 @@ export default function Auth() {
     const [loginLoading, setLoginLoading] = useState(false)
     const [regLoading, setRegLoading] = useState(false)
 
-    // login request states
+    // Login request states
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordShow, setPasswordShow] = useState(false)
 
-    // register request states
+    // Register request states
     const [email2, setEmail2] = useState('')
     const [password2, setPassword2] = useState('')
     const [confPassword, setConfPassword] = useState('')
     const [fullName, setFullName] = useState('') // only for parent
 
+    // Show/hide password handlers
     const onStateChange = (state: boolean) => {
         setPasswordShow(state)
     }
 
+    // Check if data is valid for login
     const canLogin = () => {
         return email.length > 0 && password.length > 0
     }
 
+    // Check if data is valid for register
     const canRegister = () => {
         const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-={}\[\]:;"'<>,.?/]).{8,}$/;
         const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -80,6 +83,7 @@ export default function Auth() {
             return strongPassword.test(password2) && validEmail.test(email2) && confPassword === password2 && fullName.length > 0;
     }
 
+    // Login handler
     const handleLogin = async () => {
         try {
             setLoginLoading(true);
@@ -105,6 +109,7 @@ export default function Auth() {
         }
     };
 
+    // Register handler
     const handleRegister = async () => {
         try {
             setRegLoading(true);
@@ -129,12 +134,13 @@ export default function Auth() {
         }
     };
 
-
+    // Clear all login fields
     const resetLogin = () => {
         setEmail('')
         setPassword('')
     }
 
+    // Clear all register fields
     const resetRegister = () => {
         setEmail2('')
         setPassword2('')
@@ -142,7 +148,7 @@ export default function Auth() {
         setConfPassword('')
     }
 
-    // effects
+    // Reset register and login fields when switching tabs
     useEffect(() => {
         setRegisterStep(AUTHSTEPS.SELECT_ROLE)
         resetLogin()

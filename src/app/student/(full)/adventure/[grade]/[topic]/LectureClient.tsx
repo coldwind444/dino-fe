@@ -3,12 +3,9 @@
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import clsx from "clsx";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
-import { Righteous, Roboto, Coiny } from "next/font/google";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose } from "@fortawesome/free-solid-svg-icons";
-
+import { Roboto } from "next/font/google";
 import { World, Lecture, Topic } from "../[topic]/page";
 
 import Volume from "@/components/Volume/Volume";
@@ -17,7 +14,6 @@ import { useRouter } from "next/navigation";
 import Confetti from "react-confetti";
 import { type CocosGameWrapperRef } from "@/components/GameComponent/CocosGameWrapper";
 
-// Import the new mode components
 import LectureMode from "./LectureMode";
 import ExerciseMode from "./ExerciseMode";
 import FinishMode from "./FinishMode";
@@ -146,15 +142,6 @@ export default function LectureClient({
     setShowSubmitBanner(true);
     setIsAnswerCorrect(isCorrect);
   };
-
-  // const handleSkipQuestion = () => {
-  //   setShowSubmitBanner(false);
-  //   if (currExIdx < exercises.length - 1) {
-  //     setCurrExIdx(currExIdx + 1);
-  //   } else {
-  //     setMode(MODE.FINISH);
-  //   }
-  // };
 
   const handleContinueAfterAnswer = () => {
     setShowSubmitBanner(false);

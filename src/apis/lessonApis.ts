@@ -2,6 +2,7 @@ import { GradeProgressResponse, GradeResponse, LectureResponse, TopicResponse } 
 import { AxiosError } from "axios";
 import api from "./config";
 
+// Grade APIs
 export const getGradeByLevel = async (level: number): Promise<GradeResponse[]> => {
     try {
         const res = await api.get(`/grades?level=${level}`)
@@ -40,6 +41,7 @@ export const getGradeProgress = async (gradeId: string): Promise<GradeProgressRe
     }
 }
 
+// Topic APIs
 export const getRecentTopics = async (limit: number): Promise<TopicResponse[]> => {
     try {
         const res = await api.get(`progress/recent?limit=${limit}`)
@@ -78,6 +80,7 @@ export const getTopicsByGradeId = async (gradeId: string): Promise<TopicResponse
     }
 }
 
+// Lecture APIs
 export const getLecturesByLessonId = async (lessonId: string): Promise<LectureResponse[]> => {
     try {
         const res = await api.get(`/worlds?lessonId=${lessonId}}`)

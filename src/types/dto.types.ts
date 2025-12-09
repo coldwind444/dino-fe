@@ -16,6 +16,7 @@ export interface CompleteProfileRequest {
     inviteCode: string;
     name: string;
     avatarUrl: string;
+    gradeId: string;
 }
 
 export interface UserResponse {
@@ -54,6 +55,11 @@ export interface UserProfileResponse {
     createdAt: string;
     updatedAt: string;
 };
+
+export interface AvatarUploadResponse {
+    message: string;
+    avatarUrl: string;
+}
 
 export interface GradeResponse {
     _id: string,

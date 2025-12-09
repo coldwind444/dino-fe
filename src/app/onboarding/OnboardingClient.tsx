@@ -99,7 +99,8 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
             await completeProfile({
                 inviteCode: code,
                 name: name,
-                avatarUrl: previewAvt
+                avatarUrl: previewAvt,
+                gradeId: ''
             })
             toast.success('Hoàn thành hồ sơ thành công ! Đang chuyển hướng ...')
             router.push('/student/home')

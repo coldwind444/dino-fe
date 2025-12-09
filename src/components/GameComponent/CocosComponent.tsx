@@ -12,6 +12,7 @@ import MultiChoice from "./MultiChoice.json";
 import DragQuestion from "./DragQuestion.json";
 import TrueFalse from "./TrueFalse.json";
 import FillQuestions from "./Fill-questions.json";
+import { ExerciseResponse } from "@/types";
 
 const GAME_QUESTION_MAP: Record<number, { questions: any[] }> = {
   0: { questions: MatchQuestions.exercises },
@@ -36,11 +37,12 @@ export interface CocosGameRef {
 }
 
 interface CocosGameProps {
+  exercises: ExerciseResponse[];
   onAnswerChecked?: (isCorrect: boolean, score: number) => void;
 }
 
 const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
-  const { onAnswerChecked } = props;
+  const { onAnswerChecked, exercises } = props;
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isReady, setIsReady] = useState(false);

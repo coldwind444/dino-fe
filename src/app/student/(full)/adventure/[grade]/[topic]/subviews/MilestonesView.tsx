@@ -7,10 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { Roboto } from "next/font/google";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
-import { GradeResponse, WorldResponse, LandResponse, TopicResponse, LectureResponse } from "@/types";
-import { useEffect, useState } from "react";
+import { WorldResponse, LandResponse, TopicResponse, LectureResponse } from "@/types";
 import { useLessonStore } from "@/stores/lessonStore";
-import { getLecturesByTopicId, getTopicById } from "@/apis";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 

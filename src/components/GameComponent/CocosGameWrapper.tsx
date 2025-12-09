@@ -2,6 +2,7 @@
 
 import { useRef, useImperativeHandle, forwardRef } from "react";
 import CocosGame, { type CocosGameRef } from "./CocosComponent";
+import { ExerciseResponse } from "@/types";
 
 export interface CocosGameWrapperRef {
   checkAnswer: () => void;
@@ -17,12 +18,13 @@ export interface CocosGameWrapperRef {
 }
 
 interface CocosGameWrapperProps {
+  exercises: ExerciseResponse[];
   onAnswerChecked?: (isCorrect: boolean, score: number) => void;
 }
 
 const CocosGameWrapper = forwardRef<CocosGameWrapperRef, CocosGameWrapperProps>(
   (props, ref) => {
-    const { onAnswerChecked } = props;
+    const { onAnswerChecked, exercises } = props;
     const cocosGameRef = useRef<CocosGameRef>(null);
 
     useImperativeHandle(
@@ -70,7 +72,7 @@ const CocosGameWrapper = forwardRef<CocosGameWrapperRef, CocosGameWrapperProps>(
       []
     );
 
-    return <CocosGame ref={cocosGameRef} onAnswerChecked={onAnswerChecked} />;
+    return <CocosGame ref={cocosGameRef} onAnswerChecked={onAnswerChecked} exercises={exercises}/>;
   }
 );
 

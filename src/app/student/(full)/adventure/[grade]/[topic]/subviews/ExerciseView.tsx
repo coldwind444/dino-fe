@@ -205,6 +205,7 @@ export default function ExerciseMode({ currentLecture, onExit }: ExerciseModePro
         {/** Interactive area */}
         <div className="max-h-[440px] w-full flex items-center justify-center">
           <CocosGameWrapper
+            exercises={exercises}
             ref={cocosGameRef}
             onAnswerChecked={handleAnswerChecked}
           />

@@ -5,8 +5,8 @@ import { Roboto, Coiny } from "next/font/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faBook, faCoins, faGift, faGraduationCap, faStar } from "@fortawesome/free-solid-svg-icons";
 
-import trophy from "../../../../../../../public/assets/exercises/trophy.png";
-import flags from "../../../../../../../public/assets/exercises/flags.png";
+const trophy = "/assets/exercises/trophy.png";
+const flags = "/assets/exercises/flags.png";
 import { LectureResponse, TopicResponse } from "@/types";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });

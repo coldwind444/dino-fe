@@ -7,8 +7,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faClose } from "@fortawesome/free-solid-svg-icons";
 import { Roboto, Righteous } from "next/font/google";
 
-import confetti from "../../../../../../../public/assets/exercises/confetti.png";
-import sadFace from "../../../../../../../public/assets/exercises/sad.png";
+const confetti = "/assets/exercises/confetti.png";
+const sadFace = "/assets/exercises/sad.png";
+
 
 import CocosGameWrapper, { type CocosGameWrapperRef } from "@/components/GameComponent/CocosGameWrapper";
 import { useLessonStore } from "@/stores/lessonStore";
@@ -70,6 +71,7 @@ export default function ExerciseMode({ currentLecture, onExit }: ExerciseModePro
     const fetchExercises = async () => {
       try {
         const exs = await getExercisesByLectureId(currentLecture._id);
+        console.log("Fetched exercises:", exs);
         setExercises(exs);
       } catch (error) {
         console.error("Error fetching exercises:", error);
@@ -206,6 +208,7 @@ export default function ExerciseMode({ currentLecture, onExit }: ExerciseModePro
         <div className="max-h-[440px] w-full flex items-center justify-center">
           <CocosGameWrapper
             exercises={exercises}
+            currentExerciseIndex={currExIdx}
             ref={cocosGameRef}
             onAnswerChecked={handleAnswerChecked}
           />

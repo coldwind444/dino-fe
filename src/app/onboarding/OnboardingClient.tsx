@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { Roboto } from "next/font/google"
 
-import { completeProfile, getGradeByLevel, uploadAvatar } from "@/apis"
+import { completeProfile, getGradeByLevel, uploadAvatar, logout } from "@/apis"
 import { Toaster, toast } from "react-hot-toast"
 
 import Loader from "@/components/Loader/Loader"
 import dinoWizard from '../../../public/assets/onboarding/wizard.svg'
 import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faSignOut } from "@fortawesome/free-solid-svg-icons"
 
 const roboto = Roboto()
 
@@ -148,6 +150,12 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
         }
     }
 
+    // Log out
+    const handleLogout = async () => {
+        await logout();
+        router.push('/auth');
+    }
+
     // Update final avatar URL when option or system avatar index changes
     useEffect(() => {
         if (option === AVATAR_OPTIONS.SYSTEM) {
@@ -212,6 +220,12 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
     return (
         <div className="flex flex-row w-screen h-screen overflow-hidden">
             <Toaster position="bottom-left" reverseOrder={false} />
+            <div className="absolute h-8 w-fit px-5 rounded-2xl text-white font-medium bg-red-400 z-50
+                            flex items-center justify-center gap-3 hover:opacity-90 top-4 right-1/3 cursor-pointer"
+                            onClick={handleLogout}>
+                Thoát
+                <FontAwesomeIcon icon={faSignOut} />
+            </div>
             <div className="w-[55%] h-full">
                 {/** Mascot area */}
                 <div className="flex flex-row h-[250px] pl-[20px] pt-[20px] relative overflow-hidden">

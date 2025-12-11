@@ -44,7 +44,7 @@ export const login = async (req: LoginRequest): Promise<LoginResponse> => {
 
 export const completeProfile = async (req: CompleteProfileRequest) => {
     try {
-        const res = await api.post(`/auth/students/me/complete-profile`, req);
+        const res = await api.post(`/auth/students/complete-profile`, req);
         return res.data;
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;

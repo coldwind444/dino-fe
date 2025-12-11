@@ -1,16 +1,17 @@
 'use client'
 
+import clsx from "clsx"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
+import { Roboto } from "next/font/google"
 
+import { completeProfile, getGradeByLevel, uploadAvatar } from "@/apis"
+import { Toaster, toast } from "react-hot-toast"
+
+import Loader from "@/components/Loader/Loader"
 import dinoWizard from '../../../public/assets/onboarding/wizard.svg'
 import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting"
-import { useEffect, useRef, useState } from "react"
-import clsx from "clsx"
-import { Roboto } from "next/font/google"
-import { completeProfile } from "@/apis"
-import { Toaster, toast } from "react-hot-toast"
-import Loader from "@/components/Loader/Loader"
-import { useRouter } from "next/navigation"
 
 const roboto = Roboto()
 
@@ -43,22 +44,27 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
     const [step, setStep] = useState(STEPS.NAME)
     const [option, setOption] = useState(AVATAR_OPTIONS.SYSTEM)
     const [sysAvtIndex, setSystemAvtIndex] = useState(0)
-    const [userSelectedAvt, setUserSelectedAvt] = useState('')
+    const [userSelectedAvatarFile, setUserSelectedAvatarFile] = useState<File | undefined>()
     const [loading, setLoading] = useState(false)
 
     // Request data state
     const [name, setName] = useState('')
     const [code, setCode] = useState('')
-    const [previewAvt, setPreviewAvt] = useState('')
     const [grade, setGrade] = useState('');
+    const [finalAvatarUrl, setFinalAvatarUrl] = useState('');
 
+    // Open image select dialog
     const openFileDialog = () => {
         if (fileInputRef) fileInputRef.current?.click()
     }
 
+    // Change avatar when user selects a file
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        // Save selected file
+        setUserSelectedAvatarFile(file);
 
         // Validate MIME type (safer than relying only on 'accept' attribute)
         if (!file.type.startsWith("image/")) {
@@ -67,15 +73,11 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
             return;
         }
 
-        // Create preview URL
-        const objectUrl = URL.createObjectURL(file);
-        setUserSelectedAvt(objectUrl);
-        setPreviewAvt(objectUrl)
-
         // Reset the input to allow re-selecting same file
         e.target.value = "";
     };
 
+    // Switch step when clicking on bullets
     const switchStepByBullet = (target: number) => {
         if (step > target) {
             setStep(target)
@@ -83,25 +85,56 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
         }
 
         if (target === STEPS.AVATAR) {
-            if (name.length > 0) setStep(target);
+            if (name.length > 0 && grade.length > 0) setStep(target);
             return
         }
 
         if (target === STEPS.CODE) {
-            if (previewAvt.length > 0 && name.length > 0) setStep(target);
+            if (finalAvatarUrl.length > 0 && name.length > 0) setStep(target);
             return
         }
     }
 
+    // Image to Base64 conversion
+    function fileToBase64(file: File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    // Complete profile API call
     const handleCompleteProfile = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
+            // Get grade ID from level
+            const gradeObj = await getGradeByLevel(Number(grade))
+            const gradeId = gradeObj[0]?._id
+            if (!gradeId) {
+                toast.error('Lớp không hợp lệ. Vui lòng chọn lại lớp.')
+                setLoading(false)
+                return
+            }
+
+            // Upload avatar if user uploaded one
+            var avatarUploadedUrl = '';
+            if (option === AVATAR_OPTIONS.UPLOAD && userSelectedAvatarFile) {
+                const base64Image = await fileToBase64(userSelectedAvatarFile);
+                const uploadResult = await uploadAvatar(base64Image);
+                avatarUploadedUrl = uploadResult.avatarUrl
+            }
+
+            // Complete profile API call
             await completeProfile({
                 inviteCode: code,
                 name: name,
-                avatarUrl: previewAvt,
-                gradeId: ''
+                avatarUrl: option === AVATAR_OPTIONS.SYSTEM ? finalAvatarUrl : avatarUploadedUrl,
+                gradeId: gradeId
             })
+
             toast.success('Hoàn thành hồ sơ thành công ! Đang chuyển hướng ...')
             router.push('/student/home')
         } catch (error: unknown) {
@@ -115,16 +148,23 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
         }
     }
 
+    // Update final avatar URL when option or system avatar index changes
     useEffect(() => {
         if (option === AVATAR_OPTIONS.SYSTEM)
-            setPreviewAvt(systemAvatars[sysAvtIndex]);
-        else setPreviewAvt(userSelectedAvt)
+            setFinalAvatarUrl(systemAvatars[sysAvtIndex]);
+        else {
+            // Create preview URL
+            const objectUrl = URL.createObjectURL(userSelectedAvatarFile as Blob);
+            setFinalAvatarUrl(objectUrl)
+        }
+
     }, [option])
 
+    // Scroll to selected system avatar
     useEffect(() => {
         if (!containerRef.current) return;
 
-        setPreviewAvt(systemAvatars[sysAvtIndex])
+        setFinalAvatarUrl(systemAvatars[sysAvtIndex])
 
         const container = containerRef.current;
         const child = container.children[sysAvtIndex];
@@ -143,6 +183,7 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
         });
     }, [sysAvtIndex]);
 
+    // Update mascot message and pose when step changes
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -186,9 +227,9 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
                             <div
                                 className="relative h-[150px] w-[150px] flex-shrink-0 overflow-hidden rounded-full"
                             >
-                                {previewAvt ? (
+                                {finalAvatarUrl ? (
                                     <Image
-                                        src={previewAvt}
+                                        src={finalAvatarUrl}
                                         fill
                                         alt="Selected avatar preview"
                                         className="object-cover object-center"
@@ -357,7 +398,7 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
                                     type="file" className="hidden"
                                     accept=".png,.jpg,.jpeg,.webp,.bmp,.svg,.ico,.tiff,.avif" />
                             </div>
-                            <button disabled={previewAvt.length === 0}
+                            <button disabled={finalAvatarUrl.length === 0}
                                 className={clsx(
                                     "h-[60px] w-[370px] rounded-[10px] bg-[#1DA492] cursor-pointer hover:opacity-90",
                                     'disabled:opacity-60 disabled:cursor-not-allowed ml-auto mr-auto'
@@ -384,7 +425,7 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
                                 <input className="h-full w-[90%] border-none outline-none pl-[20px] text-[20px]"
                                     placeholder="Mã liên kết" value={code} onChange={e => setCode(e.target.value)} />
                             </div>
-                            <button disabled={name.length === 0 || previewAvt.length === 0 || code.length === 0}
+                            <button disabled={name.length === 0 || finalAvatarUrl.length === 0 || code.length === 0}
                                 className={clsx(
                                     "h-[60px] w-[370px] rounded-[10px] bg-[#1DA492] cursor-pointer hover:opacity-90",
                                     'disabled:opacity-60 disabled:cursor-not-allowed'

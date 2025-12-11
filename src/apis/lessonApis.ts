@@ -83,7 +83,9 @@ export const getRecentTopics = async (limit: number): Promise<TopicResponse[]> =
 export const getTopicsByGradeId = async (gradeId: string): Promise<TopicResponse[]> => {
     try {
         const res = await api.get(`/topics?gradeId=${gradeId}`)
-        return res.data.items as TopicResponse[]
+        const topics = res.data.items as TopicResponse[]
+        const sortedTopics = topics.sort((a, b) => (a.weekNumbers[0] ?? Infinity) - (b.weekNumbers[0] ?? Infinity))
+        return sortedTopics
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
         let message: string;
@@ -102,8 +104,11 @@ export const getTopicsByGradeId = async (gradeId: string): Promise<TopicResponse
 // Lecture APIs
 export const getLecturesByTopicId = async (topicId: string): Promise<LectureResponse[]> => {
     try {
-        const res = await api.get(`/lectures?topicId=${topicId}`)
-        return res.data.items as LectureResponse[]
+        const easy = await api.get(`/lectures?topicId=${topicId}&difficulty=easy`)
+        const medium = await api.get(`/lectures?topicId=${topicId}&difficulty=medium`)
+        const hard = await api.get(`/lectures?topicId=${topicId}&difficulty=hard`)
+        const res = [...easy.data.items, ...medium.data.items, ...hard.data.items]
+        return res as LectureResponse[]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
         let message: string;

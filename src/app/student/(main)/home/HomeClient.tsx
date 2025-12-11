@@ -28,7 +28,7 @@ interface StudentHomeProps {
 export default function StudentHome({ lessons }: StudentHomeProps) {
   const username = "Tân";
 
-  const { gradeId, setGradeId, setTopicId, setLectureIdx } = useLessonStore();
+  const { gradeLevel, setGradeLevel, setTopicId, setLectureIdx } = useLessonStore();
   const [isTestPopupClosed, setIsTestPopupClosed] = useState(false)
 
   const closeTestPopup = () => { setIsTestPopupClosed(true) }
@@ -91,7 +91,7 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
                       <button
                         key={n}
                         onClick={() => {
-                          setGradeId(n.toString());
+                          setGradeLevel(n.toString());
                           setTopicId("1");
                           setLectureIdx(0);
                         }}
@@ -99,7 +99,7 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
                           "relative aspect-square h-20 rounded-full flex items-center justify-center",
                           "font-bold text-3xl transition-all hover:scale-105 group cursor-pointer",
                           "bg-[#C4F1EC] text-[#23BEAA] hover:bg-[#23BEAA] hover:text-white group",
-                          n.toString() === gradeId
+                          n.toString() === gradeLevel
                             ? "bg-amber-500 text-white"
                             : "",
                           fredoka.className
@@ -110,7 +110,7 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
                             "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[15px] w-[30px]",
                             "bg-[rgba(255,255,255)] bottom-0 right-0 mb-[13px] mr-[5px] -rotate-45",
                             "group-hover:bg-[rgba(255,255,255,0.5)]",
-                            n.toString() === gradeId
+                            n.toString() === gradeLevel
                               ? "bg-[rgba(255,255,255,0.5)]"
                               : ""
                           )}
@@ -119,7 +119,7 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
                           className={clsx(
                             "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[10px] w-[20px]",
                             "bg-[rgba(255,255,255)] left-0 rotate-90 group-hover:bg-[rgba(255,255,255,0.5)]",
-                            n.toString() === gradeId
+                            n.toString() === gradeLevel
                               ? "bg-[rgba(255,255,255,0.5)]"
                               : ""
                           )}

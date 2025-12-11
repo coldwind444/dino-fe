@@ -59,7 +59,6 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
   });
 
   const currentExercise = exercises[currentExerciseIndex];
-  console.log("Current exercise:", currentExercise);
 
   const getGameIndexFromExercise = (exercise: ExerciseResponse): number => {
     console.log("Getting game index for exercise:", exercise);

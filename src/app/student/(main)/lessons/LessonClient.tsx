@@ -135,7 +135,7 @@ export default function LessonClient({ topics, grade, userQuartz, gradeProgress 
                 <div className="flex-1 flex justify-start pl-8">
                   <div className="w-40 h-40 flex items-center justify-center">
                     <Image
-                      src={topics[0]?.description}
+                      src={topics[0]?.description || ''}
                       alt="featured topic"
                       width={120}
                       height={120}
@@ -185,7 +185,7 @@ export default function LessonClient({ topics, grade, userQuartz, gradeProgress 
                       />
                     </div>
                     <div className="inline-block bg-[#1ABC9C] text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
-                      Chủ đề {globalIndex + 1}
+                      Chủ đề {topic.weekNumbers?.[0] ?? globalIndex + 1}
                     </div>
                     <h3 className="text-base font-bold text-[#1ABC9C] text-center leading-snug px-2">
                       {topic.title}

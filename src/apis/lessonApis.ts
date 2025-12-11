@@ -102,7 +102,7 @@ export const getTopicsByGradeId = async (gradeId: string): Promise<TopicResponse
 // Lecture APIs
 export const getLecturesByTopicId = async (topicId: string): Promise<LectureResponse[]> => {
     try {
-        const res = await api.get(`/lectures?topicId=${topicId}}`)
+        const res = await api.get(`/lectures?topicId=${topicId}`)
         return res.data.items as LectureResponse[]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;

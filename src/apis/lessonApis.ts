@@ -125,9 +125,15 @@ export const getLecturesByTopicId = async (topicId: string): Promise<LectureResp
 }
 
 // Exercise APIs
-export const getExercisesByLectureId = async (lectureId: string): Promise<ExerciseResponse[]> => {
+export const getExercisesByLectureId = async (lectureId: string, limit?: number): Promise<ExerciseResponse[]> => {
     try {
-        const res = await api.get(`/exercises?lectureId=${lectureId}`)
+        let url = `/exercises?lectureId=${lectureId}`;
+        if (limit) {
+            url += `&limit=${limit}`;
+        }
+        console.log("API URL:", url);
+        const res = await api.get(url);
+        console.log("API Response:", res.data);
         return res.data.items as ExerciseResponse[]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;

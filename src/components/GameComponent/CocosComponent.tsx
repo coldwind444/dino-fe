@@ -13,6 +13,7 @@ const EXERCISE_TYPE_TO_GAME_INDEX: Record<string, number> = {
   matching: 0,
   choice: 1,
   interactive: 2,
+  tutorial: 3,
   true_false: 4,
   fill_in: 5,
 };
@@ -34,7 +35,7 @@ export interface CocosGameRef {
 interface CocosGameProps {
   exercises: ExerciseResponse[];
   currentExerciseIndex?: number;
-  onAnswerChecked?: (isCorrect: boolean, score: number) => void;
+  onAnswerChecked?: (isCorrect: boolean, score: number, points?: number) => void;
 }
 
 const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
@@ -116,9 +117,9 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
         case "ANSWER_CHECKED":
           console.log("Answer checked:", payload);
           if (payload.isCorrect) {
-            console.log("Correct answer! Score:", payload.score);
+            console.log("Correct answer! Score:", payload.score, "Points:", payload.points);
           } else {
-            console.log("Wrong answer. Score:", payload.score);
+            console.log("Wrong answer. Score:", payload.score, "Points:", payload.points);
           }
           // Call callback to parent component
           console.log("onAnswerChecked callback exists?", !!onAnswerChecked);
@@ -126,9 +127,10 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
             console.log(
               "Calling onAnswerChecked with:",
               payload.isCorrect,
-              payload.score
+              payload.score,
+              payload.points
             );
-            onAnswerChecked(payload.isCorrect, payload.score);
+            onAnswerChecked(payload.isCorrect, payload.score, payload.points);
           }
           break;
         case "QUIZ_RESTARTED":

@@ -22,15 +22,17 @@ const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 interface ExerciseViewProps {
   currentLecture: LectureResponse;
   onExit: () => void;
+  onFinish?: () => void;
 }
 
-export default function ExerciseView({ currentLecture, onExit }: ExerciseViewProps) {
+export default function ExerciseView({ currentLecture, onExit, onFinish }: ExerciseViewProps) {
   // Refs
   const cocosGameRef = useRef<CocosGameWrapperRef>(null);
 
   // UI states
   const [showSubmitBanner, setShowSubmitBanner] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+  const [currentPoints, setCurrentPoints] = useState(0);
 
   // Data states
   const { lectureIdx } = useLessonStore();
@@ -44,20 +46,33 @@ export default function ExerciseView({ currentLecture, onExit }: ExerciseViewPro
     }
   };
 
-  const handleAnswerChecked = (isCorrect: boolean, score: number) => {
+  const handleAnswerChecked = (isCorrect: boolean, score: number, points: number = 0) => {
     console.log(
       "handleAnswerChecked called - Answer result:",
       isCorrect,
       "Score:",
-      score
+      score,
+      "Points:",
+      points
     );
     setShowSubmitBanner(true);
     setIsAnswerCorrect(isCorrect);
+    setCurrentPoints(points);
   };
 
   const handleContinueAfterAnswer = () => {
     setShowSubmitBanner(false);
-    if (currExIdx < exercises.length - 1) setCurrExIdx(currExIdx + 1);
+
+    if (currExIdx < exercises.length - 1) {
+      setCurrExIdx(currExIdx + 1);
+    } else {
+
+      if (onFinish) {
+        onFinish();
+      } else {
+        onExit();
+      }
+    }
   };
 
   const handleShowCorrectAnswer = () => {
@@ -70,8 +85,9 @@ export default function ExerciseView({ currentLecture, onExit }: ExerciseViewPro
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const exs = await getExercisesByLectureId(currentLecture._id);
+        const exs = await getExercisesByLectureId(currentLecture._id, 40);
         console.log("Fetched exercises:", exs);
+        console.log("Number of exercises fetched:", exs.length);
         setExercises(exs);
       } catch (error) {
         console.error("Error fetching exercises:", error);
@@ -79,6 +95,11 @@ export default function ExerciseView({ currentLecture, onExit }: ExerciseViewPro
     }
     fetchExercises();
   }, [])
+
+  useEffect(() => {
+    setShowSubmitBanner(false);
+    setCurrentPoints(0);
+  }, [currExIdx])
 
   return (
     <motion.div
@@ -276,18 +297,20 @@ export default function ExerciseView({ currentLecture, onExit }: ExerciseViewPro
                       ? "GIỎI QUÁ ! BẠN LÀM ĐÚNG RỒI !"
                       : "TIẾC QUÁ ! BẠN LÀM SAI RỒI !"}
                   </h1>
-                  <div className="flex flex-row gap-[15px] items-center text-[#FF9600] text-xl font-medium">
-                    +
-                    <span>
-                      <Image
-                        src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
-                        height={50}
-                        width={50}
-                        alt=""
-                      />
-                    </span>
-                    100 thạch anh
-                  </div>
+                  {currentPoints > 0 && (
+                    <div className="flex flex-row gap-[15px] items-center text-[#FF9600] text-xl font-medium">
+                      +
+                      <span>
+                        <Image
+                          src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                          height={50}
+                          width={50}
+                          alt=""
+                        />
+                      </span>
+                      {currentPoints} thạch anh
+                    </div>
+                  )}
                 </div>
                 {isAnswerCorrect ? (
                   <div

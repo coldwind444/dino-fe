@@ -18,7 +18,7 @@ const roboto = Roboto()
 const MESSAGES = {
     ASK_NAME: 'Bạn tên là gì vậy? Mình muốn ghi vào danh sách những bạn siêu dễ thương hôm nay đó!',
     ASK_AVATAR: 'Chọn cho mình một ảnh đại diện thật đẹp để khoe với bạn bè nào ! Mình sẽ cho bạn xem trước lựa chọn của mình ở đây nhé !',
-    ASK_CODE: 'Sắp xong rồi ! Bạn nhập mã mà phụ huynh cung cấp để tiến hành liên kết tài khoản nhé !'
+    ASK_CODE: 'Sắp xong rồi ! Bạn nhập mã mà phụ huynh cung cấp để tiến hành liên kết tài khoản nhé ! Nếu không có thì cứ để trống và nhấn hoàn thành nha !'
 }
 
 const STEPS = {
@@ -129,11 +129,11 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
 
             // Complete profile API call
             await completeProfile({
-                inviteCode: code,
-                name: name,
+                ...(code.length > 0 ? { inviteCode: code } : {}),
+                name,
                 avatarUrl: option === AVATAR_OPTIONS.SYSTEM ? finalAvatarUrl : avatarUploadedUrl,
-                gradeId: gradeId
-            })
+                gradeId
+            });
 
             toast.success('Hoàn thành hồ sơ thành công ! Đang chuyển hướng ...')
             router.push('/student/home')
@@ -150,15 +150,16 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
 
     // Update final avatar URL when option or system avatar index changes
     useEffect(() => {
-        if (option === AVATAR_OPTIONS.SYSTEM)
+        if (option === AVATAR_OPTIONS.SYSTEM) {
+            if (!systemAvatars[sysAvtIndex]) return;
             setFinalAvatarUrl(systemAvatars[sysAvtIndex]);
-        else {
+        } else {
             // Create preview URL
+            if (!userSelectedAvatarFile) return;
             const objectUrl = URL.createObjectURL(userSelectedAvatarFile as Blob);
             setFinalAvatarUrl(objectUrl)
         }
-
-    }, [option])
+    }, [option, userSelectedAvatarFile, sysAvtIndex, systemAvatars]);
 
     // Scroll to selected system avatar
     useEffect(() => {
@@ -209,7 +210,7 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
     }, [step]);
 
     return (
-        <div className="flex flex-row w-screen h-screen">
+        <div className="flex flex-row w-screen h-screen overflow-hidden">
             <Toaster position="bottom-left" reverseOrder={false} />
             <div className="w-[55%] h-full">
                 {/** Mascot area */}
@@ -423,9 +424,9 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
                                 'focus-within:border-[#23BEAA] transition-all duration-150'
                             )}>
                                 <input className="h-full w-[90%] border-none outline-none pl-[20px] text-[20px]"
-                                    placeholder="Mã liên kết" value={code} onChange={e => setCode(e.target.value)} />
+                                    placeholder="Mã liên kết (Không bắt buộc)" value={code} onChange={e => setCode(e.target.value)} />
                             </div>
-                            <button disabled={name.length === 0 || finalAvatarUrl.length === 0 || code.length === 0}
+                            <button disabled={name.length === 0 || finalAvatarUrl.length === 0}
                                 className={clsx(
                                     "h-[60px] w-[370px] rounded-[10px] bg-[#1DA492] cursor-pointer hover:opacity-90",
                                     'disabled:opacity-60 disabled:cursor-not-allowed'

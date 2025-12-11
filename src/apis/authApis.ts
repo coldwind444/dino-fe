@@ -48,13 +48,10 @@ export const completeProfile = async (req: CompleteProfileRequest) => {
         return res.data;
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
-        let message: string;
+        let message = '';
         if (err.response?.status !== 200) {
-            message = 'Mã liên kết không tồn tại !';
-        } else {
             message =
                 err.response?.data?.message ||
-                err.message ||
                 'Lỗi hệ thống.';
         }
         throw new Error(message);

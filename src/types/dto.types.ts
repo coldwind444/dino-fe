@@ -13,7 +13,7 @@ export interface LoginRequest {
 }
 
 export interface CompleteProfileRequest {
-    inviteCode: string;
+    inviteCode?: string;
     name: string;
     avatarUrl: string;
     gradeId: string;

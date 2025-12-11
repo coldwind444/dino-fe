@@ -55,6 +55,7 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
   }
 
   const onContinue = () => {
+    setIsCelebrating(false)
     setMode(MODE.LECTURE);
     setTotalReward(0)
     setTotalScore(0)

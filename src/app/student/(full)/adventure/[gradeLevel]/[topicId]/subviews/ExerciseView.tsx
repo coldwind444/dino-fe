@@ -1,7 +1,9 @@
 import Image from "next/image";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Dispatch } from "react";
+import { SetStateAction } from "react";
+import { useSpring, animated } from "@react-spring/web";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faClose } from "@fortawesome/free-solid-svg-icons";
@@ -21,18 +23,28 @@ const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 
 interface ExerciseViewProps {
   currentLecture: LectureResponse;
+  setTotalScore: Dispatch<SetStateAction<number>>;
+  setTotalReward: Dispatch<SetStateAction<number>>;
   onExit: () => void;
-  onFinish?: () => void;
+  onFinish: () => void;
 }
 
-export default function ExerciseView({ currentLecture, onExit, onFinish }: ExerciseViewProps) {
+export default function ExerciseView({ currentLecture, onExit, onFinish, setTotalScore, setTotalReward }: ExerciseViewProps) {
   // Refs
   const cocosGameRef = useRef<CocosGameWrapperRef>(null);
+
+  // Rising animated points
+  const [currentPoints, setCurrentPoints] = useState(0);
+  const { number } = useSpring({
+    from: { number: 0 },
+    number: currentPoints,
+    config: { duration: 600 },
+  });
 
   // UI states
   const [showSubmitBanner, setShowSubmitBanner] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
-  const [currentPoints, setCurrentPoints] = useState(0);
+  const [doneExercises, setDoneExercises] = useState<number[]>([]);
 
   // Data states
   const { lectureIdx } = useLessonStore();
@@ -55,18 +67,25 @@ export default function ExerciseView({ currentLecture, onExit, onFinish }: Exerc
       "Points:",
       points
     );
-    setShowSubmitBanner(true);
     setIsAnswerCorrect(isCorrect);
-    setCurrentPoints(points);
+
+    if (!doneExercises.includes(currExIdx)) {
+      setShowSubmitBanner(true);
+      setDoneExercises([...doneExercises, currExIdx]);
+      if (isCorrect) {
+        setTimeout(() => setCurrentPoints(points), 300)
+        setTotalScore(prev => prev + 1)
+        setTotalReward(prev => prev + points)
+      }
+    }
   };
 
   const handleContinueAfterAnswer = () => {
     setShowSubmitBanner(false);
 
-    if (currExIdx < exercises.length - 1) {
+    if (doneExercises.length < 10) {
       setCurrExIdx(currExIdx + 1);
     } else {
-
       if (onFinish) {
         onFinish();
       } else {
@@ -86,8 +105,6 @@ export default function ExerciseView({ currentLecture, onExit, onFinish }: Exerc
     const fetchExercises = async () => {
       try {
         const exs = await getExercisesByLectureId(currentLecture._id, 40);
-        console.log("Fetched exercises:", exs);
-        console.log("Number of exercises fetched:", exs.length);
         setExercises(exs);
       } catch (error) {
         console.error("Error fetching exercises:", error);
@@ -152,20 +169,22 @@ export default function ExerciseView({ currentLecture, onExit, onFinish }: Exerc
         >
           <label className="text-[18px] font-semibold">{`Bài ${lectureIdx + 1
             }`}</label>
-          <h2 className="max-w-[250px] text-wrap text-[25px] font-bold">
+          <h2 className="max-w-[250px] text-wrap text-[23px] font-bold">
             {currentLecture.title}
           </h2>
         </div>
-        <div className="flex flex-row flex-wrap gap-[8px] max-w-[85%] mt-[50px]">
+        <div className="flex flex-row flex-wrap gap-[8px] max-w-[90%] mt-[50px] max-h-80 overflow-y-auto">
           {exercises.map((ex, idx) => (
             <div
               key={idx}
-              onClick={() => setCurrExIdx(idx)}
+              onClick={() => {if (!doneExercises.includes(idx)) setCurrExIdx(idx); }}
               className={clsx(
                 "h-[40px] aspect-square rounded-full cursor-pointer relative font-bold",
                 currExIdx === idx
                   ? "bg-[#1DA492] text-white"
-                  : "bg-[#C4F1EB] text-[#1DA492]",
+                  : doneExercises.includes(idx) ?
+                    'bg-amber-500 text-white'
+                    : "bg-[#C4F1EB] text-[#1DA492]",
                 "hover:opacity-90 flex items-center justify-center",
                 righteous.className
               )}
@@ -176,7 +195,7 @@ export default function ExerciseView({ currentLecture, onExit, onFinish }: Exerc
                   "absolute left-0 ml-[2px] rotate-45 -translate-y-[10px] translate-x-[22px]",
                   "h-[7px] w-[12px] rounded-[1000px]",
                   "[clip-path:ellipse(50%_50%_at_50%_50%)]",
-                  currExIdx === idx
+                  currExIdx === idx || doneExercises.includes(idx)
                     ? "bg-[rgba(255,255,255,0.3)]"
                     : "bg-white"
                 )}
@@ -184,12 +203,13 @@ export default function ExerciseView({ currentLecture, onExit, onFinish }: Exerc
             </div>
           ))}
         </div>
+        {/* Submit button */}
         <div
           className={clsx(
             "h-[60px] w-[230px] bg-amber-700 rounded-[15px] cursor-pointer",
             "hover:brightness-110 transition-all duration-200 overflow-hidden",
-            "font-bold text-white mt-[100px]"
-          )}
+            "font-bold text-white mt-auto mb-10"
+          )} onClick={() => { if (doneExercises.length === 10) onFinish();}}
         >
           <div
             className={clsx(
@@ -308,7 +328,10 @@ export default function ExerciseView({ currentLecture, onExit, onFinish }: Exerc
                           alt=""
                         />
                       </span>
-                      {currentPoints} thạch anh
+                      <animated.span>
+                        {number.to((n) => Math.floor(n))}
+                      </animated.span>
+                      thạch anh
                     </div>
                   )}
                 </div>

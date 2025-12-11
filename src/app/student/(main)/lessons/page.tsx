@@ -8,7 +8,7 @@ import { getGradeByLevel, getGradeProgress, getTopicsByGradeId, getUserProfile, 
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 
 export default function LessonsPage() {
-  const { gradeId } = useLessonStore()
+  const { gradeLevel } = useLessonStore()
 
   const [grade, setGrade] = useState<GradeResponse | null>(null);
   const [topics, setTopics] = useState<TopicResponse[]>([])
@@ -20,7 +20,7 @@ export default function LessonsPage() {
   useEffect(() => {
     const fetchGradeData = async () => {
       try {
-        const res = await getGradeByLevel(Number(gradeId));
+        const res = await getGradeByLevel(Number(gradeLevel));
         setGrade(res[0]);
       } catch (error) {
         console.error("Error fetching grade data:", error);

@@ -8,8 +8,8 @@ import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 
 interface LessonsPageProps {
     params: {
-        grade: string; // gradeLevel: 1 => 5
-        topic: string; // topicId: string
+        gradeLevel: string; // gradeLevel: 1 => 5
+        topicId: string; // topicId: string
     };
 }
 
@@ -25,39 +25,40 @@ export default function LessonsPage({ params }: LessonsPageProps) {
     const [lands, setLands] = useState<LandResponse[]>([]);
 
     useEffect(() => {
-        // Get grade level from params
-        const { grade, topic } = params;
-        if (!grade || !topic) return;
-
-        // Fetch data
         const fetchData = async () => {
+            const { gradeLevel, topicId } = params;
+            if (!gradeLevel || !topicId) return;
+
+            console.log("Fetching world data...");
             setLoading(true);
+
             try {
-                const grades = await getGradeByLevel(Number(grade));
+                const grades = await getGradeByLevel(Number(gradeLevel));
                 const world = await getWorldById(grades[0].worldId);
                 const lands = await getLandsByWorldId(world._id);
-                const topic = await getTopicById(params.topic);
+                const topic = await getTopicById(topicId);
                 const lectures = await getLecturesByTopicId(topic._id);
+
                 setCurrGrade(grades[0]);
                 setCurrWorld(world);
                 setLands(lands);
                 setCurrTopic(topic);
                 setLectures(lectures);
-            } catch (error){
+            } catch (error) {
                 console.error("Error fetching world data:", error);
             } finally {
                 setLoading(false);
             }
-        }
+        };
 
         fetchData();
-    }, [])
+    }, [params]);
 
     // Return loading state if data is not ready
-    if (loading || !currGrade || !currWorld || !currTopic || !lands || !lectures ) return <ScreenLoader/>
+    if (loading || !currGrade || !currWorld || !currTopic || !lands || !lectures) return <ScreenLoader />
 
     // Pass data to client-side component
     return (
-        <LessonView grade={currGrade} world={currWorld} lands={lands} topic={currTopic} lectures={lectures}/>
+        <LessonView grade={currGrade} world={currWorld} lands={lands} topic={currTopic} lectures={lectures} />
     );
 }

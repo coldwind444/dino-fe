@@ -12,7 +12,7 @@ import { LectureResponse, TopicResponse } from "@/types";
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const coiny = Coiny({ subsets: ["latin"], weight: ["400"] });
 
-interface FinishModeProps {
+interface FinishViewProps {
   grade: string;
   topic: TopicResponse;
   currentLecture: LectureResponse;
@@ -21,7 +21,7 @@ interface FinishModeProps {
   onContinue: () => void;
 }
 
-export default function FinishMode({ grade, topic, currentLecture, score, reward, onContinue }: FinishModeProps) {
+export default function FinishView({ grade, topic, currentLecture, score, reward, onContinue }: FinishViewProps) {
   return (
     <motion.div
       key="finish-popup"

@@ -44,6 +44,7 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
   // Data states
   const { lectureIdx } = useLessonStore();
   const [currLand, setCurrLand] = useState<LandResponse>(lands.filter(land => land.difficulty === 'easy')[0]);
+  const [currentLecture, setCurrentLecture] = useState<LectureResponse | null>(null);
   const [totalScore, setTotalScore] = useState(0);
   const [totalReward, setTotalReward] = useState(0);
 
@@ -52,6 +53,9 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
     const difficulty = lectures[lectureIdx].difficulty;
     const selectedLand = lands.find(land => land.difficulty === difficulty);
     if (selectedLand) setCurrLand(selectedLand);
+    if (lectures[lectureIdx]) {
+      setCurrentLecture(lectures[lectureIdx]);
+    }
   }, [lectureIdx])
 
   useEffect(() => {
@@ -122,7 +126,7 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
           {/** Exercise view */}
           {mode === MODE.EXERCISE && (
             <ExerciseView
-              currentLecture={lectures[lectureIdx]}
+              currentLecture={currentLecture!!}
               onExit={() => setMode(MODE.LECTURE)}
             />
           )}

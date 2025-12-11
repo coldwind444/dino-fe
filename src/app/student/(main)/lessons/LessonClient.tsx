@@ -17,7 +17,7 @@ interface LessonClientProps {
 
 export default function LessonClient({ topics, grade, userQuartz, gradeProgress }: LessonClientProps) {
   const router = useRouter()
-  const { gradeId, setTopicId, setLectureIdx } = useLessonStore()
+  const { gradeLevel, setTopicId, setLectureIdx } = useLessonStore()
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -31,7 +31,7 @@ export default function LessonClient({ topics, grade, userQuartz, gradeProgress 
   const navigateToLecture = (topicId: string) => {
     setTopicId(topicId)
     setLectureIdx(0)
-    router.push(`/student/adventure/${gradeId}/${topicId}`)
+    router.push(`/student/adventure/${gradeLevel}/${topicId}`)
   }
 
   const handlePrevPage = () => {
@@ -52,7 +52,7 @@ export default function LessonClient({ topics, grade, userQuartz, gradeProgress 
             <div className="absolute -top-2 -left-2 w-10 h-10 bg-[#E6FCF9] bg-opacity-20 rounded-full"></div>
 
             <h3 className="text-lg font-semibold relative z-10 text-center ml-6">
-              Chương trình lớp {gradeId}
+              Chương trình lớp {gradeLevel}
             </h3>
           </div>
 

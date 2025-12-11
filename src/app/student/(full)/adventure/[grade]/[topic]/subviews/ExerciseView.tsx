@@ -19,12 +19,12 @@ import { getExercisesByLectureId } from "@/apis";
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 
-interface ExerciseModeProps {
+interface ExerciseViewProps {
   currentLecture: LectureResponse;
   onExit: () => void;
 }
 
-export default function ExerciseMode({ currentLecture, onExit }: ExerciseModeProps) {
+export default function ExerciseView({ currentLecture, onExit }: ExerciseViewProps) {
   // Refs
   const cocosGameRef = useRef<CocosGameWrapperRef>(null);
 

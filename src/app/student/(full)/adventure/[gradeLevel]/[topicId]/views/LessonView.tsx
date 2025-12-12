@@ -48,9 +48,11 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
   const [currentLecture, setCurrentLecture] = useState<LectureResponse | null>(null);
   const [totalScore, setTotalScore] = useState(0);
   const [totalReward, setTotalReward] = useState(0);
+  const [maxScore, setMaxScore] = useState(0)
 
   // Functions
-  const onFinish = () => {
+  const onFinish = (max: number) => {
+    setMaxScore(max)
     setMode(MODE.FINISH);
   }
 
@@ -154,7 +156,7 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
               score={totalScore}
               reward={totalReward}
               currentLecture={lectures[lectureIdx]}
-              maxScore={10}
+              maxScore={maxScore}
               onContinue={onContinue}
             />
           )}

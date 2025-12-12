@@ -26,7 +26,7 @@ interface ExerciseViewProps {
   setTotalScore: Dispatch<SetStateAction<number>>;
   setTotalReward: Dispatch<SetStateAction<number>>;
   onExit: () => void;
-  onFinish: () => void;
+  onFinish: (max: number) => void;
 }
 
 export default function ExerciseView({ currentLecture, onExit, onFinish, setTotalScore, setTotalReward }: ExerciseViewProps) {
@@ -83,11 +83,11 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
   const handleContinueAfterAnswer = () => {
     setShowSubmitBanner(false);
 
-    if (doneExercises.length < 10) {
+    if (doneExercises.length < exercises.length && currExIdx < exercises.length - 1) {
       setCurrExIdx(currExIdx + 1);
     } else {
       if (onFinish) {
-        onFinish();
+        onFinish(exercises.length);
       } else {
         onExit();
       }
@@ -209,7 +209,7 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
             "h-[60px] w-[230px] bg-amber-700 rounded-[15px] cursor-pointer",
             "hover:brightness-110 transition-all duration-200 overflow-hidden",
             "font-bold text-white mt-auto mb-10"
-          )} onClick={() => { if (doneExercises.length === 10) onFinish();}}
+          )} onClick={() => { if (doneExercises.length === exercises.length) onFinish(exercises.length);}}
         >
           <div
             className={clsx(

@@ -1,172 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import clsx from "clsx";
-import { Roboto, Righteous, Chewy, Fredoka } from "next/font/google";
+import { Fredoka } from "next/font/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBookOpen,
-  faFireFlameCurved,
-  faBarsProgress,
-  faTrophy,
-  faGamepad,
-  faPlay,
-  faRotateRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFlaskVial, faPlay, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { useLessonStore } from "@/stores/lessonStore";
+import { TimeCard } from "@/components/TimeCard/TimeCard";
+import EntranceTestPopup from "@/components/EntranceTestPopup/EntranceTestPopup";
 
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
-const righteous = Righteous({ weight: "400", subsets: ["latin"] });
-const chewy = Chewy({ subsets: ["latin"], weight: "400" });
-const fredoka = Fredoka()
-
+const fredoka = Fredoka();
 const trophy = "/assets/home/trophy.png";
 const SAMPLE_THUMB_PATH = "/assets/landing/egg_normal.png";
-const morning = "/assets/home/sunrise.png";
-const afternoon = "/assets/home/sunset.png";
-const night = "/assets/home/moonlight.png";
-
-const timeConfig = [
-  {
-    start: 5,
-    end: 12,
-    greeting: "Chúc buổi sáng tốt lành!",
-    image: morning,
-    shadow: "#FED876",
-    bg: "#FDF1D2",
-    timeColor: "#F1A12E",
-    textColor: "#1DA492",
-  },
-  {
-    start: 12,
-    end: 18,
-    greeting: "Cuối ngày thật đẹp nhé!",
-    image: afternoon,
-    shadow: "#FDBEA1",
-    bg: "#FFE5D9",
-    timeColor: "#E85D04",
-    textColor: "#6A4C93",
-  },
-  {
-    start: 18,
-    end: 24,
-    greeting: "Buổi tối vui vẻ!",
-    image: night,
-    shadow: "#0D0719",
-    bg: "#2D1B4E",
-    timeColor: "#FFB347",
-    textColor: "#CDB4DB",
-  },
-  {
-    start: 0,
-    end: 5,
-    greeting: "Buổi tối vui vẻ!",
-    image: night,
-    shadow: "#0D0719",
-    bg: "#2D1B4E",
-    timeColor: "#FFB347",
-    textColor: "#CDB4DB",
-  },
-];
 
 interface LessonsData {
   [grade: string]: Array<{
     name: string;
     brand?: string;
   }>;
-}
-
-export function TimeCard({ username }: { username: string }) {
-  const [time, setTime] = useState("");
-  const [greeting, setGreeting] = useState("");
-  const [imageSrc, setImageSrc] = useState(morning);
-  const [colors, setColors] = useState({
-    shadow: "#FED876",
-    bg: "#FDF1D2",
-    timeColor: "#F1A12E",
-    textColor: "#1DA492",
-  });
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const hours = now.getHours();
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-      const hoursStr = String(hours).padStart(2, "0");
-      setTime(`${hoursStr}:${minutes}`);
-
-      const current = timeConfig.find(
-        ({ start, end }) => hours >= start && hours < end
-      );
-      if (current) {
-        setGreeting(current.greeting);
-        setImageSrc(current.image);
-        setColors({
-          shadow: current.shadow,
-          bg: current.bg,
-          timeColor: current.timeColor,
-          textColor: current.textColor,
-        });
-      }
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="relative w-[270px] h-[170px]">
-      <div
-        className="absolute inset-0 rounded-[15px] translate-x-[4px] translate-y-[4px]"
-        style={{ backgroundColor: colors.shadow }}
-      />
-
-      <div
-        className={clsx(
-          "relative",
-          "rounded-[15px]",
-          "w-full h-full"
-        )}
-        style={{
-          backgroundColor: colors.bg,
-          borderColor: colors.shadow,
-        }}
-      >
-        <div
-          className={clsx(
-            "absolute top-[19px] right-[37px]",
-            "text-[28px] font-bold",
-            chewy.className
-          )}
-          style={{ color: colors.timeColor }}
-        >
-          {time}
-        </div>
-
-        <div
-          className={clsx(
-            roboto.className,
-            "absolute top-[100px] right-[37px] text-[19px] font-medium"
-          )}
-          style={{ color: colors.textColor }}
-        >
-          <div>Chào {username},</div>
-          <div>{greeting}</div>
-        </div>
-
-        <Image
-          src={imageSrc}
-          alt="Thời gian trong ngày"
-          width={120}
-          height={120}
-          className="absolute bottom-[90px] right-1/2"
-        />
-      </div>
-    </div>
-  );
 }
 
 interface StudentHomeProps {
@@ -176,10 +28,25 @@ interface StudentHomeProps {
 export default function StudentHome({ lessons }: StudentHomeProps) {
   const username = "Tân";
 
-  const { gradeId, setGradeId, setTopicId, setLectureIdx } = useLessonStore()
+  const { gradeLevel, setGradeLevel, setTopicId, setLectureIdx } = useLessonStore();
+  const [isTestPopupClosed, setIsTestPopupClosed] = useState(false)
+
+  const closeTestPopup = () => { setIsTestPopupClosed(true) }
 
   return (
     <div className="w-full min-h-screen p-6 sm:p-10 pl-[63px] pr-[69px]">
+      <div className="absolute h-15 w-15 top-25 right-5 cursor-pointer hover:brightness-110 z-20" 
+        onClick={() => setIsTestPopupClosed(false)}>
+        {/* Ping circle */}
+        <div className="absolute inset-0 m-auto h-12 w-12 bg-amber-500 rounded-full animate-ping z-10"></div>
+        {/* Main circle */}
+        <div className="absolute inset-0 m-auto h-15 w-15 bg-amber-500 rounded-full
+                  flex items-center justify-center text-white shadow-2xl text-xl z-20">
+          <FontAwesomeIcon icon={faFlaskVial} />
+        </div>
+        {/* Red dot */}
+        <div className="absolute top-0 right-0 h-4 w-4 bg-red-600 rounded-full border-2 border-white z-30"></div>
+      </div>
       <div className="flex flex-col lg:flex-row gap-[21px]">
         <div className="pt-[32px]">
           <TimeCard username={username} />
@@ -222,29 +89,41 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
                   <div className="flex items-center gap-5 ml-[30px]">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button
-                        key={n} onClick={() => {
-                          setGradeId(n.toString());
-                          setTopicId('1');
-                          setLectureIdx(0)
+                        key={n}
+                        onClick={() => {
+                          setGradeLevel(n.toString());
+                          setTopicId("1");
+                          setLectureIdx(0);
                         }}
                         className={clsx(
                           "relative aspect-square h-20 rounded-full flex items-center justify-center",
                           "font-bold text-3xl transition-all hover:scale-105 group cursor-pointer",
                           "bg-[#C4F1EC] text-[#23BEAA] hover:bg-[#23BEAA] hover:text-white group",
-                          n.toString() === gradeId ? 'bg-amber-500 text-white' : '',
+                          n.toString() === gradeLevel
+                            ? "bg-amber-500 text-white"
+                            : "",
                           fredoka.className
                         )}
                       >
-                        <span className={clsx(
-                          "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[15px] w-[30px]",
-                          'bg-[rgba(255,255,255)] bottom-0 right-0 mb-[13px] mr-[5px] -rotate-45',
-                          'group-hover:bg-[rgba(255,255,255,0.5)]', n.toString() === gradeId ? 'bg-[rgba(255,255,255,0.5)]' : ''
-                        )}></span>
-                        <span className={clsx(
-                          "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[10px] w-[20px]",
-                          'bg-[rgba(255,255,255)] left-0 rotate-90 group-hover:bg-[rgba(255,255,255,0.5)]',
-                          n.toString() === gradeId ? 'bg-[rgba(255,255,255,0.5)]' : ''
-                        )}></span>
+                        <span
+                          className={clsx(
+                            "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[15px] w-[30px]",
+                            "bg-[rgba(255,255,255)] bottom-0 right-0 mb-[13px] mr-[5px] -rotate-45",
+                            "group-hover:bg-[rgba(255,255,255,0.5)]",
+                            n.toString() === gradeLevel
+                              ? "bg-[rgba(255,255,255,0.5)]"
+                              : ""
+                          )}
+                        ></span>
+                        <span
+                          className={clsx(
+                            "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[10px] w-[20px]",
+                            "bg-[rgba(255,255,255)] left-0 rotate-90 group-hover:bg-[rgba(255,255,255,0.5)]",
+                            n.toString() === gradeLevel
+                              ? "bg-[rgba(255,255,255,0.5)]"
+                              : ""
+                          )}
+                        ></span>
                         {n}
                       </button>
                     ))}
@@ -360,6 +239,7 @@ export default function StudentHome({ lessons }: StudentHomeProps) {
           </div>
         </aside>
       </div>
+      {!isTestPopupClosed && <EntranceTestPopup close={closeTestPopup}/>}
     </div>
   );
 }

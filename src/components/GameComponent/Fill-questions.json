@@ -1,0 +1,54 @@
+{
+  "exercises": [
+    {
+      "question": "Giải các phép tính sau",
+      "type": "fill_in",
+      "content": "Nhập đáp án vào các ô trống",
+      "correctAnswer": ["8", "8", "13"],
+      "difficulty": "easy",
+      "metadata": {
+        "questions": ["5 + 3 =", "6 + 2 =", "8 + 5 ="]
+      }
+    },
+    {
+      "question": "Giải các phép tính sau",
+      "type": "fill_in",
+      "content": "Nhập đáp án vào các ô trống",
+      "correctAnswer": ["6", "15", "7"],
+      "difficulty": "easy",
+      "metadata": {
+        "questions": ["10 - 4 =", "12 + 3 =", "9 - 2 ="]
+      }
+    },
+    {
+      "question": "Giải các phép tính sau",
+      "type": "fill_in",
+      "content": "Nhập đáp án vào các ô trống",
+      "correctAnswer": ["12", "4", "12"],
+      "difficulty": "medium",
+      "metadata": {
+        "questions": ["6 × 2 =", "8 ÷ 2 =", "7 + 5 ="]
+      }
+    },
+    {
+      "question": "Giải các phép tính sau",
+      "type": "fill_in",
+      "content": "Nhập đáp án vào các ô trống",
+      "correctAnswer": ["5", "14", "12"],
+      "difficulty": "medium",
+      "metadata": {
+        "questions": ["15 ÷ 3 =", "4 + 10 =", "20 - 8 ="]
+      }
+    },
+    {
+      "question": "Giải các phép tính sau",
+      "type": "fill_in",
+      "content": "Nhập đáp án vào các ô trống",
+      "correctAnswer": ["16", "12", "10"],
+      "difficulty": "medium",
+      "metadata": {
+        "questions": ["9 + 7 =", "18 - 6 =", "5 × 2 ="]
+      }
+    }
+  ]
+}

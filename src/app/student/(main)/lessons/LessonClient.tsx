@@ -4,34 +4,23 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useState } from "react";
-import ProfilePopup from "@/components/ProfilePopup/ProfilePopup";
 import { useLessonStore } from "@/stores/lessonStore";
 import { useRouter } from "next/navigation";
-
-interface Topic {
-  name: string;
-  brand: string;
-}
-
-interface LessonsData {
-  [grade: string]: Topic[];
-}
+import { GradeProgressResponse, GradeResponse, TopicResponse } from "@/types";
 
 interface LessonClientProps {
-  lessons: LessonsData;
-  grades: Record<string, { image: string }>
+  topics: TopicResponse[]
+  grade: GradeResponse
+  userQuartz: number
+  gradeProgress: GradeProgressResponse
 }
 
-export default function LessonClient({ lessons, grades }: LessonClientProps) {
-  const { gradeId, setTopicId, setLectureIdx } = useLessonStore()
+export default function LessonClient({ topics, grade, userQuartz, gradeProgress }: LessonClientProps) {
   const router = useRouter()
+  const { gradeLevel, setTopicId, setLectureIdx } = useLessonStore()
 
-  const username = "Tân";
-  const src = grades[gradeId].image
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const topics = lessons[gradeId];
   const TOPICS_PER_PAGE = 4;
   const totalPages = Math.ceil(topics.length / TOPICS_PER_PAGE);
   const currentTopics = topics.slice(
@@ -39,16 +28,10 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
     (currentPage + 1) * TOPICS_PER_PAGE
   );
 
-  const colors = ["#23BEAA"];
-
-  const getRandomColor = (index: number) => {
-    return colors[index % colors.length];
-  };
-
   const navigateToLecture = (topicId: string) => {
     setTopicId(topicId)
     setLectureIdx(0)
-    router.push(`/student/adventure/${gradeId}/${topicId}`)
+    router.push(`/student/adventure/${gradeLevel}/${topicId}`)
   }
 
   const handlePrevPage = () => {
@@ -69,7 +52,7 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
             <div className="absolute -top-2 -left-2 w-10 h-10 bg-[#E6FCF9] bg-opacity-20 rounded-full"></div>
 
             <h3 className="text-lg font-semibold relative z-10 text-center ml-6">
-              Chương trình lớp {gradeId}
+              Chương trình lớp {gradeLevel}
             </h3>
           </div>
 
@@ -78,8 +61,8 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
             <div className="mb-4 bg-white rounded-[20px] border-[1px] border-[#23BEAA] p-4 -translate-x-[3px] w-full">
               <div className="flex flex-col items-center">
                 <Image
-                  src={src}
-                  alt="egg progress"
+                  src={grade.description}
+                  alt="progress"
                   width={80}
                   height={80}
                   className="w-20 h-20 object-contain mb-2"
@@ -88,12 +71,12 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
                   Tiến trình hiện tại
                 </div>
                 <div className="text-4xl font-bold text-[#23BEAA] mb-3">
-                  40%
+                  {Math.floor(gradeProgress.percent)}%
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-[#23BEAA] h-2 rounded-full transition-all"
-                    style={{ width: "40%" }}
+                    style={{ width: `${Math.floor(gradeProgress.percent)}%` }}
                   ></div>
                 </div>
               </div>
@@ -101,8 +84,8 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
 
             {/* Achievement Card */}
             <div className="mb-4 flex items-center flex-col justify-center gap-[15px] bg-white rounded-[20px] border-[1px] border-[#1ABC9C] p-5 -translate-x-[3px] -translate-y-[3px] w-full h-[170px]">
-              <div className="text-center text-[15px] text-gray-700 font-medium mb-4">
-                Đã tích lũy được từ lớp học này
+              <div className="text-center text-[15px] text-gray-500 font-bold mb-4">
+                TỔNG THẠCH ANH ĐANG CÓ
               </div>
               <div className="flex items-center justify-center gap-3">
                 <div className="w-15 h-15 flex-shrink-0">
@@ -114,9 +97,9 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
                     className="w-full h-full object-contain"
                   />
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center gap-1">
                   <div className="text-4xl font-bold text-[#FF9600] leading-none mb-1">
-                    202
+                    {userQuartz}
                   </div>
                   <div className="text-xs text-[#FF9600] font-bold uppercase tracking-wide">
                     Tinh thể thạch anh
@@ -152,7 +135,7 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
                 <div className="flex-1 flex justify-start pl-8">
                   <div className="w-40 h-40 flex items-center justify-center">
                     <Image
-                      src={topics[0].brand}
+                      src={topics[0]?.description || ''}
                       alt="featured topic"
                       width={120}
                       height={120}
@@ -162,10 +145,10 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
                 </div>
                 <div className="flex flex-col items-center text-center flex-1">
                   <div className="inline-block bg-[#C4F1EB] text-[#1DA492] text-[18px] font-bold px-5 py-2 rounded-full text-sm mb-4">
-                    Chủ đề 1
+                    {`Chủ đề ${1}`}
                   </div>
                   <h2 className="text-xl font-bold text-[#1ABC9C] mb-6 px-4">
-                    {topics[0]?.name || "Chủ đề đầu tiên"}
+                    {topics[0]?.title}
                   </h2>
                   <button className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative cursor-pointer">
                     <span className="absolute top-2 right-4 w-2 h-2 rounded-full bg-white/40" />
@@ -183,29 +166,29 @@ export default function LessonClient({ lessons, grades }: LessonClientProps) {
             {currentTopics.map((topic, index) => {
               const globalIndex = currentPage * TOPICS_PER_PAGE + index;
               return (
-                <div key={index} className="relative h-[320px]" onClick={() => navigateToLecture((globalIndex + 1).toString())}>
+                <div key={index} className="relative h-[320px] transition-all hover:scale-105" 
+                    onClick={() => navigateToLecture(topic._id)}>
                   <div
-                    className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px]"
-                    style={{ backgroundColor: getRandomColor(index) }}
+                    className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#23BEAA]"
                   />
                   <div
-                    className="relative h-full bg-[#F3FFFD] rounded-3xl border-[3px] flex flex-col items-center justify-center cursor-pointer transition-all hover:shadow-lg p-6"
-                    style={{ borderColor: getRandomColor(index) }}
+                    className="relative h-full bg-[#F3FFFD] rounded-3xl border-[3px] border-[#23BEAA] 
+                              flex flex-col items-center justify-center cursor-pointer p-6"
                   >
                     <div className="w-32 h-32 mb-6 flex items-center justify-center">
                       <Image
-                        src={topic.brand}
-                        alt={topic.name}
+                        src={topic.description}
+                        alt="topic image"
                         width={120}
                         height={120}
                         className="object-contain"
                       />
                     </div>
                     <div className="inline-block bg-[#1ABC9C] text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
-                      Chủ đề {globalIndex + 1}
+                      Chủ đề {topic.weekNumbers?.[0] ?? globalIndex + 1}
                     </div>
                     <h3 className="text-base font-bold text-[#1ABC9C] text-center leading-snug px-2">
-                      {topic.name}
+                      {topic.title}
                     </h3>
                   </div>
                 </div>

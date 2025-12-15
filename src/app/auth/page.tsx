@@ -14,6 +14,7 @@ import parents from '../../../public/assets/auth/parents.png'
 import leftHand from '../../../public/assets/auth/left.svg'
 import rightHand from '../../../public/assets/auth/right.svg'
 import logo from '../../../public/assets/logo.svg'
+import google from '../../../public/assets/auth/google.png'
 
 import RoundedTextBox from "@/components/RoundedTextBox/RoundedTextBox";
 import RoundedPasswordBox from "@/components/RoundedPasswordBox/RoundedPasswordBox";
@@ -227,6 +228,7 @@ export default function Auth() {
                                 )}>
                                     {/** Log in step container */}
                                     <div className="flex items-center justify-center gap-[20px] flex-col h-full w-1/2 bg-white">
+                                        {/** Mascot animation */}
                                         <div className="relative aspect-square h-[180px] border-2 border-[#1DA492] rounded-full overflow-hidden">
                                             <iframe src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html" height={380}
                                                 className="-translate-x-[12px] translate-y-[20px] z-0" />
@@ -241,7 +243,9 @@ export default function Auth() {
                                                     { '-translate-x-[100px]': passwordShow }
                                                 )} />
                                         </div>
+                                        {/** Title */}
                                         <h1 className={clsx(roboto.className, 'text-[27px] font-bold text-[#1DA492]')}>Đăng nhập</h1>
+                                        {/** Fields */}
                                         <div className="flex flex-col gap-[10px]">
                                             <RoundedTextBox onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                                                 placeholder="Email" width="330" value={email} />
@@ -249,10 +253,12 @@ export default function Auth() {
                                                 onStateChange={onStateChange} value={password}
                                                 placeholder="Password" width="330" />
                                         </div>
+                                        {/** Forget password link */}
                                         <Link className={clsx(
                                             "font-medium cursor-pointer hover:text-[#1DA492] hover:underline",
                                             'mr-[150px]'
                                         )} href='/auth/reset-password'>Quên mật khẩu ?</Link>
+                                        {/** Login button */}
                                         <button disabled={!canLogin()} className={clsx(
                                             'h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium',
                                             'disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center',
@@ -261,6 +267,16 @@ export default function Auth() {
                                             Đăng nhập
                                             <div className="absolute right-0 aspect-square h-[30px] mr-[15px]"><Loader isLoading={loginLoading} /></div>
                                         </button>
+                                        {/** Login with Google button */}
+                                        <div className="h-5 w-[300px] flex relative items-center justify-center">
+                                            <span className="h-0.5 w-full bg-gray-200"></span>
+                                            <span className="mr-auto ml-auto absolute bg-white px-2 text-gray-400">Hoặc</span>
+                                        </div>
+                                        <div className="h-18 w-[330px] rounded-full border border-gray-300 flex flex-row items-center px-5 gap-8
+                                                        cursor-pointer hover:bg-gray-50 transition-all duration-150">
+                                            <Image src={google} alt="" height={40} width={40}/>
+                                            <span className="font-bold">Đăng nhập bằng Google</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

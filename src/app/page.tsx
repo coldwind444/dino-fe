@@ -92,12 +92,12 @@ export default function Home() {
         <div className="h-50 w-full bg-white items-center justify-center flex flex-col gap-8 border-gray-100 border">
           <span className="font-medium text-xl">Được hỗ trợ bởi</span>
           <div className="flex flex-row justify-around w-full">
-              <Image src={aws} alt="" height={70} width={70}/>
-              <Image src={next} alt="" height={70} width={70}/>
-              <Image src={react} alt="" height={70} width={70}/>
-              <Image src={mongo} alt="" height={70} width={70}/>
-              <Image src={node} alt="" height={70} width={70}/>
-              <Image src={cocos} alt="" height={70} width={70}/>
+            <Image src={aws} alt="" height={70} width={70} />
+            <Image src={next} alt="" height={70} width={70} />
+            <Image src={react} alt="" height={70} width={70} />
+            <Image src={mongo} alt="" height={70} width={70} />
+            <Image src={node} alt="" height={70} width={70} />
+            <Image src={cocos} alt="" height={70} width={70} />
           </div>
         </div>
       </div>
@@ -180,7 +180,7 @@ function FeaturesSection() {
 
   const features = [
     { icon: puzzle, text: "Học toán qua các bài tập dạng tương tác" },
-    { icon: game, text: "Vừa học vừa chơi với các Minigames Toán học" },
+    { icon: game, text: "Vừa học vừa chơi với các Minigames Toán học đầy hấp dẫn" },
     { icon: fight, text: "So tài Toán học với những người dùng khác trong Đấu trường" },
     { icon: history, text: "Biết điểm mạnh và điểm yếu của bản thân qua lịch sử học tập" },
     { icon: pvp, text: "Tăng sự gắn kết giữa phụ huynh và học sinh thông các trò chơi PvP" },
@@ -270,29 +270,145 @@ function ReviewsSection({ reviews }: { reviews: any[] }) {
 }
 
 // Helper Components for cleaner code
-function FeatureCard({ icon, text }: { icon: any, text: string }) {
+function FeatureCard({
+  icon,
+  text,
+}: {
+  icon: any
+  text: string
+}) {
   return (
-    <div className="flex flex-row gap-6 bg-white items-center shadow-[0_4px_20px_rgba(0,0,0,0.1)] cursor-pointer rounded-2xl h-38 w-full px-10 hover:scale-[1.02] transition-transform">
-      <Image src={icon} alt="" height={70} width={70} />
-      <p className="font-medium text-lg leading-snug select-none">{text}</p>
+    <div
+      className="
+        group relative flex flex-row items-center gap-6
+        bg-white
+        px-10 py-6 w-full
+        rounded-[28px]
+        border-2 border-amber-500
+        shadow-[2px_4px_0px_rgba(251,191,36,0.45)]
+        cursor-pointer
+        transition-all duration-300
+        hover:-translate-y-1
+        hover:rotate-[-0.8deg]
+      "
+    >
+      {/* Icon doodle background */}
+      <div
+        className="
+          relative flex items-center justify-center
+          w-[72px] h-[72px]
+        "
+      >
+        <span
+          className="
+            absolute inset-0
+            rounded-[18px]
+            rotate-[-6deg]
+            group-hover:rotate-[4deg]
+            transition-transform
+          "
+        />
+        <Image
+          src={icon}
+          alt=""
+          height={82}
+          width={82}
+          className="relative z-10 select-none"
+        />
+      </div>
+
+      {/* Text */}
+      <p className="font-medium text-lg leading-snug text-gray-800 select-none">
+        {text}
+      </p>
+
+      {/* Doodle underline */}
+      <span
+        className="
+          absolute bottom-4 left-28
+          w-16 h-[3px]
+          bg-[#FFD166]
+          rounded-full
+          rotate-[-2deg]
+        "
+      />
     </div>
   )
 }
 
-function ReviewCard({ name, role, content }: { name: string, role: string, content: string }) {
+
+function ReviewCard({
+  name,
+  role,
+  content,
+}: {
+  name: string
+  role: string
+  content: string
+}) {
   return (
-    <div className="flex flex-col bg-[azure] p-8 rounded-[40px] relative shadow-sm hover:shadow-md transition-shadow">
-      <div className="absolute -top-5 left-10 w-10 h-10 rounded-full flex items-center justify-center text-[#23BEAA]">
-        <FontAwesomeIcon icon={faQuoteLeft} className="h-30 w-30" />
+    <div
+      className="
+        relative flex flex-col bg-[#F8FFFD] p-8
+        rounded-[32px]
+        border-2 border-dashed border-[#1DA492]
+        shadow-[3px_3px_0px_#23BEAA]
+        hover:shadow-[5px_5px_0px_#23BEAA]
+        hover:-translate-y-1
+        transition-all duration-300
+      "
+    >
+      {/* Doodle quote bubble */}
+      <div className="
+        absolute -top-6 left-8
+        w-12 h-12 rounded-full
+        bg-white border-2 border-[#23BEAA]
+        flex items-center justify-center
+        rotate-[-8deg]
+      ">
+        <FontAwesomeIcon
+          icon={faQuoteLeft}
+          className="h-6 w-6 text-[#23BEAA]"
+        />
       </div>
+
+      {/* Stars */}
       <div className="flex gap-1 mb-4 text-amber-400">
-        {[...Array(5)].map((_, i) => <FontAwesomeIcon key={i} icon={faStar} className="h-7 w-7" />)}
+        {[...Array(5)].map((_, i) => (
+          <FontAwesomeIcon
+            key={i}
+            icon={faStar}
+            className={clsx(
+              "h-6 w-6",
+              i % 2 === 0 ? "rotate-[-8deg]" : "rotate-[6deg]"
+            )}
+          />
+        ))}
       </div>
-      <p className={clsx(roboto.className, "text-gray-700 italic mb-6 text-lg leading-relaxed")}>"{content}"</p>
+
+      {/* Content */}
+      <p
+        className={clsx(
+          roboto.className,
+          "text-gray-700 italic mb-6 text-lg leading-relaxed"
+        )}
+      >
+        “{content}”
+      </p>
+
+      {/* Author */}
       <div className="mt-auto">
-        <p className="font-bold text-gray-900">{name}</p>
-        <p className="text-sm text-[#1DA492] font-medium">{role}</p>
+        <p className="font-bold text-gray-900 tracking-wide">
+          {name}
+        </p>
+        <p className="text-sm text-[#1DA492] font-medium">
+          {role}
+        </p>
       </div>
+
+      {/* Small doodle dots */}
+      <span className="absolute bottom-6 right-6 w-2 h-2 bg-[#23BEAA] rounded-full" />
+      <span className="absolute bottom-10 right-10 w-1.5 h-1.5 bg-[#1DA492] rounded-full" />
     </div>
   )
 }

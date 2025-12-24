@@ -1,11 +1,12 @@
 'use client'
 
+import clsx from "clsx";
+import Image from "next/image";
+import { useState } from "react";
 import { faCrown, faPlay, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import clsx from "clsx";
-import { useState } from "react";
-import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
+
 import single from '../../../../../public/assets/games/single.png'
 import pvp from '../../../../../public/assets/games/pvp.png'
 
@@ -15,12 +16,13 @@ const MODES = {
 }
 
 const games = [
-    { name: 'Game Name', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit', plan: 'free' },
-    { name: 'Game Name', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit', plan: 'premium' },
-    { name: 'Game Name', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit', plan: 'free' },
-    { name: 'Game Name', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit', plan: 'premium' },
-    { name: 'Game Name', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit', plan: 'free' },
-    { name: 'Game Name', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit', plan: 'premium' },
+    {
+        name: 'Math Match',
+        plan: 'free',
+        thumbnail: "https://res.cloudinary.com/dqym15t8v/image/upload/v1765507684/Gemini_Generated_Image_wzpgm3wzpgm3wzpg_ooorcx.png",
+        link: "https://khoa9894.github.io/build_dacn/",
+        description: "Math Match là trò chơi luyện tư duy toán học thông qua cơ chế nối cặp kết quả đúng. Người chơi sẽ nhìn vào các ô số và phép tính được đặt ngẫu nhiên trên bảng. Nhiệm vụ của họ là kết nối hai ô có cùng kết quả bằng một đường thẳng, không vượt quá 2 lần rẽ, trước khi hết thời gian."
+    }
 ]
 
 export default function Games() {
@@ -137,27 +139,31 @@ export default function Games() {
                 </div>
                 {/** Game list */}
                 <div className="flex flex-1 max-h-[520px] flex-wrap flex-row gap-x-4 gap-y-6 overflow-y-auto pr-10">
-                    {games.map((val,idx) => (
+                    {games.map((val, idx) => (
                         // Game Card
                         <div key={idx} className={clsx(
-                            "h-80 w-70 border-2 rounded-2xl", val.plan === 'free' ? 'border-[#23BEAA]' : 'border-[#F1A12E]',
+                            "h-90 w-70 border-2 rounded-2xl", val.plan === 'free' ? 'border-[#23BEAA]' : 'border-[#F1A12E]',
                             'flex flex-col gap-2 p-2'
                         )}>
                             {/** Thumbnail */}
-                            <div className="h-1/2 w-full bg-blue-200 rounded-xl"></div>
+                            <div className="h-1/2 w-full rounded-xl object-cover overflow-hidden">
+                                <Image src={val.thumbnail} height={500} width={200} alt="" className="w-auto h-full"/>
+                            </div>
                             {/** Label */}
-                            <div className="flex flex-col ml-2">
+                            <div className="flex flex-col ml-2 gap-2 mb-3">
                                 <label className="text-[18px] font-medium">{val.name}</label>
-                                <p className="text-[15px] font-medium max-w-[90%] text-wrap text-justify text-gray-400">{val.description}</p>
+                                <div className="max-w-full max-h-20 overflow-y-auto pr-3">
+                                    <p className="text-sm font-medium text-wrap text-justify text-gray-400">{val.description}</p>
+                                </div>
                             </div>
                             {/** Play button */}
                             <div className={clsx(
                                 'h-12 w-full rounded-xl', val.plan === 'free' ? 'bg-[#23BEAA]' : 'bg-[#F1A12E]',
-                                'flex flex-row text-white font-medium items-center mt-auto mb-0',
+                                'flex flex-row text-white font-medium items-center mt-auto mb-0 ',
                                 'hover:brightness-110 cursor-pointer transition-all duration-150'
-                            )}>
-                                <label className="mr-auto ml-20">{val.plan === 'free' ? 'Chơi ngay' : 'Mua Premium'}</label>
-                                <FontAwesomeIcon className="ml-auto mr-5 text-xl" icon={val.plan === 'free' ? faPlay : faCrown}/>
+                            )} onClick={() => window.open(val.link)}>
+                                <label className="mr-auto ml-20 cursor-pointer">{val.plan === 'free' ? 'Chơi ngay' : 'Mua Premium'}</label>
+                                <FontAwesomeIcon className="ml-auto mr-5 text-xl" icon={val.plan === 'free' ? faPlay : faCrown} />
                             </div>
                         </div>
                     ))}

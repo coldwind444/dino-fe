@@ -12,7 +12,7 @@ export default function LessonsPage() {
 
   const [grade, setGrade] = useState<GradeResponse | null>(null);
   const [topics, setTopics] = useState<TopicResponse[]>([])
-  const [userQuartz, setUserQuartz] = useState<number|undefined>();
+  const [userQuartz, setUserQuartz] = useState<number | undefined>();
   const [gradeProgress, setGradeProgress] = useState<GradeProgressResponse | null>();
   const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
 
@@ -79,10 +79,11 @@ export default function LessonsPage() {
   }, [grade])
 
   if (!grade || userQuartz === undefined || !topics || !gradeProgress) {
-    return <ScreenLoader/>;
+    return <ScreenLoader />;
   }
 
-  return <LessonClient topics={topics}
+  return <LessonClient
+    topics={topics}
     grade={grade!}
     userQuartz={userQuartz}
     gradeProgress={gradeProgress!} />;

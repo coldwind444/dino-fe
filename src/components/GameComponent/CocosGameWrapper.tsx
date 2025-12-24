@@ -20,7 +20,7 @@ export interface CocosGameWrapperRef {
 interface CocosGameWrapperProps {
   exercises: ExerciseResponse[];
   currentExerciseIndex?: number;
-  onAnswerChecked?: (isCorrect: boolean, score: number) => void;
+  onAnswerChecked?: (isCorrect: boolean, score: number, points?: number) => void;
 }
 
 const CocosGameWrapper = forwardRef<CocosGameWrapperRef, CocosGameWrapperProps>(

@@ -26,7 +26,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const { gradeLevel, topicId } = params;
+            const { gradeLevel, topicId } = await params;
             if (!gradeLevel || !topicId) return;
 
             console.log("Fetching world data...");
@@ -44,6 +44,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
                 setLands(lands);
                 setCurrTopic(topic);
                 setLectures(lectures);
+
             } catch (error) {
                 console.error("Error fetching world data:", error);
             } finally {
@@ -55,7 +56,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
     }, [params]);
 
     // Return loading state if data is not ready
-    if (loading || !currGrade || !currWorld || !currTopic || !lands || !lectures) return <ScreenLoader />
+    if (loading || !currGrade || !currWorld || !currTopic || !lectures || !lands) return <ScreenLoader />
 
     // Pass data to client-side component
     return (

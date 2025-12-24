@@ -18,7 +18,7 @@ type LectureSliderProps = {
 export default function LectureSlider({ lectures, doExercise, milestone }: LectureSliderProps ) {
     const { lectureIdx: idx, setLectureIdx: setIdx } = useLessonStore();
     const [translate, setTranslate] = useState(0);
-    const lastUnlockedMilestoneIdx = 2
+    const unlockedDifficulty = ['easy']
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -50,7 +50,7 @@ export default function LectureSlider({ lectures, doExercise, milestone }: Lectu
     return (
         <div className="h-full w-full overflow-hidden flex flex-col items-center gap-[100px]">
             {/* Header */}
-            {idx <= lastUnlockedMilestoneIdx ?
+            { unlockedDifficulty.includes(lectures[idx].difficulty) ?
                 (<h1 className="text-white font-bold text-[25px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
                     {lectures[idx]?.title}
                 </h1>) : (
@@ -78,10 +78,10 @@ export default function LectureSlider({ lectures, doExercise, milestone }: Lectu
                                     className={clsx(
                                         "aspect-square flex-shrink-0 object-contain",
                                         index === idx ? "scale-100" : "scale-75 opacity-60",
-                                        "transition-all duration-500", index > lastUnlockedMilestoneIdx ? 'grayscale-100' : ''
+                                        "transition-all duration-500", !unlockedDifficulty.includes(lecture.difficulty) ? 'grayscale-100' : ''
                                     )}
                                 />
-                                {index > lastUnlockedMilestoneIdx && <Image src={lock} alt="X" width={100} height={100} className="absolute" />}
+                                {!unlockedDifficulty.includes(lecture.difficulty) && <Image src={lock} alt="X" width={100} height={100} className="absolute" />}
                             </div>
                             {index !== lectures.length - 1 && (
                                 <svg
@@ -117,7 +117,7 @@ export default function LectureSlider({ lectures, doExercise, milestone }: Lectu
 
                 {/* Fixed height container to maintain footer position */}
                 <div className="h-[50px] sm:h-[55px] md:h-[60px] flex items-center justify-center">
-                    {idx <= lastUnlockedMilestoneIdx ?
+                    {unlockedDifficulty.includes(lectures[idx].difficulty) ?
                         (<div className="overflow-hidden h-[50px] sm:h-[55px] md:h-[60px]">
                             <iframe className="absolute -translate-y-[90px] -translate-x-[20px]" src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html" height={200}/>
                             <div

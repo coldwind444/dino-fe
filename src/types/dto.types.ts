@@ -106,7 +106,7 @@ export interface LectureResponse {
     contentType: string,
     description: string,
     difficulty: string,
-    lessonId: string
+    topicId: string
 }
 
 export interface ExerciseResponse {

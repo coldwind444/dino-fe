@@ -105,7 +105,7 @@ export default function Navbar({
   return (
     <div
       className={clsx(
-        "bg-white border-2 border-[rgba(0,0,0,0.1)] h-[80px] w-screen",
+        "bg-white border-2 border-[rgba(0,0,0,0.1)] h-[80px] w-full",
         "flex items-center justify-center pl-5 pr-5"
       )}
     >

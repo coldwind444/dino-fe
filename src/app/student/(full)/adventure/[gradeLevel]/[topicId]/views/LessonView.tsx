@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { Roboto } from "next/font/google";
 import { useRouter } from "next/navigation";
 import Confetti from "react-confetti";
+import { useSpring, animated } from "@react-spring/web";
 
 import Volume from "@/components/Volume/Volume";
 import MilestonesView from '../subviews/MilestonesView';
@@ -47,6 +48,20 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
   const [currentLecture, setCurrentLecture] = useState<LectureResponse | null>(null);
   const [totalScore, setTotalScore] = useState(0);
   const [totalReward, setTotalReward] = useState(0);
+  const [maxScore, setMaxScore] = useState(0)
+
+  // Functions
+  const onFinish = (max: number) => {
+    setMaxScore(max)
+    setMode(MODE.FINISH);
+  }
+
+  const onContinue = () => {
+    setIsCelebrating(false)
+    setMode(MODE.LECTURE);
+    setTotalReward(0)
+    setTotalScore(0)
+  }
 
   // Effects
   useEffect(() => {
@@ -126,8 +141,11 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
           {/** Exercise view */}
           {mode === MODE.EXERCISE && (
             <ExerciseView
+              setTotalScore={setTotalScore}
+              setTotalReward={setTotalReward}
               currentLecture={currentLecture!!}
               onExit={() => setMode(MODE.LECTURE)}
+              onFinish={onFinish}
             />
           )}
           {/** Finish view */}
@@ -138,7 +156,8 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
               score={totalScore}
               reward={totalReward}
               currentLecture={lectures[lectureIdx]}
-              onContinue={() => router.back()}
+              maxScore={maxScore}
+              onContinue={onContinue}
             />
           )}
         </AnimatePresence>

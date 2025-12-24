@@ -2,12 +2,14 @@ import clsx from "clsx";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Roboto, Coiny } from "next/font/google";
+import { useSpring, animated } from "@react-spring/web";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faBook, faCoins, faGift, faGraduationCap, faStar } from "@fortawesome/free-solid-svg-icons";
 
 const trophy = "/assets/exercises/trophy.png";
 const flags = "/assets/exercises/flags.png";
 import { LectureResponse, TopicResponse } from "@/types";
+import { useEffect, useState } from "react";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const coiny = Coiny({ subsets: ["latin"], weight: ["400"] });
@@ -18,10 +20,33 @@ interface FinishViewProps {
   currentLecture: LectureResponse;
   score: number;
   reward: number;
+  maxScore: number;
   onContinue: () => void;
 }
 
-export default function FinishView({ grade, topic, currentLecture, score, reward, onContinue }: FinishViewProps) {
+export default function FinishView({ grade, topic, currentLecture, score, reward, maxScore, onContinue }: FinishViewProps) {
+  // Rising animated points
+  const [animatedScore, setAnimatedScore] = useState(0)
+  const [animatedReward, setAnimatedReward] = useState(0)
+  const spring = useSpring({
+    from: {
+      reward: 0,
+      score: 0,
+    },
+    to: {
+      reward: reward,
+      score: score,
+    },
+    config: { duration: 800 },
+  });
+
+  useEffect(() => {
+    setTimeout(() => {
+      setAnimatedScore(score)
+      setAnimatedReward(reward)
+    }, 300)
+  }, [])
+
   return (
     <motion.div
       key="finish-popup"
@@ -106,9 +131,12 @@ export default function FinishView({ grade, topic, currentLecture, score, reward
                   <FontAwesomeIcon className="text-4xl" icon={faCoins} />
                   <label className="text-[16px]">Tổng điểm</label>
                 </div>
-                <div className="font-medium text-3xl">{score}</div>
+                <div className="flex flex-row gap-2">
+                  <animated.span className="font-medium text-3xl">{spring.score.to(n => Math.floor(n))}</animated.span>
+                  <span className="font-medium text-3xl">{`/ ${maxScore}`}</span>
+                </div>
               </div>
-              <div className="h-fit w-1/2 rounded-[10px] text-white flex flex-row gap-10 px-5 py-3 items-center bg-gradient-to-br from-0% from-[#EC4899] to-100% to-[#7C3AED]">
+              <div className="h-fit w-1/2 rounded-[10px] text-white flex flex-row gap-5 px-5 py-3 items-center bg-gradient-to-br from-0% from-[#EC4899] to-100% to-[#7C3AED]">
                 <div className="flex flex-col items-center justify-center gap-1">
                   <FontAwesomeIcon className="text-4xl" icon={faGift} />
                   <label className="text-[16px]">Phần thưởng</label>
@@ -121,7 +149,7 @@ export default function FinishView({ grade, topic, currentLecture, score, reward
                     alt=""
                     className="inline-block mr-2"
                   />
-                  {reward}
+                  <animated.span>{spring.reward.to(n => Math.floor(n))}</animated.span>
                 </div>
               </div>
             </div>

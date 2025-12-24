@@ -7,7 +7,7 @@
 
 body {
   height: 100vh;
-  width: 100vw;
+  max-width: 100vw;
   background-color: white;
 }
 
@@ -27,4 +27,27 @@ img {
 
 iframe {
   user-select: none;
+}
+
+/* Scrollbar width */
+::-webkit-scrollbar {
+  width: 5px;      /* vertical scrollbar */
+  height: 8px;     /* horizontal scrollbar */
+}
+
+/* Track (background) */
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+/* Handle (thumb) */
+::-webkit-scrollbar-thumb {
+  background: orange;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }

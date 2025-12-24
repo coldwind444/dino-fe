@@ -101,6 +101,20 @@ export const getTopicsByGradeId = async (gradeId: string): Promise<TopicResponse
     }
 }
 
+export const getCompletedTopics = async (limit?: number): Promise<TopicResponse[]> => {
+    try {
+        const res = await api.get(`/progress/completed?limit=${limit}`)
+        return res.data.items as TopicResponse[]
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
+    }
+}
+
 // Lecture APIs
 export const getLecturesByTopicId = async (topicId: string): Promise<LectureResponse[]> => {
     try {

@@ -15,7 +15,7 @@ interface LessonClientProps {
   gradeProgress: GradeProgressResponse
 }
 
-export default function LessonClient({ topics, grade, userQuartz, gradeProgress }: LessonClientProps) {
+export default function LessonView({ topics, grade, userQuartz, gradeProgress }: LessonClientProps) {
   const router = useRouter()
   const { gradeLevel, setTopicId, setLectureIdx } = useLessonStore()
 

@@ -39,3 +39,25 @@ export const uploadAvatar = async (base64Image: string): Promise<AvatarUploadRes
         throw new Error(message);
     }
 }
+
+export const updateUserQuartz = async (delta: number) => {
+    try {
+        await api.put('/users/me/quartz', { delta: delta })
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        let message: string;
+        if (err.response?.status === 400) {
+            message = 'Dữ liệu gửi lên không hợp lệ';
+        } else if (err.response?.status === 403) {
+            message = 'Không có quyền';
+        } else if (err.response?.status === 404) {
+            message = 'Không tìm thấy user';
+        } else {
+            message =
+                err.response?.data?.message ||
+                err.message ||
+                'Lỗi hệ thống.';
+        }
+        throw new Error(message);
+    }
+}

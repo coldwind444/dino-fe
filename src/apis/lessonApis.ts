@@ -1,4 +1,4 @@
-import { ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, TopicResponse } from "@/types";
+import { CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, TopicResponse } from "@/types";
 import { AxiosError } from "axios";
 import api from "./config";
 
@@ -105,6 +105,19 @@ export const getCompletedTopics = async (limit?: number): Promise<TopicResponse[
     try {
         const res = await api.get(`/progress/completed?limit=${limit}`)
         return res.data.items as TopicResponse[]
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
+    }
+}
+
+export const createProgress = async (req: CreateProgressRequest) => {
+    try {
+        await api.post('/progress', req)
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
         const message =

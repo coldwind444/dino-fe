@@ -1,7 +1,7 @@
 'use client'
 
 import { useLessonStore } from "@/stores/lessonStore";
-import LessonClient from "./LessonClient";
+import LessonView from "./LessonView";
 import { useEffect, useState } from "react";
 import { GradeProgressResponse, GradeResponse, TopicResponse } from "@/types";
 import { getGradeByLevel, getGradeProgress, getTopicsByGradeId, getUserProfile, getRecentTopics } from "@/apis";
@@ -82,7 +82,7 @@ export default function LessonsPage() {
     return <ScreenLoader />;
   }
 
-  return <LessonClient
+  return <LessonView
     topics={topics}
     grade={grade!}
     userQuartz={userQuartz}

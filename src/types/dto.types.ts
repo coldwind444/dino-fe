@@ -1,3 +1,4 @@
+// Request
 export interface RegisterRequest {
     email: string;
     password: string;
@@ -19,6 +20,15 @@ export interface CompleteProfileRequest {
     gradeId: string;
 }
 
+export interface CreateProgressRequest {
+  topicId: string,
+  lectureId: string,
+  completion: number,
+  averageScore: number,
+  status: string
+}
+
+// Response
 export interface UserResponse {
     id: string;
     email: string;

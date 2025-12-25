@@ -5,11 +5,13 @@ import { Roboto, Coiny } from "next/font/google";
 import { useSpring, animated } from "@react-spring/web";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faBook, faCoins, faGift, faGraduationCap, faStar } from "@fortawesome/free-solid-svg-icons";
+import { LectureResponse, TopicResponse } from "@/types";
+import { useEffect, useState, useRef } from "react";
+import { createProgress, updateUserQuartz } from "@/apis";
+import Loader from "@/components/Loader/Loader";
 
 const trophy = "/assets/exercises/trophy.png";
 const flags = "/assets/exercises/flags.png";
-import { LectureResponse, TopicResponse } from "@/types";
-import { useEffect, useState } from "react";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const coiny = Coiny({ subsets: ["latin"], weight: ["400"] });
@@ -40,12 +42,44 @@ export default function FinishView({ grade, topic, currentLecture, score, reward
     config: { duration: 800 },
   });
 
+  // UI States
+  const [loading, setLoading] = useState(false)
+  const hasUpdatedRef = useRef(false)
+
+  // Effects
   useEffect(() => {
     setTimeout(() => {
       setAnimatedScore(score)
       setAnimatedReward(reward)
     }, 300)
   }, [])
+
+  useEffect(() => {
+    if (!reward || !score || hasUpdatedRef.current) return
+
+    const updateResult = async () => {
+      hasUpdatedRef.current = true
+      setLoading(true)
+      try {
+        await updateUserQuartz(reward)
+        await createProgress({
+          topicId: topic._id,
+          lectureId: currentLecture._id,
+          completion: 100,
+          averageScore: score,
+          status: 'completed',
+        })
+      } catch (error) {
+        console.log("Failed to update quartz.", error)
+        hasUpdatedRef.current = false // optional rollback
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    updateResult()
+  }, [reward, score])
+
 
   return (
     <motion.div
@@ -154,13 +188,17 @@ export default function FinishView({ grade, topic, currentLecture, score, reward
               </div>
             </div>
             {/** Continue Button */}
-            <div
-              className="flex flex-row h-[50px] text-white items-center justify-center w-2/3 ml-auto mr-auto cursor-pointer hover:opacity-90 transition-all duration-200 bg-[#4F46E5] rounded-[15px] px-10 gap-5 mt-3"
-              onClick={onContinue}
-            >
-              <FontAwesomeIcon icon={faArrowRight} />
+            <button disabled={loading}
+              className="flex flex-row h-[50px] text-white items-center justify-center w-2/3 ml-auto mr-auto 
+                    cursor-pointer hover:opacity-90 transition-all duration-200 bg-[#4F46E5] rounded-[15px] px-10 gap-5 mt-3
+                    disabled:opacity-80 disabled:cursor-not-allowed relative"
+              onClick={onContinue}>
               <label className="cursor-pointer">Tiếp tục</label>
-            </div>
+              <FontAwesomeIcon icon={faArrowRight} />
+              <div className="absolute left-2">
+                <Loader isLoading={loading} />
+              </div>
+            </button>
           </div>
         </div>
       </div>

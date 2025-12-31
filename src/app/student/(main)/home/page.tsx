@@ -9,16 +9,19 @@ import { faBriefcaseClock, faChalkboard, faFlaskVial, faPlay, faRotateRight } fr
 import { useLessonStore } from "@/stores/lessonStore";
 import { TimeCard } from "@/components/TimeCard/TimeCard";
 import EntranceTestPopup from "@/components/EntranceTestPopup/EntranceTestPopup";
-import { getCompletedTopics, getRecentTopics, getUserProfile } from "@/apis";
+import { getCompletedTopics, getGradeById, getRecentTopics, getRecommendedTopicByGradeId, getTopicById, getUserProfile } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import TopicRecommendPopup from "@/components/TopicRecommendPopup/TopicRecommendPopup";
 import { TopicResponse } from "@/types";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const fredoka = Fredoka();
 const trophy = "/assets/home/trophy.png";
 
 export default function StudentHome() {
+    const router = useRouter()
+
     // UI States
     const { gradeLevel, setGradeLevel, setTopicId, setLectureIdx } = useLessonStore();
     const [entranceTestDone, setEntranceTestDone] = useState(false)
@@ -29,32 +32,55 @@ export default function StudentHome() {
     const [username, setUsername] = useState('');
     const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
     const [completedTopic, setCompletedTopics] = useState<TopicResponse[]>([])
+    const [recommendedTopic, setRecommendedTopic] = useState<TopicResponse|null>(null)
     const [isLoading, setIsLoading] = useState(true);
 
     // Functions
-    const closeTestPopup = () => { 
-        setIsTestPopupClosed(true); 
+    const closeTestPopup = () => {
+        setIsTestPopupClosed(true);
     };
 
-    const closeModal = () => { 
-        setRecommend(false); 
-        if (!entranceTestDone) setIsTestPopupClosed(false); 
+    const closeModal = () => {
+        setRecommend(false);
+        if (!entranceTestDone) setIsTestPopupClosed(false);
     }
 
     // Effects
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setIsLoading(true)
                 const [userRes, recentTopicsRes, compTopicsRes] = await Promise.all([
                     getUserProfile(),
                     getRecentTopics(1),
                     getCompletedTopics(10)
                 ]);
 
+                // Trim lastname
                 const lastname = userRes.name.trim().split(/\s+/).pop() ?? "";
                 setUsername(lastname);
-                setRecentTopic(recentTopicsRes[0])
-                setCompletedTopics(compTopicsRes)
+
+                // Fetch user grade
+                if (userRes.gradeId){
+                    const grade = await getGradeById(userRes.gradeId)
+                    if (grade && gradeLevel === '' ) setGradeLevel(grade.level.toString())
+                    
+                    const recommend = await getRecommendedTopicByGradeId(userRes.gradeId)
+                    setRecommendedTopic(recommend)
+                }
+
+                // Fetch recent studied topics
+                if (recentTopicsRes && recentTopicsRes.length > 0) {
+                    const rtopic = await getTopicById(recentTopicsRes[0])
+                    setRecentTopic(rtopic)
+                }
+
+                // Fetch completed topics
+                if (compTopicsRes && compTopicsRes.length > 0) {
+                    const completedTopics = await Promise.all(compTopicsRes.map(topicId => getTopicById(topicId)))
+                    setCompletedTopics(completedTopics)
+                }
+
             } catch (err) {
                 console.log('Failed to fetch data.', err);
             } finally {
@@ -126,8 +152,6 @@ export default function StudentHome() {
                                                 key={n}
                                                 onClick={() => {
                                                     setGradeLevel(n.toString());
-                                                    setTopicId("1");
-                                                    setLectureIdx(0);
                                                 }}
                                                 className={clsx(
                                                     "relative aspect-square h-20 rounded-full flex items-center justify-center",
@@ -227,7 +251,7 @@ export default function StudentHome() {
                         </div>) : (
                             <div className="relative h-[400px] rounded-[15px] border-2 border-gray-300 gap-2 flex flex-col items-center justify-center">
                                 <FontAwesomeIcon icon={faBriefcaseClock} className="text-gray-400 text-[50px]" />
-                                <label className="text-gray-400 text-xl font-medium">Bạn chưa học chủ đề nào gần đây.</label>
+                                <label className="text-gray-400 text-xl font-medium">{`Bạn chưa học chủ đề nào của Lớp ${gradeLevel} gần đây.`}</label>
                                 <Link href='/student/lessons' className="text-blue-500 cursor-pointer font-medium hover:underline">Học ngay nào !</Link>
                             </div>
                         )}
@@ -258,7 +282,11 @@ export default function StudentHome() {
                                                 "shadow-md border border-gray-200 hover:shadow-lg hover:scale-105",
                                                 "transition-all duration-200 group"
                                             )}
-                                        >
+                                            onClick={() => {
+                                                setTopicId(val._id)
+                                                setLectureIdx(0)
+                                                router.push(`/student/adventure/${gradeLevel}/${val._id}`)
+                                            }}>
                                             <FontAwesomeIcon
                                                 icon={faRotateRight}
                                                 className="text-[#FF6B6B] group-hover:rotate-180 transition-transform duration-300"
@@ -270,13 +298,15 @@ export default function StudentHome() {
                         </div>) : (
                             <div className="h-[398px] w-[830px] rounded-[15px] border-2 border-gray-300 flex flex-col gap-2 items-center justify-center">
                                 <FontAwesomeIcon icon={faChalkboard} className="text-gray-400 text-[50px]" />
-                                <label className="text-gray-400 text-xl font-medium">Bạn chưa hoàn thành chủ đề nào.</label>
+                                <label className="text-gray-400 text-xl font-medium">
+                                    {`Bạn chưa hoàn thành chủ đề nào của Lớp ${gradeLevel}.`}
+                                </label>
                             </div>
                         )}
                 </aside>
             </div>
             {!isTestPopupClosed && <EntranceTestPopup close={closeTestPopup} />}
-            {recommend && <TopicRecommendPopup close={closeModal}/>}
+            {recommend && <TopicRecommendPopup topic={recommendedTopic} close={closeModal} />}
         </div>
     );
 }

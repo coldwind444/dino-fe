@@ -13,9 +13,12 @@ interface LessonClientProps {
   grade: GradeResponse
   userQuartz: number
   gradeProgress: GradeProgressResponse
+  noUnlocked: number
+  noComplete: number
+  recentTopic?: TopicResponse
 }
 
-export default function LessonView({ topics, grade, userQuartz, gradeProgress }: LessonClientProps) {
+export default function LessonView({ topics, grade, userQuartz, gradeProgress, noUnlocked, noComplete, recentTopic }: LessonClientProps) {
   const router = useRouter()
   const { gradeLevel, setTopicId, setLectureIdx } = useLessonStore()
 
@@ -112,13 +115,13 @@ export default function LessonView({ topics, grade, userQuartz, gradeProgress }:
             <div className=" rounded-3xl p-5 h-[150px]">
               <div className="space-y-2 text-sm text-white font-bold">
                 <div>
-                  Số chủ đề đã học: <strong>4</strong>
+                  Số chủ đề đã học: <strong>{noComplete}</strong>
                 </div>
                 <div>
-                  Chủ đề học gần nhất: <strong>4</strong>
+                  Chủ đề học gần nhất: <strong>{`CĐ ${1}`}</strong>
                 </div>
                 <div>
-                  Số chủ đề đã mở khóa: <strong>{topics.length}</strong>
+                  Số chủ đề đã mở khóa: <strong>{`${noUnlocked}/${topics.length}`}</strong>
                 </div>
               </div>
             </div>

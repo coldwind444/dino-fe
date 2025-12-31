@@ -21,11 +21,11 @@ export interface CompleteProfileRequest {
 }
 
 export interface CreateProgressRequest {
-  topicId: string,
-  lectureId: string,
-  completion: number,
-  averageScore: number,
-  status: string
+    topicId: string,
+    lectureId: string,
+    completion: number,
+    averageScore: number,
+    status: string
 }
 
 // Response
@@ -64,6 +64,8 @@ export interface UserProfileResponse {
     students: string[];
     createdAt: string;
     updatedAt: string;
+    familyId: string;
+    gradeId: string;
 };
 
 export interface AvatarUploadResponse {
@@ -131,4 +133,18 @@ export interface ExerciseResponse {
     difficulty: string,
     lectureId: string,
     category: string
+}
+
+export interface TermResponse {
+    _id: string,
+    name: string,
+    year: number,
+    term: string,
+    startDate: string,
+    endDate: string,
+    isActive: boolean,
+    notes: string,
+    createdAt: string,
+    updatedAt: string,
+    __v: number
 }

@@ -1,6 +1,22 @@
-import { CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, TopicResponse } from "@/types";
+import { CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, TermResponse, TopicResponse } from "@/types";
 import { AxiosError } from "axios";
 import api from "./config";
+
+// Term APIs
+export const getTermById = async (termid: string) : Promise<TermResponse> => {
+    try {
+        console.log(termid)
+        const res = await api.get(`/academic-terms/${termid}`)
+        return res.data as TermResponse
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
+    }
+}
 
 // Grade APIs
 export const getGradeByLevel = async (level: number): Promise<GradeResponse[]> => {
@@ -9,16 +25,25 @@ export const getGradeByLevel = async (level: number): Promise<GradeResponse[]> =
         return res.data.data as GradeResponse[]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
-        let message: string;
-        if (err.response?.status !== 200) {
-            message = 'Bạn không có quyền truy cập !';
-        } else {
-            message =
-                err.response?.data?.message ||
-                err.message ||
-                'Lỗi hệ thống.';
-        }
-        throw new Error(message);
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
+    }
+}
+
+export const getGradeById = async (id: string): Promise<GradeResponse> => {
+    try {
+        const res = await api.get(`/grades/${id}`)
+        return res.data.data as GradeResponse
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
     }
 }
 
@@ -28,16 +53,11 @@ export const getGradeProgress = async (gradeId: string): Promise<GradeProgressRe
         return res.data as GradeProgressResponse
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
-        let message: string;
-        if (err.response?.status !== 200) {
-            message = 'Bạn không có quyền truy cập !';
-        } else {
-            message =
-                err.response?.data?.message ||
-                err.message ||
-                'Lỗi hệ thống.';
-        }
-        throw new Error(message);
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
     }
 }
 
@@ -48,35 +68,25 @@ export const getTopicById = async (topicId: string): Promise<TopicResponse> => {
         return res.data as TopicResponse
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
-        let message: string;
-        if (err.response?.status !== 200) {
-            message = 'Bạn không có quyền truy cập !';
-        } else {
-            message =
-                err.response?.data?.message ||
-                err.message ||
-                'Lỗi hệ thống.';
-        }
-        throw new Error(message);
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
     }
 }
 
-export const getRecentTopics = async (limit: number): Promise<TopicResponse[]> => {
+export const getRecentTopics = async (limit: number): Promise<string[]> => {
     try {
         const res = await api.get(`progress/recent?limit=${limit}`)
-        return res.data.items as TopicResponse[]
+        return res.data.items as string[]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
-        let message: string;
-        if (err.response?.status !== 200) {
-            message = 'Bạn không có quyền truy cập !';
-        } else {
-            message =
-                err.response?.data?.message ||
-                err.message ||
-                'Lỗi hệ thống.';
-        }
-        throw new Error(message);
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
     }
 }
 
@@ -88,23 +98,34 @@ export const getTopicsByGradeId = async (gradeId: string): Promise<TopicResponse
         return sortedTopics
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
-        let message: string;
-        if (err.response?.status !== 200) {
-            message = 'Bạn không có quyền truy cập !';
-        } else {
-            message =
-                err.response?.data?.message ||
-                err.message ||
-                'Lỗi hệ thống.';
-        }
-        throw new Error(message);
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
     }
 }
 
-export const getCompletedTopics = async (limit?: number): Promise<TopicResponse[]> => {
+export const getCompletedTopics = async (limit?: number): Promise<string[]> => {
     try {
         const res = await api.get(`/progress/completed?limit=${limit}`)
-        return res.data.items as TopicResponse[]
+        return res.data.items as string[]
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
+    }
+}
+
+export const getRecommendedTopicByGradeId = async (gradeId: string): Promise<TopicResponse> => {
+    try {
+        const zuluDateTime = '2025-10-30T00:00:00.000Z'; 
+        const res = await api.get(`/topics/ongoing?gradeId=${gradeId}&date=${zuluDateTime}`)
+        const topics = res.data.topics as TopicResponse[]
+        return topics[0]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
         const message =
@@ -138,16 +159,11 @@ export const getLecturesByTopicId = async (topicId: string): Promise<LectureResp
         return res as LectureResponse[]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
-        let message: string;
-        if (err.response?.status !== 200) {
-            message = 'Bạn không có quyền truy cập !';
-        } else {
-            message =
-                err.response?.data?.message ||
-                err.message ||
-                'Lỗi hệ thống.';
-        }
-        throw new Error(message);
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
     }
 }
 
@@ -164,15 +180,10 @@ export const getExercisesByLectureId = async (lectureId: string, limit?: number)
         return res.data.items as ExerciseResponse[]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
-        let message: string;
-        if (err.response?.status !== 200) {
-            message = 'Bạn không có quyền truy cập !';
-        } else {
-            message =
-                err.response?.data?.message ||
-                err.message ||
-                'Lỗi hệ thống.';
-        }
-        throw new Error(message);
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
     }
 }

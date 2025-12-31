@@ -4,7 +4,7 @@ import { useLessonStore } from "@/stores/lessonStore";
 import LessonView from "./LessonView";
 import { useEffect, useState } from "react";
 import { GradeProgressResponse, GradeResponse, TopicResponse } from "@/types";
-import { getGradeByLevel, getGradeProgress, getTopicsByGradeId, getUserProfile, getRecentTopics } from "@/apis";
+import { getGradeByLevel, getGradeProgress, getTopicsByGradeId, getUserProfile, getRecentTopics, getTopicById, getCompletedTopics } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 
 export default function LessonsPage() {
@@ -15,6 +15,8 @@ export default function LessonsPage() {
   const [userQuartz, setUserQuartz] = useState<number | undefined>();
   const [gradeProgress, setGradeProgress] = useState<GradeProgressResponse | null>();
   const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
+  const [noCompletedTopics, setNoCompletedTopics] = useState(0)
+  const [noUnlockedTopics, setNoUnlockedTopics] = useState(0)
 
   // Init fetch grade and user data
   useEffect(() => {
@@ -68,7 +70,19 @@ export default function LessonsPage() {
     const fetchRecentTopics = async () => {
       try {
         const res = await getRecentTopics(1);
-        setRecentTopic(res[0]);
+        const rtopic = await getTopicById(res[0])
+        setRecentTopic(rtopic)
+      } catch (error) {
+        console.error("Error fetching recent topics:", error);
+      }
+    }
+
+    // Complete topics
+    const fetchCompleteTopics = async () => {
+      try {
+        const res = await getCompletedTopics();
+        const rtopic = await getTopicById(res[0])
+        setRecentTopic(rtopic)
       } catch (error) {
         console.error("Error fetching recent topics:", error);
       }
@@ -76,6 +90,7 @@ export default function LessonsPage() {
 
     fetchTopicsData();
     fetchGradeProgress();
+    fetchRecentTopics()
   }, [grade])
 
   if (!grade || userQuartz === undefined || !topics || !gradeProgress) {
@@ -86,5 +101,8 @@ export default function LessonsPage() {
     topics={topics}
     grade={grade!}
     userQuartz={userQuartz}
-    gradeProgress={gradeProgress!} />;
+    gradeProgress={gradeProgress!} 
+    noComplete={noCompletedTopics}
+    noUnlocked={noUnlockedTopics}
+    />
 }

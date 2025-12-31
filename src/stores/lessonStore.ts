@@ -13,7 +13,7 @@ export interface LectureStoreState {
 export const useLessonStore = create<LectureStoreState>()(
     persist(
         (set, get) => ({
-            gradeLevel: '1',
+            gradeLevel: '',
             topicId: '',
             lectureIdx: 0,
             setGradeLevel: (level: string) => set({ gradeLevel: level }),

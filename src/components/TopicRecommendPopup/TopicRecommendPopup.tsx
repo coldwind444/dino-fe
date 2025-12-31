@@ -7,10 +7,55 @@ import Image from "next/image"
 import boy from '../../../public/assets/home/boy_riding_pencil.png'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faArrowRight, faClose } from "@fortawesome/free-solid-svg-icons"
+import { TermResponse, TopicResponse } from "@/types"
+import { useEffect, useState } from "react"
+import { getTermById } from "@/apis"
+import { useLessonStore } from "@/stores/lessonStore"
+import { useRouter } from "next/navigation"
 
 const baloo = Baloo_2()
 
-export default function TopicRecommendPopup({ close }: { close: () => void }) {
+export default function TopicRecommendPopup({ close, topic }: { close: () => void, topic: TopicResponse | null }) {
+    const router = useRouter()
+
+    // UI states
+    const [loading, setIsLoading] = useState(false)
+
+    // Data states
+    const { gradeLevel, setTopicId, setLectureIdx } = useLessonStore()
+    const [term, setTerm] = useState<TermResponse | null>(null)
+    const [today, setToday] = useState('')
+
+    // Effects
+    useEffect(() => {
+        if (!topic || !topic._id) return
+
+        const getNow = () => {
+            const date = new Date();
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const year = date.getFullYear();
+
+            const formattedDate = `${day}-${month}-${year}`;
+            setToday(formattedDate)
+        }
+
+        const fetchTerm = async () => {
+            try {
+                setIsLoading(true)
+                const res = await getTermById(topic.termId)
+                setTerm(res)
+            } catch (err) {
+                console.log('Failed to fetch academic term.', err)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        getNow()
+        fetchTerm()
+    }, [topic])
+
     return (
         <AnimatePresence>
             <motion.div
@@ -43,25 +88,25 @@ export default function TopicRecommendPopup({ close }: { close: () => void }) {
                         {/** Title */}
                         <h1 className={clsx(baloo.className, 'text-4xl font-bold text-[#23BEAA]')}>GỢI Ý CHƯƠNG TRÌNH HỌC</h1>
                         {/** Image placeholder */}
-                        <div className="h-40 aspect-square bg-blue-950 rounded-full"></div>
+                        <Image src={topic?.description || ''} height={120} width={120} alt=""/>
                         {/** Topic info */}
-                        <div className={clsx("flex flex-col gap-2 items-center justify-center w-full", baloo.className)}>
+                        <div className={clsx("flex flex-col gap-3 items-center justify-center w-full", baloo.className)}>
                             <div className={clsx(
                                 "rounded-full h-fit bg-amber-500 w-fit px-3 py-1.5 flex items-center justify-center text-white font-bold text-sm",
                             )}>
-                                Chủ đề 1
+                                {topic ? `Chủ đề ${topic.weekNumbers[0]}` : 'Chủ đề ##'}
                             </div>
-                            <p className='text-2xl text-amber-500 font-bold max-h-20 max-w-[80%] text-center text-wrap'>
-                                Các phép toán cơ bản
+                            <p className='text-2xl text-amber-500 font-bold max-h-20 max-w-[85%] text-center text-wrap'>
+                                {topic ? topic.title : ''}
                             </p>
                         </div>
                         {/** Time */}
                         <div className={clsx("flex flex-col items-center justify-center w-full", baloo.className)}>
                             <p className='text-xl text-[#1DA492] font-bold max-h-20 max-w-[80%] text-center text-wrap'>
-                                Học kỳ 1 - Lớp 1
+                                {topic ? `Học kỳ ${term?.name} - Lớp ${gradeLevel}` : ''}
                             </p>
                             <p className='text-3xl text-[#1DA492] font-bold max-h-20 max-w-[80%] text-center text-wrap'>
-                                12-11-2025
+                                {today}
                             </p>
                         </div>
                         {/** Learn button */}
@@ -69,9 +114,16 @@ export default function TopicRecommendPopup({ close }: { close: () => void }) {
                                         bg-pink-500 absolute items-center justify-center -right-15
                                         translate-y-50 shadow-[0_0_10px_rgba(0,0,0,0.25)]
                                         cursor-pointer hover:brightness-110 transition-all duration-200
-                                        hover:gap-7">
+                                        hover:gap-7"
+                            onClick={() => {
+                                if (topic && topic._id) {
+                                    setTopicId(topic._id)
+                                    setLectureIdx(0)
+                                    router.push(`/student/adventure/${gradeLevel}/${topic?._id}`)
+                                }
+                            }}>
                             <span className={clsx("text-center leading-tight", baloo.className)}>HỌC <br /> NGAY</span>
-                            <FontAwesomeIcon className="text-xl" icon={faArrowRight}/>
+                            <FontAwesomeIcon className="text-xl" icon={faArrowRight} />
                             <span className="absolute [clip-path:ellipse(50%_50%_at_50%_50%)] h-4 w-6 bg-[rgba(255,255,255,0.4)]
                                             top-2 right-2 rotate-45"></span>
                         </div>

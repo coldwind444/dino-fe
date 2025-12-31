@@ -122,7 +122,7 @@ export default function OnboardingClient({ systemAvatars }: { systemAvatars: str
             }
 
             // Upload avatar if user uploaded one
-            var avatarUploadedUrl = '';
+            let avatarUploadedUrl = '';
             if (option === AVATAR_OPTIONS.UPLOAD && userSelectedAvatarFile) {
                 const base64Image = await fileToBase64(userSelectedAvatarFile);
                 const uploadResult = await uploadAvatar(base64Image);

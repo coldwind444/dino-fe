@@ -131,7 +131,7 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
           {mode === MODE.LECTURE && (
             <MilestonesView
               world={world}
-              land={currLand!!}
+              land={currLand!}
               topic={topic}
               lectures={lectures}
               onBack={() => router.back()}
@@ -143,7 +143,7 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
             <ExerciseView
               setTotalScore={setTotalScore}
               setTotalReward={setTotalReward}
-              currentLecture={currentLecture!!}
+              currentLecture={currentLecture!}
               onExit={() => setMode(MODE.LECTURE)}
               onFinish={onFinish}
             />

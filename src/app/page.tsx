@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Navbar from "@/components/Navbar/Navbar";
 import Link from "next/link";
 
@@ -218,7 +218,7 @@ function FeaturesSection() {
 }
 
 // Reviews Section Component with Animation
-function ReviewsSection({ reviews }: { reviews: any[] }) {
+function ReviewsSection({ reviews }: { reviews: {name: string, role: string, content: string, }[] }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
@@ -274,7 +274,7 @@ function FeatureCard({
   icon,
   text,
 }: {
-  icon: any
+  icon: StaticImageData
   text: string
 }) {
   return (

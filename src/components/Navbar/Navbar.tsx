@@ -47,7 +47,7 @@ const parentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   [
     { name: "Thống kê", icon: faChartColumn, pathname: "/parent/dashboard" },
     { name: "Minigames", icon: faGamepad, pathname: "/parent/games" },
-    { name: "Lịch sử", icon: faHistory , pathname: "/parent/history" },
+    { name: "Lịch sử", icon: faHistory, pathname: "/parent/history" },
   ];
 
 export default function Navbar({
@@ -67,7 +67,7 @@ export default function Navbar({
   const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
   const [username, setUsername] = useState('');
-  const [avatar, setAvatar] = useState<string|null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
 
   const pathname = usePathname();
 
@@ -230,7 +230,17 @@ export default function Navbar({
           >
             <FontAwesomeIcon icon={faUserOutlined} />
           </div>
-          {avatar&&<Image src={avatar} alt="avatar" height={60} width={60} />}
+          {avatar && (
+            <div className="relative h-[60px] aspect-square overflow-hidden rounded-full"> {/* Added 'relative' */}
+              <Image
+                src={avatar}
+                alt="avatar"
+                fill
+                className="object-cover"
+                sizes="60px" // Good practice: tells Next.js this image is small
+              />
+            </div>
+          )}
           <div className={clsx("flex flex-col justify-center mt-[5px]")}>
             <label className={clsx(righteous.className, "select-none")}>
               Xin chào,

@@ -19,6 +19,20 @@ export const getTermById = async (termid: string) : Promise<TermResponse> => {
 }
 
 // Grade APIs
+export const getAllGrades = async (): Promise<GradeResponse[]> => {
+    try {
+        const res = await api.get(`/grades`)
+        return res.data.data as GradeResponse[]
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        const message =
+            err.response?.data?.message ||
+            err.message ||
+            'Lỗi hệ thống.';
+        throw new Error(message)
+    }
+}
+
 export const getGradeByLevel = async (level: number): Promise<GradeResponse[]> => {
     try {
         const res = await api.get(`/grades?level=${level}`)

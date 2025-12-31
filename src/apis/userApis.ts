@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { api } from "./config";
-import { AvatarUploadResponse, UserProfileResponse } from "@/types";
+import { AvatarUploadResponse, UpdateUserProfileRequest, UserProfileResponse } from "@/types";
 
 export const getUserProfile = async () : Promise<UserProfileResponse> => {
     try {
@@ -49,6 +49,26 @@ export const updateUserQuartz = async (delta: number) => {
         if (err.response?.status === 400) {
             message = 'Dữ liệu gửi lên không hợp lệ';
         } else if (err.response?.status === 403) {
+            message = 'Không có quyền';
+        } else if (err.response?.status === 404) {
+            message = 'Không tìm thấy user';
+        } else {
+            message =
+                err.response?.data?.message ||
+                err.message ||
+                'Lỗi hệ thống.';
+        }
+        throw new Error(message);
+    }
+}
+
+export const updateUserProfile = async (req: UpdateUserProfileRequest) => {
+    try {
+        await api.put('/users/me/profile', req)
+    } catch (error) {
+        const err = error as AxiosError<{ message?: string }>;
+        let message: string;
+        if (err.response?.status === 403) {
             message = 'Không có quyền';
         } else if (err.response?.status === 404) {
             message = 'Không tìm thấy user';

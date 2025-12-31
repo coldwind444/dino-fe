@@ -28,6 +28,12 @@ export interface CreateProgressRequest {
     status: string
 }
 
+export interface UpdateUserProfileRequest {
+    name?: string
+    avatarUrl?: string
+    gradeId?: string
+}
+
 // Response
 export interface UserResponse {
     id: string;

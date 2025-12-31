@@ -135,7 +135,7 @@ export interface ExerciseResponse {
     pairs: { left: string, right: string }[],
     correctAnswer: string,
     content: string,
-    metadata: Object,
+    metadata: object,
     difficulty: string,
     lectureId: string,
     category: string

@@ -10,6 +10,13 @@ import { getAllGrades, updateUserProfile, uploadAvatar } from "@/apis";
 import { Toaster, toast } from "react-hot-toast";
 import Loader from "../Loader/Loader";
 
+interface ProfileFormData {
+    fullname?: string,
+    gradeId?: string,
+    avatarUrl?: string,
+    email?: string,
+}
+
 export default function ProfileTab({ profileData }: { profileData: UserProfileResponse }) {
     // Refs
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,14 +40,14 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
 
     const [previewUrl, setPreviewUrl] = useState<string>(profileData.avatarUrl || ''); // preview avatar object url
 
-    const originalFormData = {
+    const originalFormData : ProfileFormData = {
         fullname: profileData.name,
         gradeId: profileData.gradeId,
         avatarUrl: profileData.avatarUrl,
         email: profileData.email,
     };
 
-    const [formData, setFormData] = useState(originalFormData);
+    const [formData, setFormData] = useState<ProfileFormData>(originalFormData);
 
     // Computed values
     // Computed values
@@ -108,7 +115,7 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
         try {
             setLoading(true)
             // Validate request
-            let req: any = { ...formData };
+            const req: ProfileFormData = { ...formData };
             delete req.email
             if (profileData.role === 'parent') {
                 delete req.gradeId
@@ -374,7 +381,7 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
                         <label className="block text-sm font-medium text-gray-700 mb-2">Khối lớp</label>
                         <div className="relative">
                             <select
-                                value={getGradeLevelById(formData.gradeId)}
+                                value={getGradeLevelById(formData.gradeId!)}
                                 onChange={(e) => setFormData({ ...formData, gradeId: getGradeIdByLevel(Number(e.target.value)) })}
                                 className="w-full p-3 pl-5 font-medium pr-10 border border-gray-300 rounded-lg focus:border-[#1ABC9C] focus:outline-none appearance-none text-[#1ABC9C]">
                                 <option value={1}>Khối 1</option>

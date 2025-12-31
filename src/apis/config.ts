@@ -1,34 +1,27 @@
-import axios, {
-  AxiosInstance,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 // =========================
 // 🔧 Base URL
 // =========================
-export const baseURL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+export const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 // =========================
-// 🧠 Token Management (in-memory + sessionStorage)
+// 🧠 Token Management (sessionStorage only, SSR-safe)
 // =========================
-let accessToken: string | null =
-  typeof window !== "undefined" ? sessionStorage.getItem("accessToken") : null;
-
 export const setAccessToken = (token: string) => {
-  accessToken = token;
   if (typeof window !== "undefined") {
     sessionStorage.setItem("accessToken", token);
   }
 };
 
 export const getAccessToken = (): string | null => {
-  return accessToken;
+  if (typeof window !== "undefined") {
+    return sessionStorage.getItem("accessToken");
+  }
+  return null;
 };
 
 export const clearAccessToken = () => {
-  accessToken = null;
   if (typeof window !== "undefined") {
     sessionStorage.removeItem("accessToken");
   }
@@ -48,7 +41,7 @@ export const api: AxiosInstance = axios.create({
 });
 
 // =========================
-// 🛡️ Request Interceptor
+// 🛡️ Request Interceptor (adds token automatically)
 // =========================
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -62,7 +55,7 @@ api.interceptors.request.use(
 );
 
 // =========================
-// ⚠️ Response Interceptor
+// ⚠️ Response Interceptor (redirect on 401)
 // =========================
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
@@ -71,7 +64,7 @@ api.interceptors.response.use(
       console.warn("Unauthorized: Token may be invalid or expired.");
       clearAccessToken();
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        window.location.href = "/auth";
       }
     }
     return Promise.reject(error);

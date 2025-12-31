@@ -1,0 +1,129 @@
+{
+  "exercises": [
+    { 
+      "question": "X + 5 = 12",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "3+4", 
+      "options": ["3", "2+3", "3+4", "9", "5+6", "13"],
+      "difficulty": "easy"
+    },
+    { 
+      "question": "X - 3 = 8",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "11", 
+      "options": ["7", "4×2", "9", "11", "6+7", "14"],
+      "difficulty": "easy"
+    },
+    { 
+      "question": "12 + X = 20",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "4×2", 
+      "options": ["2×2", "6", "7", "4×2", "5+5", "12"],
+      "difficulty": "easy"
+    },
+    { 
+      "question": "15 - X = 6",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "9", 
+      "options": ["5", "3+4", "8", "9", "11", "6×2"],
+      "difficulty": "medium"
+    },
+    { 
+      "question": "X × 4 = 16",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "2+2", 
+      "options": ["1+1", "3", "2+2", "2+3", "6", "4×2"],
+      "difficulty": "medium"
+    },
+    { 
+      "question": "18 ÷ X = 6",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "3", 
+      "options": ["2", "3", "2×2", "5", "3+3", "9"],
+      "difficulty": "hard"
+    },
+    { 
+      "question": "10 - 6 = X",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "2×2", 
+      "options": ["1+1", "3", "2×2", "5", "3×2", "7"],
+      "difficulty": "easy"
+    },
+    { 
+      "question": "8 + 7 = X",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "15", 
+      "options": ["6×2", "13", "7+7", "15", "16", "8+9"],
+      "difficulty": "easy"
+    },
+    { 
+      "question": "5 × 3 = X",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "10+5", 
+      "options": ["5×2", "12", "6+7", "10+5", "8+8", "9×2"],
+      "difficulty": "medium"
+    },
+    { 
+      "question": "16 ÷ 4 = X",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "4", 
+      "options": ["1+1", "3", "4", "2+3", "3×2", "8"],
+      "difficulty": "medium"
+    },
+    { 
+      "question": "Lan có __ quả táo. Mẹ cho thêm 5 quả thì có tất cả 12 quả.",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "3+4", 
+      "options": ["2×2", "5", "3+4", "4+4", "9", "5+5"],
+      "difficulty": "easy",
+      "metadata": { "mathExpression": "X + 5 = 12" }
+    },
+    { 
+      "question": "Minh có 12 cái bút. Bạn cho thêm __ cái thì có tất cả 20 cái",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "8", 
+      "options": ["5", "3+3", "7", "8", "9", "5×2"],
+      "difficulty": "easy",
+      "metadata": { "mathExpression": "12 + X = 20" }
+    },
+    { 
+      "question": "Có 15 quả cam. Sau khi ăn __ quả thì còn lại 6 quả.",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "5+4", 
+      "options": ["3×2", "7", "4+4", "5+4", "10", "5+6"],
+      "difficulty": "medium",
+      "metadata": { "mathExpression": "15 - X = 6" }
+    },
+    { 
+      "question": "Một hộp có 8 viên kẹo. Có __ hộp thì tất cả là 24 viên kẹo.",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "3", 
+      "options": ["1+1", "3", "2×2", "5", "3+3", "4×2"],
+      "difficulty": "hard",
+      "metadata": { "mathExpression": "8 × X = 24" }
+    },
+    { 
+      "question": "Chia 20 cái kẹo cho __ bạn, mỗi bạn được 5 cái.",
+      "content": "Kéo ô thích hợp vào ô trống", 
+      "type": "fill_in", 
+      "correctAnswer": "2×2", 
+      "options": ["2", "1+2", "2×2", "2+3", "3×2", "5×2"],
+      "difficulty": "medium",
+      "metadata": { "mathExpression": "20 ÷ X = 5" }
+    }
+  ]
+}

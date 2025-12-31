@@ -2,10 +2,10 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface LectureStoreState {
-    gradeId: string;
+    gradeLevel: string;
     topicId: string;
     lectureIdx: number;
-    setGradeId: (id: string) => void
+    setGradeLevel: (id: string) => void
     setTopicId: (id: string) => void
     setLectureIdx: (idx: number) => void;
 }
@@ -13,10 +13,10 @@ export interface LectureStoreState {
 export const useLessonStore = create<LectureStoreState>()(
     persist(
         (set, get) => ({
-            gradeId: '1',
-            topicId: '1',
+            gradeLevel: '',
+            topicId: '',
             lectureIdx: 0,
-            setGradeId: (id: string) => set({ gradeId: id }),
+            setGradeLevel: (level: string) => set({ gradeLevel: level }),
             setTopicId: (id: string) => set({ topicId: id }),
             setLectureIdx: (idx: number) => set({ lectureIdx: idx })
         }),

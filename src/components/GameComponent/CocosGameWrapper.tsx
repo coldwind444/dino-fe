@@ -1,0 +1,82 @@
+"use client";
+
+import { useRef, useImperativeHandle, forwardRef } from "react";
+import CocosGame, { type CocosGameRef } from "./CocosComponent";
+import { ExerciseResponse } from "@/types";
+
+export interface CocosGameWrapperRef {
+  checkAnswer: () => void;
+  nextQuestion: () => void;
+  restartQuiz: () => void;
+  resetCurrentQuestion: () => void;
+  showCorrectAnswer: () => void;
+  switchGame: (
+    gameIndex: number,
+    questionData?: unknown,
+    questionIndex?: number
+  ) => void;
+}
+
+interface CocosGameWrapperProps {
+  exercises: ExerciseResponse[];
+  currentExerciseIndex?: number;
+  onAnswerChecked?: (isCorrect: boolean, score: number, points?: number) => void;
+}
+
+const CocosGameWrapper = forwardRef<CocosGameWrapperRef, CocosGameWrapperProps>(
+  (props, ref) => {
+    const { onAnswerChecked, exercises, currentExerciseIndex = 0 } = props;
+    const cocosGameRef = useRef<CocosGameRef>(null);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        checkAnswer: () => {
+          if (cocosGameRef.current) {
+            cocosGameRef.current.checkAnswer();
+          }
+        },
+        nextQuestion: () => {
+          if (cocosGameRef.current) {
+            cocosGameRef.current.nextQuestion();
+          }
+        },
+        restartQuiz: () => {
+          if (cocosGameRef.current) {
+            cocosGameRef.current.restartQuiz();
+          }
+        },
+        resetCurrentQuestion: () => {
+          if (cocosGameRef.current) {
+            cocosGameRef.current.resetCurrentQuestion();
+          }
+        },
+        showCorrectAnswer: () => {
+          if (cocosGameRef.current) {
+            cocosGameRef.current.showCorrectAnswer();
+          }
+        },
+        switchGame: (
+          gameIndex: number,
+          questionData?: unknown,
+          questionIndex?: number
+        ) => {
+          if (cocosGameRef.current) {
+            cocosGameRef.current.switchGame(
+              gameIndex,
+              questionData,
+              questionIndex
+            );
+          }
+        },
+      }),
+      []
+    );
+
+    return <CocosGame ref={cocosGameRef} onAnswerChecked={onAnswerChecked} exercises={exercises} currentExerciseIndex={currentExerciseIndex} />;
+  }
+);
+
+CocosGameWrapper.displayName = "CocosGameWrapper";
+
+export default CocosGameWrapper;

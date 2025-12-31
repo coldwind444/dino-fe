@@ -2,30 +2,32 @@
 
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell } from "@fortawesome/free-regular-svg-icons";
+import { faBell, faUser as faUserOutlined } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCaretDown,
   faHouse,
   faCubes,
   faFireFlameCurved,
   faTrophy,
   faBarsProgress,
   faGamepad,
-  faUser,
+  faChartColumn,
+  faHistory,
 } from "@fortawesome/free-solid-svg-icons";
 import { Roboto } from "next/font/google";
 import { Righteous } from "next/font/google";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import brand from "../../../public/assets/brand.svg";
 import fullEgg from "../../../public/assets/landing/egg_normal.png";
 import brokenEgg from "../../../public/assets/landing/egg_break.png";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons/faSignOut";
 import Link from "next/link";
 import ProfilePopup from "../ProfilePopup/ProfilePopup";
+import { getUserProfile } from "@/apis/userApis";
+import { logout } from "@/apis/authApis";
 
 const roboto = Roboto({ subsets: ["latin"] });
 const righteous = Righteous({ weight: "400" });
@@ -38,16 +40,19 @@ const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
     { name: "Xếp hạng", icon: faTrophy, pathname: "/student/leaderboard" },
     { name: "Nhiệm vụ", icon: faBarsProgress, pathname: "/student/missions" },
     { name: "Trò chơi", icon: faGamepad, pathname: "/student/games" },
+    { name: "Lịch sử", icon: faHistory, pathname: "/student/history" },
   ];
 
 const parentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
-  [];
+  [
+    { name: "Thống kê", icon: faChartColumn, pathname: "/parent/dashboard" },
+    { name: "Minigames", icon: faGamepad, pathname: "/parent/games" },
+    { name: "Lịch sử", icon: faHistory, pathname: "/parent/history" },
+  ];
 
 export default function Navbar({
   isAuthenticated = false,
-  username = null,
   role = null,
-  avatarUrl = "",
   notifications = [],
 }: {
   isAuthenticated: boolean;
@@ -56,12 +61,46 @@ export default function Navbar({
   avatarUrl?: string;
   notifications?: { title: string; content: string }[];
 }) {
+  const router = useRouter()
   const [signUpHover, setSignUpHover] = useState(false);
-  const [popupShow, setPopupShow] = useState(false);
+  const [urls, setUrls] = useState<{ name: string, icon: IconDefinition, pathname: string }[]>([]);
   const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
+  const [username, setUsername] = useState('');
+  const [avatar, setAvatar] = useState<string | null>(null);
 
   const pathname = usePathname();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/auth');
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  }
+
+  useEffect(() => {
+    if (role === "student") {
+      setUrls(studentLinks);
+    } else if (role === "parent") {
+      setUrls(parentLinks);
+    }
+  }, [role])
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const fetchUserProfile = async () => {
+      try {
+        const res = await getUserProfile();
+        setUsername(res.name.split(' ').pop() || '');
+        setAvatar(res.avatarUrl);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    }
+    fetchUserProfile();
+  }, [])
 
   return (
     <div
@@ -73,80 +112,40 @@ export default function Navbar({
       <Image src={brand} height={20} width={100} alt="dino-brand" />
       {isAuthenticated && (
         <div className="flex gap-[20px] items-center ml-auto mr-auto">
-          {role === "student"
-            ? studentLinks.map((item, key) => (
-              <Link
-                href={item.pathname}
-                key={key}
+          {urls.map((item, key) => (
+            <Link
+              href={item.pathname}
+              key={key}
+              className={clsx(
+                "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[16px] transition-all duration-500 group cursor-pointer",
+                pathname.startsWith(item.pathname)
+                  ? "bg-[#23BEAA] max-w-[250px]"
+                  : "bg-[rgba(0,0,0,0.1)] max-w-[50px] hover:bg-[#23BEAA] hover:max-w-[250px]"
+              )}
+            >
+              <FontAwesomeIcon
                 className={clsx(
-                  "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[10px] transition-all duration-300 group cursor-pointer",
+                  "text-[20px] flex-shrink-0 transition-colors duration-300 mr-[10px]",
                   pathname.startsWith(item.pathname)
-                    ? "bg-[#23BEAA] w-[150px]"
-                    : "bg-[rgba(0,0,0,0.1)] w-[50px] hover:bg-[#23BEAA] hover:w-[150px]"
+                    ? "text-white"
+                    : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
+                )}
+                icon={item.icon}
+              />
+
+              <span
+                className={clsx(
+                  "whitespace-nowrap font-medium transition-all duration-300 text-center",
+                  pathname.startsWith(item.pathname)
+                    ? "opacity-100 text-white"
+                    : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
                 )}
               >
-                {/* ICON */}
-                <FontAwesomeIcon
-                  className={clsx(
-                    "text-[20px] flex-shrink-0 transition-colors duration-300",
-                    pathname.startsWith(item.pathname)
-                      ? "text-white"
-                      : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
-                  )}
-                  icon={item.icon}
-                />
+                {item.name}
+              </span>
+            </Link>
 
-                {/* LABEL CONTAINER — flex center aligns text */}
-                <div className="flex justify-center items-center flex-1 overflow-hidden">
-                  <span
-                    className={clsx(
-                      "block whitespace-nowrap overflow-hidden text-ellipsis font-medium transition-all duration-300 text-center",
-                      pathname.startsWith(item.pathname)
-                        ? "opacity-100 text-white"
-                        : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
-                    )}
-                  >
-                    {item.name}
-                  </span>
-                </div>
-              </Link>
-            ))
-            : parentLinks.map((item, key) => (
-              <div
-                key={key}
-                className={clsx(
-                  "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[10px] transition-all duration-300 group cursor-pointer",
-                  pathname.startsWith(item.pathname)
-                    ? "bg-[#23BEAA] w-[150px]"
-                    : "bg-[rgba(0,0,0,0.1)] w-[50px] hover:bg-[#23BEAA] hover:w-[150px]"
-                )}
-              >
-                {/* ICON */}
-                <FontAwesomeIcon
-                  className={clsx(
-                    "text-[20px] flex-shrink-0 transition-colors duration-300",
-                    pathname.startsWith(item.pathname)
-                      ? "text-white"
-                      : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
-                  )}
-                  icon={item.icon}
-                />
-
-                {/* LABEL CONTAINER — flex center aligns text */}
-                <div className="flex justify-center items-center flex-1 overflow-hidden">
-                  <span
-                    className={clsx(
-                      "block whitespace-nowrap overflow-hidden text-ellipsis font-medium transition-all duration-300 text-center",
-                      pathname.startsWith(item.pathname)
-                        ? "opacity-100 text-white"
-                        : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
-                    )}
-                  >
-                    {item.name}
-                  </span>
-                </div>
-              </div>
-            ))}
+          ))}
         </div>
       )}
       {!isAuthenticated ? (
@@ -223,8 +222,25 @@ export default function Navbar({
           >
             <FontAwesomeIcon icon={faBell} />
           </div>
-          <Image src='https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540867/avt_01_uteagr.svg'
-            alt="avatar" height={60} width={60} />
+          <div
+            className={clsx(
+              "h-[30px] aspect-square rounded-full hover:bg-[#D9D9D9] cursor-pointer",
+              "flex items-center justify-center"
+            )} onClick={() => setProfilePopupShow(true)}
+          >
+            <FontAwesomeIcon icon={faUserOutlined} />
+          </div>
+          {avatar && (
+            <div className="relative h-[60px] aspect-square overflow-hidden rounded-full"> {/* Added 'relative' */}
+              <Image
+                src={avatar}
+                alt="avatar"
+                fill
+                className="object-cover"
+                sizes="60px" // Good practice: tells Next.js this image is small
+              />
+            </div>
+          )}
           <div className={clsx("flex flex-col justify-center mt-[5px]")}>
             <label className={clsx(righteous.className, "select-none")}>
               Xin chào,
@@ -235,57 +251,14 @@ export default function Navbar({
                 "text-[22px] select-none font-bold"
               )}
             >
-              Tân
+              {username}
             </label>
           </div>
           <FontAwesomeIcon
-            onClick={() => setPopupShow((prev) => !prev)}
-            className={clsx("cursor-pointer transition-all duration-300", {
-              "rotate-180": popupShow,
-            })}
-            icon={faCaretDown}
+            onClick={() => handleLogout()}
+            className={clsx("cursor-pointer text-rose-500")}
+            icon={faSignOut}
           />
-        </div>
-      )}
-      {popupShow && (
-        <div
-          className={clsx(
-            "absolute h-[100px] w-[195px] rounded-[10px] bg-white right-0 mr-[20px] mt-[200px]",
-            "flex flex-col gap-[15px] justify-center",
-            "shadow-[0_0_15px_rgba(0,0,0,0.15)]"
-          )}
-        >
-          <div
-            onClick={() => setProfilePopupShow(true)}
-            className={clsx(
-              "flex gap-[20px] items-center pl-[20px] pt-[5px] pb-[5px] cursor-pointer hover:bg-[rgba(0,0,0,0.05)]"
-            )}
-          >
-            <FontAwesomeIcon icon={faUser} />
-            <label
-              className={clsx(
-                "font-bold cursor-pointer select-none",
-                roboto.className
-              )}
-            >
-              Hồ sơ
-            </label>
-          </div>
-          <div
-            className={clsx(
-              "flex gap-[20px] items-center pl-[20px] pt-[5px] pb-[5px] cursor-pointer hover:bg-[rgba(0,0,0,0.05)]"
-            )}
-          >
-            <FontAwesomeIcon className="text-[#FF5964]" icon={faSignOut} />
-            <label
-              className={clsx(
-                "text-[#FF5964] font-bold cursor-pointer select-none",
-                roboto.className
-              )}
-            >
-              Đăng xuất
-            </label>
-          </div>
         </div>
       )}
       <ProfilePopup

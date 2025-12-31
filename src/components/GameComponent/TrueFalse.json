@@ -1,0 +1,144 @@
+{
+  "exercises": [
+    {
+      "question": "5 + 3 = 8",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "easy",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "10 - 4 = 7",
+      "type": "true_false",
+      "correctAnswer": "false",
+      "difficulty": "easy",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "6 × 2 = 12",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "easy",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "15 ÷ 3 = 6",
+      "type": "true_false",
+      "correctAnswer": "false",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "9 + 7 = 16",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "easy",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "20 - 8 = 12",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "4 × 5 = 25",
+      "type": "true_false",
+      "correctAnswer": "false",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "18 ÷ 2 = 9",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "easy",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "7 + 8 = 14",
+      "type": "true_false",
+      "correctAnswer": "false",
+      "difficulty": "easy",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "30 - 15 = 15",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "8 × 3 = 24",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "24 ÷ 4 = 6",
+      "type": "true_false",
+      "correctAnswer": "false",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "12 + 9 = 21",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "25 - 10 = 16",
+      "type": "true_false",
+      "correctAnswer": "false",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "6 × 6 = 36",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "28 ÷ 7 = 4",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "hard",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "11 + 13 = 24",
+      "type": "true_false",
+      "correctAnswer": "false",
+      "difficulty": "medium",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "40 - 18 = 22",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "hard",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "9 × 4 = 36",
+      "type": "true_false",
+      "correctAnswer": "true",
+      "difficulty": "hard",
+      "content": "Chọn Đúng hoặc Sai"
+    },
+    {
+      "question": "35 ÷ 5 = 7",
+      "type": "true_false",
+      "correctAnswer": "false",
+      "difficulty": "hard",
+      "content": "Chọn Đúng hoặc Sai"
+    }
+  ]
+}

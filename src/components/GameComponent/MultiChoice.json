@@ -1,0 +1,84 @@
+{
+  "exercises": [
+    {
+      "question": "2 + 2 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["4", "3", "5", "6"],
+      "correctAnswer": "4",
+      "difficulty": "easy"
+    },
+    {
+      "question": "5 + 3 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["7", "8", "9", "6"],
+      "correctAnswer": "8",
+      "difficulty": "easy"
+    },
+    {
+      "question": "10 - 4 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["5", "7", "6", "8"],
+      "correctAnswer": "6",
+      "difficulty": "easy"
+    },
+    {
+      "question": "7 + 8 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["14", "16", "13", "15"],
+      "correctAnswer": "15",
+      "difficulty": "medium"
+    },
+    {
+      "question": "6 × 2 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["10", "12", "14", "8"],
+      "correctAnswer": "12",
+      "difficulty": "medium"
+    },
+    {
+      "question": "15 ÷ 3 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["5", "4", "6", "3"],
+      "correctAnswer": "5",
+      "difficulty": "medium"
+    },
+    {
+      "question": "9 + 6 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["14", "16", "15", "17"],
+      "correctAnswer": "15",
+      "difficulty": "medium"
+    },
+    {
+      "question": "20 - 8 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["11", "12", "13", "14"],
+      "correctAnswer": "12",
+      "difficulty": "medium"
+    },
+    {
+      "question": "4 × 5 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["15", "25", "20", "30"],
+      "correctAnswer": "20",
+      "difficulty": "hard"
+    },
+    {
+      "question": "18 ÷ 2 = ?",
+      "type": "choice",
+      "content": "Chọn đáp án đúng",
+      "options": ["8", "9", "10", "7"],
+      "correctAnswer": "9",
+      "difficulty": "medium"
+    }
+  ]
+}

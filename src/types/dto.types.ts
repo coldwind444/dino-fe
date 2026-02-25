@@ -115,7 +115,8 @@ export interface TopicResponse {
     description: string,
     gradeId: string,
     termId: string,
-    weekNumbers: number[]
+    weekNumbers: number[],
+    level: number
 }
 
 export interface LectureResponse {

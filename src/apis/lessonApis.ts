@@ -1,11 +1,10 @@
-import { CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, TermResponse, TopicResponse } from "@/types";
+import { CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, Pagination, TermResponse, TopicResponse } from "@/types";
 import { AxiosError } from "axios";
 import api from "./config";
 
 // Term APIs
 export const getTermById = async (termid: string) : Promise<TermResponse> => {
     try {
-        console.log(termid)
         const res = await api.get(`/academic-terms/${termid}`)
         return res.data as TermResponse
     } catch (error) {
@@ -19,23 +18,9 @@ export const getTermById = async (termid: string) : Promise<TermResponse> => {
 }
 
 // Grade APIs
-export const getAllGrades = async (): Promise<GradeResponse[]> => {
+export const getGrades = async (params?: Record<string, any>): Promise<GradeResponse[]> => {
     try {
-        const res = await api.get(`/grades`)
-        return res.data.data as GradeResponse[]
-    } catch (error) {
-        const err = error as AxiosError<{ message?: string }>;
-        const message =
-            err.response?.data?.message ||
-            err.message ||
-            'Lỗi hệ thống.';
-        throw new Error(message)
-    }
-}
-
-export const getGradeByLevel = async (level: number): Promise<GradeResponse[]> => {
-    try {
-        const res = await api.get(`/grades?level=${level}`)
+        const res = await api.get(`/grades`, { params })
         return res.data.data as GradeResponse[]
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
@@ -76,6 +61,11 @@ export const getGradeProgress = async (gradeId: string): Promise<GradeProgressRe
 }
 
 // Topic APIs
+export type PaginationTopicResponse = {
+    items: TopicResponse[];
+    pagination: Pagination;
+}
+
 export const getTopicById = async (topicId: string): Promise<TopicResponse> => {
     try {
         const res = await api.get(`/topics/${topicId}`)
@@ -104,12 +94,10 @@ export const getRecentTopics = async (limit: number): Promise<string[]> => {
     }
 }
 
-export const getTopicsByGradeId = async (gradeId: string): Promise<TopicResponse[]> => {
+export const getTopics = async (params?: Record<string, any>) : Promise<PaginationTopicResponse> => {
     try {
-        const res = await api.get(`/topics?gradeId=${gradeId}`)
-        const topics = res.data.items as TopicResponse[]
-        const sortedTopics = topics.sort((a, b) => (a.weekNumbers[0] ?? Infinity) - (b.weekNumbers[0] ?? Infinity))
-        return sortedTopics
+        const res = await api.get(`/topics`, { params })
+        return res.data as PaginationTopicResponse
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
         const message =

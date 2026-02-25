@@ -3,7 +3,7 @@ import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 
 // =========================
 // 🔧 Base URL
 // =========================
-export const baseURL = process.env.NEXT_PUBLIC_API_URL;
+export const baseURL = '/backend';
 
 // =========================
 // 🧠 Token Management (sessionStorage only, SSR-safe)

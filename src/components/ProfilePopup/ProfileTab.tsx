@@ -9,15 +9,20 @@ import clsx from "clsx";
 import { getAllGrades, updateUserProfile, uploadAvatar } from "@/apis";
 import { Toaster, toast } from "react-hot-toast";
 import Loader from "../Loader/Loader";
+// 1. Import useRouter
+import { useRouter } from "next/navigation";
 
 interface ProfileFormData {
-    fullname?: string,
+    name?: string,
     gradeId?: string,
     avatarUrl?: string,
     email?: string,
 }
 
-export default function ProfileTab({ profileData }: { profileData: UserProfileResponse }) {
+export default function ProfileTab({ profileData, onUpdateSuccess }: { profileData: UserProfileResponse, onUpdateSuccess: () => void }) {
+    // 2. Initialize router
+    const router = useRouter();
+
     // Refs
     const fileInputRef = useRef<HTMLInputElement>(null);
     const avatarContainerRef = useRef<HTMLDivElement>(null);
@@ -26,22 +31,19 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
     const [loading, setLoading] = useState(false)
 
     // Data states
-    // states for grade mapping
     const [gradeLevels, setGradeLevels] = useState<number[]>([])
     const [gradeIds, setGradeIds] = useState<string[]>([])
 
     // states for avatar management
     const [avatarType, setAvatarType] = useState<'system' | 'user'>('system')
+    const [systemAvatars, setSystemAvatars] = useState<string[]>([]);
+    const [currSysAvatarIndex, setCurrSysAvatarIndex] = useState(0);
+    const [avatarFile, setAvatarFile] = useState<File | undefined>()
+    const [previewUrl, setPreviewUrl] = useState<string>(profileData.avatarUrl || '');
 
-    const [systemAvatars, setSystemAvatars] = useState<string[]>([]); // sys avt array
-    const [currSysAvatarIndex, setCurrSysAvatarIndex] = useState(0); // for system avt
-
-    const [avatarFile, setAvatarFile] = useState<File | undefined>() // media file for uploaded avt
-
-    const [previewUrl, setPreviewUrl] = useState<string>(profileData.avatarUrl || ''); // preview avatar object url
-
-    const originalFormData : ProfileFormData = {
-        fullname: profileData.name,
+    // Form Data
+    const originalFormData: ProfileFormData = {
+        name: profileData.name,
         gradeId: profileData.gradeId,
         avatarUrl: profileData.avatarUrl,
         email: profileData.email,
@@ -50,26 +52,19 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
     const [formData, setFormData] = useState<ProfileFormData>(originalFormData);
 
     // Computed values
-    // Computed values
     const hasAvatarChanged = (() => {
-        // Case 1: User Mode - Only changed if a NEW file is uploaded
         if (avatarType === 'user') {
             return !!avatarFile;
         }
-
-        // Case 2: System Mode - Changed if selected URL != Original URL
-        // We check systemAvatars.length to avoid initial undefined issues
         if (avatarType === 'system' && systemAvatars.length > 0) {
             return systemAvatars[currSysAvatarIndex] !== originalFormData.avatarUrl;
         }
-
         return false;
     })();
 
-    // Combine form data check + avatar check
     const isFormDirty = JSON.stringify(formData) !== JSON.stringify(originalFormData) || hasAvatarChanged;
 
-    // Map grade level <=> grade id
+    // Helpers
     const getGradeIdByLevel = (level: number) => {
         const idx = gradeLevels.indexOf(level)
         if (idx !== -1) return gradeIds[idx]
@@ -82,22 +77,18 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
         return ''
     }
 
-    // Functions
+    // Handlers
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Save selected file
         setAvatarFile(file)
 
-        // Validate MIME type (safer than relying only on 'accept' attribute)
         if (!file.type.startsWith("image/")) {
             alert("Please select a valid image file (PNG, JPG, etc.)");
-            e.target.value = ""; // reset input so user can re-select same file
+            e.target.value = "";
             return;
         }
-
-        // Reset the input to allow re-selecting same file
         e.target.value = "";
     };
 
@@ -105,7 +96,6 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-
             reader.onload = () => resolve(reader.result as string);
             reader.onerror = error => reject(error);
         });
@@ -114,14 +104,12 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
     const handleUpdateProfile = async () => {
         try {
             setLoading(true)
-            // Validate request
             const req: ProfileFormData = { ...formData };
             delete req.email
             if (profileData.role === 'parent') {
                 delete req.gradeId
             }
 
-            // Avatar upload
             let finalAvatarUrl = originalFormData.avatarUrl;
             if (avatarType === 'user' && avatarFile) {
                 const base64Image = await fileToBase64(avatarFile);
@@ -132,8 +120,14 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
             }
             req.avatarUrl = finalAvatarUrl
 
-            // Call API
             await updateUserProfile(req)
+            
+            toast.success("Cập nhật thông tin thành công!");
+            onUpdateSuccess();
+
+            // 3. Refresh the router to fetch new data from server
+            router.refresh();
+
         } catch (error: unknown) {
             if (error instanceof Error) {
                 toast.error(error.message);
@@ -146,17 +140,49 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
     };
 
     // Effects
+
+    // 4. NEW EFFECT: Sync state when profileData changes (after router.refresh)
+    useEffect(() => {
+        // Reset Form Data to new props
+        setFormData({
+            name: profileData.name,
+            gradeId: profileData.gradeId,
+            avatarUrl: profileData.avatarUrl,
+            email: profileData.email,
+        });
+
+        // Reset Avatar Preview to new props
+        setPreviewUrl(profileData.avatarUrl || '');
+        setAvatarFile(undefined); // Clear uploaded file
+
+        // Determine correct avatar type based on new URL
+        if (profileData.avatarUrl && systemAvatars.includes(profileData.avatarUrl)) {
+            setAvatarType('system');
+            setCurrSysAvatarIndex(systemAvatars.indexOf(profileData.avatarUrl));
+        } else {
+            setAvatarType('user');
+        }
+
+    }, [profileData, systemAvatars]);
+
+
     useEffect(() => {
         const fetchAvatars = async () => {
             try {
                 const res = await fetch("https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/sys_avatars.json");
                 const avatars = await res.json();
-
-                const idx = avatars.indexOf(profileData.avatarUrl)
-                if (idx != -1) setCurrSysAvatarIndex(idx);
-                else setAvatarType('user')
-
                 setSystemAvatars(avatars);
+                
+                // Initial load logic
+                const idx = avatars.indexOf(profileData.avatarUrl)
+                if (idx != -1) {
+                    setCurrSysAvatarIndex(idx);
+                    setAvatarType('system')
+                }
+                else {
+                    setAvatarType('user')
+                }
+
             } catch (error) {
                 console.error("Failed to fetch avatars:", error);
             }
@@ -176,39 +202,30 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
 
         fetchAllGrades()
         fetchAvatars();
-    }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); 
 
+    // Preview Logic
     useEffect(() => {
         if (avatarType === 'system') {
-            // CRITICAL CHECK: Only update if system avatars have actually loaded.
-            // Otherwise, keep the initial state value.
             if (systemAvatars.length > 0 && systemAvatars[currSysAvatarIndex]) {
                 setPreviewUrl(systemAvatars[currSysAvatarIndex]);
             }
         } else if (avatarType === 'user') {
-            let url = '';
             if (avatarFile) {
-                url = URL.createObjectURL(avatarFile);
+                const url = URL.createObjectURL(avatarFile);
                 setPreviewUrl(url);
+                return () => URL.revokeObjectURL(url);
             } else {
-                // Fallback: If in user mode but no file is selected yet, 
-                // keep showing the original avatar.
-                setPreviewUrl(profileData.avatarUrl);
+                // If switched to user but no file, revert to current profile url
+                setPreviewUrl(profileData.avatarUrl || '');
             }
         }
-
-        // Cleanup memory
-        return () => {
-            if (avatarType === 'user' && avatarFile) {
-                URL.revokeObjectURL(previewUrl);
-            }
-        };
     }, [avatarType, currSysAvatarIndex, avatarFile, systemAvatars, profileData.avatarUrl]);
-    // Added 'systemAvatars' to dependencies so it updates once the API loads
 
+    // Scroll Logic
     useEffect(() => {
         if (!avatarContainerRef.current || currSysAvatarIndex === -1) return;
-
         const container = avatarContainerRef.current;
         const child = container.children[currSysAvatarIndex];
         if (!child) return;
@@ -238,7 +255,7 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
                             {previewUrl === '' && <label className="text-center text-gray-500 font-medium">Chưa có ảnh nào <br /> được tải lên.</label>}
                             {previewUrl && <Image
                                 src={previewUrl}
-                                alt="Chưa có ảnh nào được tải lên."
+                                alt="Avatar preview"
                                 fill
                                 className="w-full h-full object-cover"
                             />}
@@ -355,8 +372,8 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
                     <div className="relative">
                         <input
                             type="text"
-                            value={formData.fullname}
-                            onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             className="w-full p-3 pl-5 pr-10 border font-medium border-gray-300 rounded-lg focus:border-[#1ABC9C] focus:outline-none text-[#1ABC9C]"
                         />
                         <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer">
@@ -372,7 +389,7 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
                                 type="email" readOnly
                                 value={formData.email}
                                 className="w-full p-3 pl-5 pr-10 border border-gray-300 bg-gray-100 
-                                        cursor-not-allowed rounded-lg font-medium text-gray-500"
+                                            cursor-not-allowed rounded-lg font-medium text-gray-500"
                             />
                         </div>
                     </div>
@@ -402,7 +419,7 @@ export default function ProfileTab({ profileData }: { profileData: UserProfileRe
                 onClick={handleUpdateProfile}
                 disabled={!isFormDirty || loading}
                 className={clsx(
-                    "max-w-lg ml-20 py-3 rounded-xl font-semibold text-base transition-colors w-full relative", // Ensure 'relative' is here
+                    "max-w-lg ml-20 py-3 rounded-xl font-semibold text-base transition-colors w-full relative",
                     isFormDirty
                         ? "bg-[#1ABC9C] text-white hover:bg-[#16A085]"
                         : "bg-gray-300 text-gray-500 cursor-not-allowed"

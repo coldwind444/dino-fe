@@ -76,11 +76,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
   const [profile, setProfile] = useState<UserProfileResponse>();
   const [loading, setLoading] = useState(false);
 
-  // Effects
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const fetchUserProfile = async () => {
+  const fetchUserProfile = async () => {
       try {
         setLoading(true);
         const res = await getUserProfile();
@@ -92,6 +88,9 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
       }
     };
 
+  // Effects
+  useEffect(() => {
+    if (!isOpen) return;
     fetchUserProfile();
   }, [isOpen]);
 
@@ -198,7 +197,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
               <ContentSkeleton />
             ) : (
               <>
-                {activeTab === "profile" && <ProfileTab profileData={profile}/>}
+                {activeTab === "profile" && <ProfileTab profileData={profile} onUpdateSuccess={fetchUserProfile}/>}
                 {activeTab === "password" && <PasswordTab />}
                 {activeTab === "link" && <AccountLinkTab />}
               </>

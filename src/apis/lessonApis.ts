@@ -124,7 +124,7 @@ export const getCompletedTopics = async (limit?: number): Promise<string[]> => {
 
 export const getRecommendedTopicByGradeId = async (gradeId: string): Promise<TopicResponse> => {
     try {
-        const zuluDateTime = '2025-10-30T00:00:00.000Z'; 
+        const zuluDateTime = new Date().toISOString();
         const res = await api.get(`/topics/ongoing?gradeId=${gradeId}&date=${zuluDateTime}`)
         const topics = res.data.topics as TopicResponse[]
         return topics[0]
@@ -152,13 +152,32 @@ export const createProgress = async (req: CreateProgressRequest) => {
 }
 
 // Lecture APIs
+export type PaginationLectureResponse = {
+    items: LectureResponse[];
+    pagination: Pagination;
+}
+
+const DIFFICULTY_ORDER = new Map<string, number>([
+    ['easy', 1],
+    ['medium', 2],
+    ['hard', 3]
+])
+
 export const getLecturesByTopicId = async (topicId: string): Promise<LectureResponse[]> => {
     try {
-        const easy = await api.get(`/lectures?topicId=${topicId}&difficulty=easy`)
-        const medium = await api.get(`/lectures?topicId=${topicId}&difficulty=medium`)
-        const hard = await api.get(`/lectures?topicId=${topicId}&difficulty=hard`)
-        const res = [...easy.data.items, ...medium.data.items, ...hard.data.items]
-        return res as LectureResponse[]
+        const res = await api.get(`/lectures?topicId=${topicId}&page=1&limit=100000`) as PaginationLectureResponse
+        const lectures = res.items as LectureResponse[]
+        const sortedLectures = lectures.sort((a, b) => {
+            const diff = DIFFICULTY_ORDER.get(a.difficulty)! - DIFFICULTY_ORDER.get(b.difficulty)!;
+            
+            if (diff !== 0) {
+                return diff;
+            }
+            
+            return a.title.localeCompare(b.title);
+        })
+
+        return sortedLectures
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;
         const message =

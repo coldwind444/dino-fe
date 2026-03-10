@@ -17,6 +17,7 @@ interface LessonClientProps {
   noUnlocked: number;
   noComplete: number;
   recentTopic?: TopicResponse;
+  changePage: (isNext: boolean) => void;
 }
 
 export default function LessonView({
@@ -27,24 +28,15 @@ export default function LessonView({
   noUnlocked,
   noComplete,
   recentTopic,
+  changePage,
 }: LessonClientProps) {
   const router = useRouter();
   const { gradeLevel, setTopicId, setLectureIdx } = useLessonStore();
-  const [currentPage, setCurrentPage] = useState(1);
 
   const navigateToLecture = (topicId: string) => {
     setTopicId(topicId);
     setLectureIdx(0);
     router.push(`/student/adventure/${gradeLevel}/${topicId}`);
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < topics.pagination.totalPages)
-      setCurrentPage(currentPage + 1);
   };
 
   return (
@@ -205,9 +197,8 @@ export default function LessonView({
           {/* Navigation */}
           <div className="flex justify-center gap-4">
             <button
-              onClick={handlePrevPage}
-              disabled={currentPage === 0}
-              className="w-12 h-12 rounded-full border-2 border-[#1ABC9C] flex items-center justify-center text-[#1ABC9C] hover:bg-[#1ABC9C] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1ABC9C]"
+              onClick={() => changePage(false)}
+              className="cursor-pointer w-12 h-12 rounded-full border-2 border-[#1ABC9C] flex items-center justify-center text-[#1ABC9C] hover:bg-[#1ABC9C] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1ABC9C]"
             >
               <svg
                 className="w-6 h-6"
@@ -224,9 +215,8 @@ export default function LessonView({
               </svg>
             </button>
             <button
-              onClick={handleNextPage}
-              disabled={currentPage === topics.pagination.totalPages}
-              className="w-12 h-12 rounded-full border-2 border-[#1ABC9C] flex items-center justify-center text-[#1ABC9C] hover:bg-[#1ABC9C] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1ABC9C]"
+              onClick={() => changePage(true)}
+              className="cursor-pointer w-12 h-12 rounded-full border-2 border-[#1ABC9C] flex items-center justify-center text-[#1ABC9C] hover:bg-[#1ABC9C] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1ABC9C]"
             >
               <svg
                 className="w-6 h-6"

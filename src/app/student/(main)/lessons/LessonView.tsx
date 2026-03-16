@@ -3,11 +3,10 @@
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import { useState } from "react";
-import { useLessonStore } from "@/stores/lessonStore";
 import { useRouter } from "next/navigation";
 import { GradeProgressResponse, GradeResponse, TopicResponse } from "@/types";
 import { PaginationTopicResponse } from "@/apis";
+import { useLessonStore } from "@/stores/lessonStore";
 
 interface LessonClientProps {
   topics: PaginationTopicResponse;
@@ -31,11 +30,9 @@ export default function LessonView({
   changePage,
 }: LessonClientProps) {
   const router = useRouter();
-  const { gradeLevel, setTopicId, setLectureIdx } = useLessonStore();
+  const { gradeLevel } = useLessonStore();
 
   const navigateToLecture = (topicId: string) => {
-    setTopicId(topicId);
-    setLectureIdx(0);
     router.push(`/student/adventure/${gradeLevel}/${topicId}`);
   };
 
@@ -112,9 +109,6 @@ export default function LessonView({
                   Số chủ đề đã học: <strong>{noComplete}</strong>
                 </div>
                 <div>
-                  Chủ đề học gần nhất: <strong>{`CĐ ${1}`}</strong>
-                </div>
-                <div>
                   Số chủ đề đã mở khóa:{" "}
                   <strong>{`${noUnlocked}/${topics.items.length}`}</strong>
                 </div>
@@ -133,7 +127,7 @@ export default function LessonView({
                 <div className="flex-1 flex justify-start pl-8">
                   <div className="w-40 h-40 flex items-center justify-center">
                     <Image
-                      src={topics.items[0]?.description || ""}
+                      src={recentTopic?.description || ""}
                       alt="featured topic"
                       width={120}
                       height={120}
@@ -143,12 +137,15 @@ export default function LessonView({
                 </div>
                 <div className="flex flex-col items-center text-center flex-1">
                   <div className="inline-block bg-[#C4F1EB] text-[#1DA492] text-[18px] font-bold px-5 py-2 rounded-full text-sm mb-4">
-                    {`Chủ đề ${topics.items[0]?.level}`}
+                    {`Chủ đề ${recentTopic?.level}`}
                   </div>
                   <h2 className="text-xl font-bold text-[#1ABC9C] mb-6 px-4">
-                    {topics.items[0]?.title}
+                    {recentTopic?.title}
                   </h2>
-                  <button className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative cursor-pointer">
+                  <button
+                    className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative cursor-pointer"
+                    onClick={() => navigateToLecture(recentTopic?._id!)}
+                  >
                     <span className="absolute top-2 right-4 w-2 h-2 rounded-full bg-white/40" />
                     Bắt đầu
                     <FontAwesomeIcon icon={faPlay} className="text-sm" />

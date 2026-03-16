@@ -83,7 +83,13 @@ export default function LessonsPage() {
       .catch(console.error);
   }, [grade, currentPage]);
 
-  if (!grade || userQuartz === undefined || !topicsPgRes || !gradeProgress) {
+  if (
+    !grade ||
+    userQuartz === undefined ||
+    !topicsPgRes ||
+    !gradeProgress ||
+    !recentTopic
+  ) {
     return <ScreenLoader />;
   }
 
@@ -96,6 +102,7 @@ export default function LessonsPage() {
       noComplete={noCompletedTopics}
       noUnlocked={noUnlockedTopics}
       changePage={handleChangePage}
+      recentTopic={recentTopic!}
     />
   );
 }

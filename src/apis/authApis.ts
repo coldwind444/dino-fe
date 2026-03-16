@@ -25,7 +25,7 @@ export const login = async (req: LoginRequest): Promise<LoginResponse> => {
     try {
         const res = await publicApi.post('/auth/login', req);
         const resData = res.data as LoginResponse;
-        if (resData.token) setAccessToken(resData.token);
+        if (resData.token && resData.user.role) setAccessToken(resData.token, resData.user.role);
         return resData;
     } catch (error) {
         const err = error as AxiosError<{ message?: string }>;

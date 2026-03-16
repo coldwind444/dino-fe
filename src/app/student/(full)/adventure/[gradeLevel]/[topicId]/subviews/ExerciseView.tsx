@@ -12,11 +12,12 @@ import { Roboto, Righteous } from "next/font/google";
 const confetti = "/assets/exercises/confetti.png";
 const sadFace = "/assets/exercises/sad.png";
 
-
-import CocosGameWrapper, { type CocosGameWrapperRef } from "@/components/GameComponent/CocosGameWrapper";
-import { useLessonStore } from "@/stores/lessonStore";
+import CocosGameWrapper, {
+  type CocosGameWrapperRef,
+} from "@/components/GameComponent/CocosGameWrapper";
 import { ExerciseResponse, LectureResponse } from "@/types";
-import { getExercisesByLectureId } from "@/apis";
+import { getExercises } from "@/apis";
+import React from "react";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
@@ -29,7 +30,13 @@ interface ExerciseViewProps {
   onFinish: (max: number) => void;
 }
 
-export default function ExerciseView({ currentLecture, onExit, onFinish, setTotalScore, setTotalReward }: ExerciseViewProps) {
+export default function ExerciseView({
+  currentLecture,
+  onExit,
+  onFinish,
+  setTotalScore,
+  setTotalReward,
+}: ExerciseViewProps) {
   // Refs
   const cocosGameRef = useRef<CocosGameWrapperRef>(null);
 
@@ -45,10 +52,12 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
   const [showSubmitBanner, setShowSubmitBanner] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
   const [doneExercises, setDoneExercises] = useState<number[]>([]);
+  const [mode, setMode] = useState<"selection" | "lesson" | "exercise">(
+    "lesson",
+  );
 
   // Data states
-  const { lectureIdx } = useLessonStore();
-  const [exercises, setExercises] = useState<ExerciseResponse[]>([])
+  const [exercises, setExercises] = useState<ExerciseResponse[]>([]);
   const [currExIdx, setCurrExIdx] = useState(0);
 
   // Functions
@@ -58,14 +67,18 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
     }
   };
 
-  const handleAnswerChecked = (isCorrect: boolean, score: number, points: number = 0) => {
+  const handleAnswerChecked = (
+    isCorrect: boolean,
+    score: number,
+    points: number = 0,
+  ) => {
     console.log(
       "handleAnswerChecked called - Answer result:",
       isCorrect,
       "Score:",
       score,
       "Points:",
-      points
+      points,
     );
     setIsAnswerCorrect(isCorrect);
 
@@ -73,9 +86,9 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
       setShowSubmitBanner(true);
       setDoneExercises([...doneExercises, currExIdx]);
       if (isCorrect) {
-        setTimeout(() => setCurrentPoints(points), 300)
-        setTotalScore(prev => prev + 1)
-        setTotalReward(prev => prev + points)
+        setTimeout(() => setCurrentPoints(points), 300);
+        setTotalScore((prev) => prev + 1);
+        setTotalReward((prev) => prev + points);
       }
     }
   };
@@ -83,7 +96,10 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
   const handleContinueAfterAnswer = () => {
     setShowSubmitBanner(false);
 
-    if (doneExercises.length < exercises.length && currExIdx < exercises.length - 1) {
+    if (
+      doneExercises.length < exercises.length &&
+      currExIdx < exercises.length - 1
+    ) {
       setCurrExIdx(currExIdx + 1);
     } else {
       if (onFinish) {
@@ -104,19 +120,22 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const exs = await getExercisesByLectureId(currentLecture._id, 40);
+        const exs = await getExercises({
+          lectureId: currentLecture._id,
+          limit: 50,
+        });
         setExercises(exs);
       } catch (error) {
         console.error("Error fetching exercises:", error);
       }
-    }
+    };
     fetchExercises();
-  }, [])
+  }, []);
 
   useEffect(() => {
     setShowSubmitBanner(false);
     setCurrentPoints(0);
-  }, [currExIdx])
+  }, [currExIdx]);
 
   return (
     <motion.div
@@ -131,7 +150,7 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
       <div
         className={clsx(
           "bg-[rgba(0,0,0,0.7)] rounded-tr-[20px] rounded-br-[20px]",
-          "h-full w-[300px] flex flex-col pt-[10px] pl-[20px]"
+          "h-full w-[300px] flex flex-col pt-[10px] pl-[20px]",
         )}
       >
         {/** Exit button */}
@@ -139,7 +158,7 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
           className={clsx(
             "h-[40px] w-[120px] items-center relative cursor-pointer",
             "bg-[#C7434C] rounded-[15px] overflow-hidden",
-            "hover:brightness-110 transition-all duration-200"
+            "hover:brightness-110 transition-all duration-200",
           )}
           onClick={onExit}
         >
@@ -147,7 +166,7 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
             className={clsx(
               "h-full w-full flex flex-row items-center justify-center bg-[#FF5964] text-white",
               "rounded-tl-[60px] rounded-br-[60px] rounded-tr-[20px] rounded-bl-[20px] gap-[10px]",
-              "font-medium"
+              "font-medium",
             )}
           >
             <FontAwesomeIcon icon={faClose} />
@@ -156,37 +175,38 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
           <span
             className={clsx(
               "absolute h-[10px] aspect-square bg-[rgba(255,255,255,0.5)] rounded-full",
-              "top-0 right-0 -translate-x-[50%] translate-y-[50%]"
+              "top-0 right-0 -translate-x-[50%] translate-y-[50%]",
             )}
           />
         </div>
-        {/* Main */}
+        {/* Question numbers area */}
         <div
           className={clsx(
             "flex flex-col text-white mt-[50px]",
-            roboto.className
+            roboto.className,
           )}
         >
-          <label className="text-[18px] font-semibold">{`Bài ${lectureIdx + 1
-            }`}</label>
+          <label className="text-[18px] font-semibold">{`Bài ${1}`}</label>
           <h2 className="max-w-[250px] text-wrap text-[23px] font-bold">
-            {currentLecture.title}
+            {currentLecture?.title}
           </h2>
         </div>
         <div className="flex flex-row flex-wrap gap-[8px] max-w-[90%] mt-[50px] max-h-80 overflow-y-auto">
           {exercises.map((ex, idx) => (
             <div
               key={idx}
-              onClick={() => {if (!doneExercises.includes(idx)) setCurrExIdx(idx); }}
+              onClick={() => {
+                if (!doneExercises.includes(idx)) setCurrExIdx(idx);
+              }}
               className={clsx(
                 "h-[40px] aspect-square rounded-full cursor-pointer relative font-bold",
                 currExIdx === idx
                   ? "bg-[#1DA492] text-white"
-                  : doneExercises.includes(idx) ?
-                    'bg-amber-500 text-white'
+                  : doneExercises.includes(idx)
+                    ? "bg-amber-500 text-white"
                     : "bg-[#C4F1EB] text-[#1DA492]",
                 "hover:opacity-90 flex items-center justify-center",
-                righteous.className
+                righteous.className,
               )}
             >
               {idx + 1}
@@ -197,7 +217,7 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
                   "[clip-path:ellipse(50%_50%_at_50%_50%)]",
                   currExIdx === idx || doneExercises.includes(idx)
                     ? "bg-[rgba(255,255,255,0.3)]"
-                    : "bg-white"
+                    : "bg-white",
                 )}
               />
             </div>
@@ -208,38 +228,43 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
           className={clsx(
             "h-[60px] w-[230px] bg-amber-700 rounded-[15px] cursor-pointer",
             "hover:brightness-110 transition-all duration-200 overflow-hidden",
-            "font-bold text-white mt-auto mb-10"
-          )} onClick={() => { if (doneExercises.length === exercises.length) onFinish(exercises.length);}}
+            "font-bold text-white mt-auto mb-10",
+          )}
+          onClick={() => {
+            if (doneExercises.length === exercises.length)
+              onFinish(exercises.length);
+          }}
         >
           <div
             className={clsx(
               "h-full w-full bg-amber-600 cursor-pointer relative",
               "flex items-center justify-center",
               "font-bold text-white text-[20px]",
-              "rounded-tl-[40px] rounded-br-[40px]"
+              "rounded-tl-[40px] rounded-br-[40px]",
             )}
           >
             Nộp bài
             <span
               className={clsx(
                 "h-[20px] aspect-square bg-[rgba(255,255,255,0.3)] absolute",
-                "top-0 right-0 -translate-x-[50%] translate-y-[30%] rounded-full"
+                "top-0 right-0 -translate-x-[50%] translate-y-[30%] rounded-full",
               )}
             ></span>
           </div>
         </div>
       </div>
-      {/* Lectures panel */}
+
+      {/* Main container */}
       <div
         className={clsx(
-          "flex flex-col flex-1 bg-[rgba(0,0,0,0.7)] gap-[10px] rounded-[20px] pt-[20px] overflow-hidden"
+          "flex flex-col flex-1 bg-[rgba(0,0,0,0.7)] gap-[10px] rounded-[20px] pt-[20px] overflow-hidden",
         )}
       >
         <div className="flex flex-col gap-[10px] items-center">
           <div
             className={clsx(
               "text-white font-bold bg-[#1DA492] rounded-full",
-              "px-[20px] py-[5px] w-fit flex items-center justify-center"
+              "px-[20px] py-[5px] w-fit flex items-center justify-center",
             )}
           >
             {`CÂU ${currExIdx + 1}`}
@@ -254,7 +279,7 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
             onAnswerChecked={handleAnswerChecked}
           />
         </div>
-        {/** Buttons */}
+        {/** Buttons and Banners */}
         <div className="flex flex-1 flex-row w-full items-center justify-center">
           <AnimatePresence mode="wait">
             {!showSubmitBanner ? (
@@ -268,7 +293,7 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
                 className={clsx(
                   "h-[50px] w-[250px] bg-[#1DA492] rounded-[15px] cursor-pointer",
                   "hover:brightness-110 transition-all duration-200 overflow-hidden",
-                  "font-bold text-white flex items-center"
+                  "font-bold text-white flex items-center",
                 )}
                 onClick={handleCheckAnswer}
               >
@@ -277,14 +302,14 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
                     "h-full w-full bg-[#23BEAA] cursor-pointer relative",
                     "flex items-center justify-center",
                     "font-bold text-white text-[16px]",
-                    "rounded-tl-[40px] rounded-br-[40px]"
+                    "rounded-tl-[40px] rounded-br-[40px]",
                   )}
                 >
                   Kiểm tra câu trả lời
                   <span
                     className={clsx(
                       "h-[20px] aspect-square bg-[rgba(255,255,255,0.3)] absolute",
-                      "top-0 right-0 -translate-x-[50%] translate-y-[30%] rounded-full"
+                      "top-0 right-0 -translate-x-[50%] translate-y-[30%] rounded-full",
                     )}
                   ></span>
                 </div>
@@ -310,7 +335,7 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
                     className={clsx(
                       roboto.className,
                       "text-2xl font-bold",
-                      isAnswerCorrect ? "text-green-400" : "text-red-400"
+                      isAnswerCorrect ? "text-green-400" : "text-red-400",
                     )}
                   >
                     {isAnswerCorrect
@@ -347,8 +372,10 @@ export default function ExerciseView({ currentLecture, onExit, onFinish, setTota
                   </div>
                 ) : (
                   <div className="flex flex-col gap-[20px] items-center justify-center ml-auto mr-0">
-                    <div className="h-[50px] w-[200px] text-white text-xl rounded-full bg-red-400 flex items-center justify-center cursor-pointer hover:brightness-105"
-                      onClick={handleShowCorrectAnswer}>
+                    <div
+                      className="h-[50px] w-[200px] text-white text-xl rounded-full bg-red-400 flex items-center justify-center cursor-pointer hover:brightness-105"
+                      onClick={handleShowCorrectAnswer}
+                    >
                       Xem đáp án
                     </div>
                     <div

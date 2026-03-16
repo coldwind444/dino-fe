@@ -51,7 +51,13 @@ export interface RegisterResponse {
 export interface LoginResponse {
     message: string;
     token: string;
-    user: UserResponse
+    user: {
+        id: string;
+        email: string;
+        role: string;
+        name: string;
+        avatarUrl: string;
+    }
 }
 
 export interface UserProfileResponse {
@@ -125,7 +131,8 @@ export interface LectureResponse {
     contentType: string,
     description: string,
     difficulty: string,
-    topicId: string
+    topicId: string,
+    order: number
 }
 
 export interface ExerciseResponse {

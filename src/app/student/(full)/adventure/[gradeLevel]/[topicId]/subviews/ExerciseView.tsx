@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faClose } from "@fortawesome/free-solid-svg-icons";
 import { Roboto, Righteous } from "next/font/google";
 
-const confetti = "/assets/exercises/confetti.png";
+const congrats = "/assets/exercises/praise.png";
 const sadFace = "/assets/exercises/sad.png";
 
 import CocosGameWrapper, {
@@ -18,6 +18,8 @@ import CocosGameWrapper, {
 import { ExerciseResponse, LectureResponse } from "@/types";
 import { getExercises } from "@/apis";
 import React from "react";
+import ExplainModal, { Theme } from "@/components/ExplainModal/ExplainModal";
+import { useLessonStore } from "@/stores/lessonStore";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
@@ -30,6 +32,8 @@ interface ExerciseViewProps {
   onFinish: (max: number) => void;
 }
 
+const THEME_ARRAY: Theme[] = ["prairie", "forest", "beach", "desert", "ruby"];
+
 export default function ExerciseView({
   currentLecture,
   onExit,
@@ -39,6 +43,7 @@ export default function ExerciseView({
 }: ExerciseViewProps) {
   // Refs
   const cocosGameRef = useRef<CocosGameWrapperRef>(null);
+  const { gradeLevel } = useLessonStore();
 
   // Rising animated points
   const [currentPoints, setCurrentPoints] = useState(0);
@@ -52,9 +57,8 @@ export default function ExerciseView({
   const [showSubmitBanner, setShowSubmitBanner] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
   const [doneExercises, setDoneExercises] = useState<number[]>([]);
-  const [mode, setMode] = useState<"selection" | "lesson" | "exercise">(
-    "lesson",
-  );
+  const [showExplainModal, setShowExplainModal] = useState(false);
+  const [showExplainButton, setShowExplainButton] = useState(false);
 
   // Data states
   const [exercises, setExercises] = useState<ExerciseResponse[]>([]);
@@ -95,6 +99,7 @@ export default function ExerciseView({
 
   const handleContinueAfterAnswer = () => {
     setShowSubmitBanner(false);
+    setShowExplainButton(false);
 
     if (
       doneExercises.length < exercises.length &&
@@ -111,6 +116,7 @@ export default function ExerciseView({
   };
 
   const handleShowCorrectAnswer = () => {
+    setShowExplainButton(true);
     if (cocosGameRef.current) {
       cocosGameRef.current.showCorrectAnswer();
     }
@@ -257,7 +263,7 @@ export default function ExerciseView({
       {/* Main container */}
       <div
         className={clsx(
-          "flex flex-col flex-1 bg-[rgba(0,0,0,0.7)] gap-[10px] rounded-[20px] pt-[20px] overflow-hidden",
+          "relative flex flex-col flex-1 bg-[rgba(0,0,0,0.7)] gap-[10px] rounded-[20px] pt-[20px] overflow-hidden",
         )}
       >
         <div className="flex flex-col gap-[10px] items-center">
@@ -280,7 +286,7 @@ export default function ExerciseView({
           />
         </div>
         {/** Buttons and Banners */}
-        <div className="flex flex-1 flex-row w-full items-center justify-center">
+        <div className="flex flex-1 flex-row w-full items-end justify-center">
           <AnimatePresence mode="wait">
             {!showSubmitBanner ? (
               // Check button
@@ -293,7 +299,7 @@ export default function ExerciseView({
                 className={clsx(
                   "h-[50px] w-[250px] bg-[#1DA492] rounded-[15px] cursor-pointer",
                   "hover:brightness-110 transition-all duration-200 overflow-hidden",
-                  "font-bold text-white flex items-center",
+                  "font-bold text-white flex items-center mb-10",
                 )}
                 onClick={handleCheckAnswer}
               >
@@ -322,15 +328,20 @@ export default function ExerciseView({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.2, ease: "easeInOut" }}
-                className="h-full w-full bg-[rgba(255,255,255,0.15)] border-t-2 border-t-[rgba(255,255,255,0.2)] flex flex-row items-center px-[50px]"
+                className="h-[90%] relative w-full bg-[rgba(255,255,255,0.15)] border-t-2 border-t-[rgba(255,255,255,0.2)] flex flex-row items-center px-[50px]"
               >
                 <Image
-                  src={isAnswerCorrect ? confetti : sadFace}
+                  src={isAnswerCorrect ? congrats : sadFace}
                   alt=""
-                  height={100}
-                  width={100}
+                  height={200}
+                  width={200}
+                  className="absolute -top-16 z-10"
+                  style={{
+                    filter:
+                      "drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.5))",
+                  }}
                 />
-                <div className="flex flex-col gap-[10px] ml-[100px]">
+                <div className="flex flex-col gap-[10px] ml-60">
                   <h1
                     className={clsx(
                       roboto.className,
@@ -372,12 +383,21 @@ export default function ExerciseView({
                   </div>
                 ) : (
                   <div className="flex flex-col gap-[20px] items-center justify-center ml-auto mr-0">
-                    <div
-                      className="h-[50px] w-[200px] text-white text-xl rounded-full bg-red-400 flex items-center justify-center cursor-pointer hover:brightness-105"
-                      onClick={handleShowCorrectAnswer}
-                    >
-                      Xem đáp án
-                    </div>
+                    {!showExplainButton ? (
+                      <div
+                        className="h-[50px] w-[200px] text-white text-xl rounded-full bg-red-400 flex items-center justify-center cursor-pointer hover:brightness-105"
+                        onClick={handleShowCorrectAnswer}
+                      >
+                        Xem đáp án
+                      </div>
+                    ) : (
+                      <div
+                        className="h-[50px] w-[200px] text-white text-xl rounded-full bg-amber-500 flex items-center justify-center cursor-pointer hover:brightness-105"
+                        onClick={() => setShowExplainModal(true)}
+                      >
+                        Xem giải thích
+                      </div>
+                    )}
                     <div
                       className="flex flex-row gap-[10px] text-xl text-white items-center justify-center font-bold cursor-pointer hover:gap-[20px] transition-all duration-200"
                       onClick={handleContinueAfterAnswer}
@@ -391,6 +411,14 @@ export default function ExerciseView({
             )}
           </AnimatePresence>
         </div>
+
+        {/* Explain Modal */}
+        <ExplainModal
+          theme={THEME_ARRAY[Number(gradeLevel) - 1]}
+          explanation=""
+          isOpen={showExplainModal}
+          onClose={() => setShowExplainModal(false)}
+        />
       </div>
     </motion.div>
   );

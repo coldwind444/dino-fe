@@ -55,7 +55,7 @@ export default function ExplainModal({
           onClick={onClose}
         >
           <motion.div
-            className="relative w-[800px] max-w-[90vw]"
+            className="relative w-[850px] max-w-[90vw]"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
@@ -71,15 +71,15 @@ export default function ExplainModal({
             <Image
               src={themeBackgrounds[theme]}
               alt={`${theme} background`}
-              width={800}
-              height={800}
+              width={850}
+              height={850}
               className="w-full h-auto block pointer-events-none select-none"
               priority
             />
 
             {/* Close button */}
             <button
-              className="group absolute top-[9%] right-[9%] w-16 h-16 cursor-pointer bg-transparent border-none p-0 z-10 transition-transform duration-200 ease-in-out hover:scale-115"
+              className="group absolute top-[5%] right-[5%] w-16 h-16 cursor-pointer bg-transparent border-none p-0 z-10 transition-transform duration-100 ease-in-out hover:scale-115"
               onClick={onClose}
             >
               <Image
@@ -94,19 +94,25 @@ export default function ExplainModal({
             {/* Explanation text */}
             <div
               className={clsx(
-                "absolute top-[18%] left-[12%] right-[12%] bottom-[18%] flex justify-center",
-                "overflow-y-auto px-8 pb-2 explain-modal-scrollbar",
-                theme === "prairie" || theme === "forest"
-                  ? "pt-5"
-                  : theme === "beach" || theme === "desert"
-                    ? "pt-16"
-                    : theme === "ruby"
-                      ? "pt-8"
-                      : "",
+                "absolute  left-[12%] right-[15%] bottom-[18%] flex justify-center",
+                "overflow-y-auto px-20 pb-2 explain-modal-scrollbar",
+                theme === "prairie" ||
+                  theme === "forest" ||
+                  theme === "desert" ||
+                  theme === "beach"
+                  ? "top-[25%]"
+                  : theme === "ruby"
+                    ? "top-[15%]"
+                    : "",
               )}
             >
-              <p className="text-lg leading-relaxed text-amber-800 text-justify whitespace-pre-wrap break-words">
-                {explanation.length === 0 ? dummyText : explanation}
+              <p
+                className={clsx(
+                  "text-lg leading-relaxed text-justify whitespace-pre-wrap break-words",
+                  theme === "ruby" ? "text-white" : "text-amber-800",
+                )}
+              >
+                {explanation.length === 0 ? dummyText + dummyText : explanation}
               </p>
             </div>
           </motion.div>

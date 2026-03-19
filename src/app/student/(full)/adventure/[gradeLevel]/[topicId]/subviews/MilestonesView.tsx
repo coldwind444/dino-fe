@@ -197,7 +197,7 @@ export default function MilestonesView({
           <div className="h-full w-full overflow-hidden flex flex-col items-center gap-4 relative">
             {/* Back button */}
             <button
-              onClick={() => setMode("slider")}
+              onClick={() => setMode("select")}
               className="absolute top-1 left-7 flex items-center cursor-pointer justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all duration-200 hover:scale-110"
             >
               <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />

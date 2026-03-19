@@ -26,6 +26,7 @@ import Link from "next/link";
 import { login, register } from "@/apis";
 import Loader from "@/components/Loader/Loader";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 const roboto = Roboto();
 const fredoka = Fredoka();
@@ -86,7 +87,7 @@ export default function Auth() {
     if (role === ROLES.STUDENT)
       return (
         strongPassword.test(password2) &&
-        validEmail.test(email2) &&
+        email2.length >= 8 &&
         confPassword === password2
       );
     else
@@ -103,7 +104,6 @@ export default function Auth() {
     try {
       setLoginLoading(true);
       const res = await login({ email, password });
-      console.log(JSON.stringify(res));
       if (res.user.role === ROLES.PARENT) {
         router.push("/parent/dashboard");
       } else if (res.user.role === ROLES.STUDENT) {
@@ -212,7 +212,7 @@ export default function Auth() {
           </Link>
           {/** Tabs container*/}
           <div className={clsx("flex flex-col mt-[100%] mb-auto")}>
-            {/** Log in tab */}
+            {/** Log in tab button*/}
             <div
               className={clsx(
                 "flex flex-row gap-[30px] items-center text-white h-[50px] cursor-pointer",
@@ -237,7 +237,7 @@ export default function Auth() {
                 Đăng nhập
               </label>
             </div>
-            {/** Sign up tab */}
+            {/** Sign up tab button*/}
             <div
               className={clsx(
                 "flex flex-row gap-[30px] items-center text-white h-[50px] cursor-pointer",
@@ -330,7 +330,7 @@ export default function Auth() {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           setEmail(e.target.value)
                         }
-                        placeholder="Email"
+                        placeholder="Email hoặc tên đăng nhập"
                         width="330"
                         value={email}
                       />
@@ -340,7 +340,7 @@ export default function Auth() {
                         }
                         onStateChange={onStateChange}
                         value={password}
-                        placeholder="Password"
+                        placeholder="Mật khẩu"
                         width="330"
                       />
                     </div>
@@ -372,20 +372,25 @@ export default function Auth() {
                         <Loader isLoading={loginLoading} />
                       </div>
                     </button>
-                    {/** Login with Google button */}
-                    <div className="h-5 w-[300px] flex relative items-center justify-center">
-                      <span className="h-0.5 w-full bg-gray-200"></span>
-                      <span className="mr-auto ml-auto absolute bg-white px-2 text-gray-400">
-                        Hoặc
-                      </span>
-                    </div>
-                    <div
-                      className="h-18 w-[330px] rounded-full border border-gray-300 flex flex-row items-center px-5 gap-8
-                                                        cursor-pointer hover:bg-gray-50 transition-all duration-150"
-                    >
-                      <Image src={google} alt="" height={40} width={40} />
-                      <span className="font-bold">Đăng nhập bằng Google</span>
-                    </div>
+                    {/** Login with google */}
+                    <React.Fragment>
+                      <div className="h-5 w-[300px] flex relative items-center justify-center">
+                        <span className="h-0.5 w-full bg-gray-200"></span>
+                        <span className="mr-auto ml-auto absolute bg-white px-2 text-gray-400">
+                          Hoặc
+                        </span>
+                      </div>
+                      <div
+                        className="h-18 w-[330px] rounded-full border border-gray-300 flex flex-row items-center px-5 gap-8
+                                                          cursor-pointer hover:bg-gray-50 transition-all duration-150"
+                      >
+                        <Image src={google} alt="" height={40} width={40} />
+                        <span className="text-center">
+                          <strong>Đăng nhập với Google</strong> <br /> (chỉ dành
+                          cho Phụ huynh)
+                        </span>
+                      </div>
+                    </React.Fragment>
                   </div>
                 </div>
               </div>
@@ -462,7 +467,31 @@ export default function Auth() {
                     </div>
                   </div>
                   {/** Sign up step container */}
-                  <div className="flex items-center justify-center gap-[20px] flex-col h-full w-1/2 bg-white">
+                  <div className="flex items-center justify-center gap-[20px] flex-col h-full w-1/2 bg-white relative">
+                    {/** Back button */}
+                    <div
+                      className={clsx(
+                        "absolute top-[40px] left-[40px] flex flex-row items-center justify-center gap-[15px] text-[#91AA9F]",
+                        "cursor-pointer hover:gap-[25px] hover:text-[#23BEAA] transition-all duration-200",
+                      )}
+                      onClick={() => {
+                        setRegisterStep(AUTHSTEPS.SELECT_ROLE);
+                        resetRegister();
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        className="h-[20px] w-[20px]"
+                        icon={faArrowLeft}
+                      />
+                      <label
+                        className={clsx(
+                          "text-[18px] font-medium cursor-pointer select-none",
+                          roboto.className,
+                        )}
+                      >
+                        Quay lại
+                      </label>
+                    </div>
                     <div className="flex flex-col gap-[2px] items-center justify-center">
                       <Image src={logo} height={80} width={80} alt="" />
                       <h1
@@ -471,7 +500,7 @@ export default function Auth() {
                           "text-[27px] font-bold text-[#1DA492]",
                         )}
                       >
-                        Đăng ký
+                        {`Đăng ký tài khoản ${role === ROLES.PARENT ? "phụ huynh" : "học sinh"}`}
                       </h1>
                       <p
                         className={clsx(
@@ -506,31 +535,52 @@ export default function Auth() {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           setEmail2(e.target.value)
                         }
-                        placeholder="Email"
+                        placeholder={
+                          role === ROLES.PARENT ? "Email" : "Tên đăng nhập"
+                        }
                         width="330"
+                        requirement={
+                          role === ROLES.PARENT
+                            ? "Email phải đúng định dạng"
+                            : "Tên đăng nhập phải ≥8 ký tự"
+                        }
                         value={email2}
+                        isValid={
+                          role === ROLES.PARENT
+                            ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email2)
+                            : email2.length >= 8
+                        }
+                        showTooltip
                       />
                       <RoundedPasswordBox
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           setPassword2(e.target.value)
                         }
-                        placeholder="Password"
+                        placeholder="Mật khẩu"
                         width="330"
                         value={password2}
+                        requirement="Mật khẩu phải ≥8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt"
+                        isValid={
+                          password2.length >= 8 &&
+                          /[A-Z]/.test(password2) &&
+                          /[a-z]/.test(password2) &&
+                          /[0-9]/.test(password2) &&
+                          /[^A-Za-z0-9]/.test(password2)
+                        }
+                        showTooltip
                       />
                       <RoundedPasswordBox
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           setConfPassword(e.target.value)
                         }
-                        placeholder="Confirm password"
+                        placeholder="Xác nhận mật khẩu"
                         width="330"
                         value={confPassword}
+                        isValid={password2 === confPassword}
+                        showTooltip
+                        requirement="Xác nhận mật khẩu phải khớp."
                       />
                     </div>
-                    <p className="text-amber-500 w-[260px] font-medium text-wrap text-center ml-auto mr-auto italic text-[15px]">
-                      *Mật khẩu phải ≥8 ký tự, có chữ hoa, chữ thường, số và ký
-                      tự đặc biệt
-                    </p>
                     <button
                       disabled={!canRegister()}
                       className={clsx(
@@ -550,31 +600,24 @@ export default function Auth() {
                         <Loader isLoading={regLoading} />
                       </div>
                     </button>
-                    <div
-                      className={clsx(
-                        "flex flex-col gap-[5px] items-center justify-center",
-                        "cursor-pointer group hover:text-[#23BEAA]",
-                      )}
-                      onClick={() => {
-                        setRegisterStep(AUTHSTEPS.SELECT_ROLE);
-                        resetRegister();
-                      }}
-                    >
-                      <div
-                        className={clsx(
-                          "aspect-square h-[80px] flex items-center justify-center",
-                          "rounded-[20px] border-2 border-[rgba(0,0,0,0.2)]",
-                        )}
-                      >
-                        <FontAwesomeIcon
-                          className="group-hover:scale-150 transition-all duration-200"
-                          icon={faArrowLeft}
-                        />
-                      </div>
-                      <label className="font-medium cursor-pointer select-none">
-                        Quay lại
-                      </label>
-                    </div>
+                    {/** Register with Google button */}
+                    {role === ROLES.PARENT && (
+                      <React.Fragment>
+                        <div className="h-5 w-[300px] flex relative items-center justify-center">
+                          <span className="h-0.5 w-full bg-gray-200"></span>
+                          <span className="mr-auto ml-auto absolute bg-white px-2 text-gray-400">
+                            Hoặc
+                          </span>
+                        </div>
+                        <div
+                          className="h-18 w-[330px] rounded-full border border-gray-300 flex flex-row items-center px-5 gap-8
+                                                          cursor-pointer hover:bg-gray-50 transition-all duration-150"
+                        >
+                          <Image src={google} alt="" height={40} width={40} />
+                          <span className="font-bold">Đăng ký với Google</span>
+                        </div>
+                      </React.Fragment>
+                    )}
                   </div>
                 </div>
               </div>

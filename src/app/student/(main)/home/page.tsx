@@ -18,6 +18,7 @@ import EntranceTestPopup from "@/components/EntranceTestPopup/EntranceTestPopup"
 import {
   getCompletedTopics,
   getGradeById,
+  getGrades,
   getRecentTopics,
   getRecommendedTopicByGradeId,
   getTopicById,
@@ -61,40 +62,51 @@ export default function StudentHome() {
 
   // Effects
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTopics = async () => {
       try {
         setIsLoading(true);
-        const [userRes, recentTopicsRes, compTopicsRes] = await Promise.all([
-          getUserProfile(),
-          getRecentTopics(1),
+        const [recentTopicsRes, compTopicsRes, gradeRes] = await Promise.all([
+          getRecentTopics(10),
           getCompletedTopics(10),
+          getGrades({ level: gradeLevel }),
         ]);
-
-        // Trim lastname
-        const lastname = userRes.name.trim().split(/\s+/).pop() ?? "";
-        setUsername(lastname);
-
-        // Fetch user grade
-        if (userRes.gradeId) {
-          const grade = await getGradeById(userRes.gradeId);
-          if (grade && gradeLevel === "") setGradeLevel(grade.level.toString());
-
-          const recommend = await getRecommendedTopicByGradeId(userRes.gradeId);
-          setRecommendedTopic(recommend);
-        }
 
         // Fetch recent studied topics
         if (recentTopicsRes && recentTopicsRes.length > 0) {
-          const rtopic = await getTopicById(recentTopicsRes[0]);
-          setRecentTopic(rtopic);
+          const filteredTopics = recentTopicsRes.filter(
+            (t) => t.gradeId === gradeRes[0]._id,
+          );
+          setRecentTopic(filteredTopics[0]);
         }
 
         // Fetch completed topics
         if (compTopicsRes && compTopicsRes.length > 0) {
-          const completedTopics = await Promise.all(
-            compTopicsRes.map((topicId) => getTopicById(topicId)),
+          const filteredTopics = compTopicsRes.filter(
+            (t) => t.gradeId === gradeRes[0]._id,
           );
-          setCompletedTopics(completedTopics);
+          setCompletedTopics(filteredTopics);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTopics();
+  }, [gradeLevel]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const userRes = await getUserProfile();
+        const lastname = userRes.name.trim().split(/\s+/).pop() ?? "";
+        setUsername(lastname);
+        if (userRes.gradeId) {
+          const grade = await getGradeById(userRes.gradeId);
+          if (grade && gradeLevel === "") setGradeLevel(grade.level.toString());
+          const recommend = await getRecommendedTopicByGradeId(userRes.gradeId);
+          setRecommendedTopic(recommend);
         }
       } catch (err) {
         console.log("Failed to fetch data.", err);

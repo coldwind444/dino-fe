@@ -16,6 +16,7 @@ interface LessonClientProps {
   noUnlocked: number;
   noComplete: number;
   recentTopic?: TopicResponse;
+  firstTopic?: TopicResponse;
   changePage: (isNext: boolean) => void;
 }
 
@@ -27,6 +28,7 @@ export default function LessonView({
   noUnlocked,
   noComplete,
   recentTopic,
+  firstTopic,
   changePage,
 }: LessonClientProps) {
   const router = useRouter();
@@ -54,23 +56,27 @@ export default function LessonView({
             {/* Progress Card */}
             <div className="mb-4 bg-white rounded-[20px] border-[1px] border-[#23BEAA] p-4 -translate-x-[3px] w-full">
               <div className="flex flex-col items-center">
-                <Image
-                  src={grade.description}
-                  alt="progress"
-                  width={80}
-                  height={80}
-                  className="w-20 h-20 object-contain mb-2"
-                />
+                {grade && (
+                  <Image
+                    src={grade?.description || ""}
+                    alt="progress"
+                    width={80}
+                    height={80}
+                    className="w-20 h-20 object-contain mb-2"
+                  />
+                )}
                 <div className="text-[14px] text-gray-700 font-medium mb-1">
                   Tiến trình hiện tại
                 </div>
                 <div className="text-4xl font-bold text-[#23BEAA] mb-3">
-                  {Math.floor(gradeProgress.percent)}%
+                  {Math.floor(gradeProgress?.percent || 0)}%
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-[#23BEAA] h-2 rounded-full transition-all"
-                    style={{ width: `${Math.floor(gradeProgress.percent)}%` }}
+                    style={{
+                      width: `${Math.floor(gradeProgress?.percent || 0)}%`,
+                    }}
                   ></div>
                 </div>
               </div>
@@ -110,7 +116,7 @@ export default function LessonView({
                 </div>
                 <div>
                   Số chủ đề đã mở khóa:{" "}
-                  <strong>{`${noUnlocked}/${topics.items.length}`}</strong>
+                  <strong>{`${noUnlocked}/${topics?.pagination.total}`}</strong>
                 </div>
               </div>
             </div>
@@ -126,28 +132,38 @@ export default function LessonView({
               <div className="flex items-center justify-between gap-6">
                 <div className="flex-1 flex justify-start pl-8">
                   <div className="w-40 h-40 flex items-center justify-center">
-                    <Image
-                      src={recentTopic?.description || ""}
-                      alt="featured topic"
-                      width={120}
-                      height={120}
-                      className="object-contain"
-                    />
+                    {(recentTopic || firstTopic) && (
+                      <Image
+                        src={
+                          recentTopic
+                            ? recentTopic?.description
+                            : firstTopic?.description || ""
+                        }
+                        alt="featured topic"
+                        width={120}
+                        height={120}
+                        className="object-contain"
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col items-center text-center flex-1">
                   <div className="inline-block bg-[#C4F1EB] text-[#1DA492] text-[18px] font-bold px-5 py-2 rounded-full text-sm mb-4">
-                    {`Chủ đề ${recentTopic?.level}`}
+                    {`Chủ đề ${recentTopic ? recentTopic?.level : firstTopic?.level}`}
                   </div>
                   <h2 className="text-xl font-bold text-[#1ABC9C] mb-6 px-4">
-                    {recentTopic?.title}
+                    {recentTopic ? recentTopic?.title : firstTopic?.title}
                   </h2>
                   <button
                     className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative cursor-pointer"
-                    onClick={() => navigateToLecture(recentTopic?._id!)}
+                    onClick={() =>
+                      navigateToLecture(
+                        recentTopic ? recentTopic?._id : firstTopic?._id!,
+                      )
+                    }
                   >
                     <span className="absolute top-2 right-4 w-2 h-2 rounded-full bg-white/40" />
-                    Bắt đầu
+                    {recentTopic ? "Tiếp tục" : "Bắt đầu"}
                     <FontAwesomeIcon icon={faPlay} className="text-sm" />
                   </button>
                 </div>
@@ -158,7 +174,7 @@ export default function LessonView({
 
           {/* Topic Grid */}
           <div className="grid grid-cols-4 gap-6 mb-6">
-            {topics.items.map((topic, index) => {
+            {topics?.items?.map((topic, index) => {
               return (
                 <div
                   key={index}

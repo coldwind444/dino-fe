@@ -25,14 +25,17 @@ export default function LessonsPage() {
   const [grade, setGrade] = useState<GradeResponse | null>(null);
   const [topicsPgRes, setTopicsPgRes] =
     useState<PaginationTopicResponse | null>(null);
-
   const [userQuartz, setUserQuartz] = useState<number | undefined>();
-
   const [gradeProgress, setGradeProgress] =
     useState<GradeProgressResponse | null>();
   const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
   const [noCompletedTopics, setNoCompletedTopics] = useState(0);
   const [noUnlockedTopics, setNoUnlockedTopics] = useState(0);
+  const [firstTopic, setFirstTopic] = useState<TopicResponse | null>(null);
+
+  // Loading state
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,43 +55,69 @@ export default function LessonsPage() {
 
   // Init fetch grade and user data
   useEffect(() => {
-    getGrades({ level: gradeLevel })
-      .then((res) => setGrade(res[0]))
-      .catch(console.error);
+    const fetchProfileData = async () => {
+      setProfileLoading(true);
+      try {
+        const [grades, profile] = await Promise.all([
+          getGrades({ level: gradeLevel }),
+          getUserProfile(),
+        ]);
+        setGrade(grades[0]);
+        setUserQuartz(profile.quartz);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      } finally {
+        setProfileLoading(false);
+      }
+    };
 
-    getUserProfile()
-      .then((res) => setUserQuartz(res.quartz))
-      .catch(console.error);
+    fetchProfileData();
   }, [gradeLevel]);
 
   // Fetch related data when grade is set
   useEffect(() => {
     if (!grade) return;
 
-    getTopics({ gradeId: grade._id, limit: TOPICS_PER_PAGE, page: currentPage })
-      .then((res) => setTopicsPgRes(res))
-      .catch(console.error);
+    const fetchLessonData = async () => {
+      setDataLoading(true);
+      try {
+        const [topics, progress, recent] = await Promise.all([
+          getTopics({
+            gradeId: grade._id,
+            limit: TOPICS_PER_PAGE,
+            page: currentPage,
+          }),
+          getGradeProgress(grade._id),
+          getRecentTopics(1),
+        ]);
 
-    getGradeProgress(grade._id)
-      .then((res) => setGradeProgress(res))
-      .catch(console.error);
-
-    getRecentTopics(1)
-      .then(async (res) => {
-        if (res?.length > 0 && res[0]) {
-          const rtopic = await getTopicById(res[0]);
-          setRecentTopic(rtopic);
+        if (topics.pagination.page === 1) {
+          setFirstTopic(topics.items[0]);
         }
-      })
-      .catch(console.error);
+        setTopicsPgRes(topics);
+        setGradeProgress(progress);
+
+        if (recent?.length > 0 && recent[0]) {
+          const filteredTopics = recent.filter((t) => t.gradeId === grade._id);
+          setRecentTopic(filteredTopics[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching lesson data:", error);
+      } finally {
+        setDataLoading(false);
+      }
+    };
+
+    fetchLessonData();
   }, [grade, currentPage]);
 
   if (
+    profileLoading ||
+    dataLoading ||
     !grade ||
-    userQuartz === undefined ||
     !topicsPgRes ||
     !gradeProgress ||
-    !recentTopic
+    !userQuartz
   ) {
     return <ScreenLoader />;
   }
@@ -96,13 +125,14 @@ export default function LessonsPage() {
   return (
     <LessonView
       topics={topicsPgRes}
-      grade={grade!}
+      grade={grade}
       userQuartz={userQuartz}
-      gradeProgress={gradeProgress!}
+      gradeProgress={gradeProgress}
       noComplete={noCompletedTopics}
       noUnlocked={noUnlockedTopics}
       changePage={handleChangePage}
       recentTopic={recentTopic!}
+      firstTopic={firstTopic!}
     />
   );
 }

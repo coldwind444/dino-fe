@@ -59,12 +59,12 @@ export default function Auth() {
   const [regLoading, setRegLoading] = useState(false);
 
   // Login request states
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [passwordShow, setPasswordShow] = useState(false);
 
   // Register request states
-  const [email2, setEmail2] = useState("");
+  const [identifier2, setIdentifier2] = useState("");
   const [password2, setPassword2] = useState("");
   const [confPassword, setConfPassword] = useState("");
   const [fullName, setFullName] = useState(""); // only for parent
@@ -76,7 +76,7 @@ export default function Auth() {
 
   // Check if data is valid for login
   const canLogin = () => {
-    return email.length > 0 && password.length > 0;
+    return identifier.length > 0 && password.length > 0;
   };
 
   // Check if data is valid for register
@@ -87,13 +87,13 @@ export default function Auth() {
     if (role === ROLES.STUDENT)
       return (
         strongPassword.test(password2) &&
-        email2.length >= 8 &&
+        identifier2.length >= 8 &&
         confPassword === password2
       );
     else
       return (
         strongPassword.test(password2) &&
-        validEmail.test(email2) &&
+        validEmail.test(identifier2) &&
         confPassword === password2 &&
         fullName.length > 0
       );
@@ -103,7 +103,7 @@ export default function Auth() {
   const handleLogin = async () => {
     try {
       setLoginLoading(true);
-      const res = await login({ email, password });
+      const res = await login({ identifier, password });
       if (res.user.role === ROLES.PARENT) {
         router.push("/parent/dashboard");
       } else if (res.user.role === ROLES.STUDENT) {
@@ -130,8 +130,9 @@ export default function Auth() {
   const handleRegister = async () => {
     try {
       setRegLoading(true);
-      const res = await register({
-        email: email2,
+      await register({
+        email: role === ROLES.PARENT ? identifier2 : "",
+        username: role === ROLES.STUDENT ? identifier2 : "",
         password: password2,
         role,
         name: role === ROLES.PARENT ? fullName : "",
@@ -156,13 +157,13 @@ export default function Auth() {
 
   // Clear all login fields
   const resetLogin = () => {
-    setEmail("");
+    setIdentifier("");
     setPassword("");
   };
 
   // Clear all register fields
   const resetRegister = () => {
-    setEmail2("");
+    setIdentifier2("");
     setPassword2("");
     setFullName("");
     setConfPassword("");
@@ -328,11 +329,11 @@ export default function Auth() {
                     <div className="flex flex-col gap-[10px]">
                       <RoundedTextBox
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setEmail(e.target.value)
+                          setIdentifier(e.target.value)
                         }
                         placeholder="Email hoặc tên đăng nhập"
                         width="330"
-                        value={email}
+                        value={identifier}
                       />
                       <RoundedPasswordBox
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -362,7 +363,7 @@ export default function Auth() {
                         "disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center",
                         {
                           "cursor-pointer hover:opacity-90":
-                            email.length > 0 && password.length > 0,
+                            identifier.length > 0 && password.length > 0,
                         },
                       )}
                       onClick={() => handleLogin()}
@@ -533,7 +534,7 @@ export default function Auth() {
                       )}
                       <RoundedTextBox
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setEmail2(e.target.value)
+                          setIdentifier2(e.target.value)
                         }
                         placeholder={
                           role === ROLES.PARENT ? "Email" : "Tên đăng nhập"
@@ -544,11 +545,11 @@ export default function Auth() {
                             ? "Email phải đúng định dạng"
                             : "Tên đăng nhập phải ≥8 ký tự"
                         }
-                        value={email2}
+                        value={identifier2}
                         isValid={
                           role === ROLES.PARENT
-                            ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email2)
-                            : email2.length >= 8
+                            ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier2)
+                            : identifier2.length >= 8
                         }
                         showTooltip
                       />
@@ -588,7 +589,7 @@ export default function Auth() {
                         "disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center",
                         {
                           "cursor-pointer hover:opacity-90":
-                            email2.length > 0 &&
+                            identifier2.length > 0 &&
                             password2.length > 0 &&
                             password2 === confPassword,
                         },
@@ -600,24 +601,6 @@ export default function Auth() {
                         <Loader isLoading={regLoading} />
                       </div>
                     </button>
-                    {/** Register with Google button */}
-                    {role === ROLES.PARENT && (
-                      <React.Fragment>
-                        <div className="h-5 w-[300px] flex relative items-center justify-center">
-                          <span className="h-0.5 w-full bg-gray-200"></span>
-                          <span className="mr-auto ml-auto absolute bg-white px-2 text-gray-400">
-                            Hoặc
-                          </span>
-                        </div>
-                        <div
-                          className="h-18 w-[330px] rounded-full border border-gray-300 flex flex-row items-center px-5 gap-8
-                                                          cursor-pointer hover:bg-gray-50 transition-all duration-150"
-                        >
-                          <Image src={google} alt="" height={40} width={40} />
-                          <span className="font-bold">Đăng ký với Google</span>
-                        </div>
-                      </React.Fragment>
-                    )}
                   </div>
                 </div>
               </div>

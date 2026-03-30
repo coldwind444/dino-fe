@@ -111,12 +111,14 @@ export default function TopicRecommendPopup({
               GỢI Ý CHƯƠNG TRÌNH HỌC
             </h1>
             {/** Image placeholder */}
-            <Image
-              src={topic?.description || ""}
-              height={120}
-              width={120}
-              alt=""
-            />
+            {topic && (
+              <Image
+                src={topic?.description || ""}
+                height={120}
+                width={120}
+                alt=""
+              />
+            )}
             {/** Topic info */}
             <div
               className={clsx(

@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faUser as faUserOutlined } from "@fortawesome/free-regular-svg-icons";
+import {
+  faBell,
+  faUser as faUserOutlined,
+} from "@fortawesome/free-regular-svg-icons";
 import {
   faHouse,
   faCubes,
@@ -26,8 +29,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons/faSignOut";
 import Link from "next/link";
 import ProfilePopup from "../ProfilePopup/ProfilePopup";
-import { getUserProfile } from "@/apis/userApis";
-import { logout } from "@/apis/authApis";
+import { getUserProfile } from "@/apis/user";
+import { logout } from "@/apis/auth";
 
 const roboto = Roboto({ subsets: ["latin"] });
 const righteous = Righteous({ weight: "400" });
@@ -61,12 +64,14 @@ export default function Navbar({
   avatarUrl?: string;
   notifications?: { title: string; content: string }[];
 }) {
-  const router = useRouter()
+  const router = useRouter();
   const [signUpHover, setSignUpHover] = useState(false);
-  const [urls, setUrls] = useState<{ name: string, icon: IconDefinition, pathname: string }[]>([]);
+  const [urls, setUrls] = useState<
+    { name: string; icon: IconDefinition; pathname: string }[]
+  >([]);
   const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
 
   const pathname = usePathname();
@@ -74,11 +79,11 @@ export default function Navbar({
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/auth');
+      router.push("/auth");
     } catch (error) {
       console.error("Logout failed:", error);
     }
-  }
+  };
 
   useEffect(() => {
     if (role === "student") {
@@ -86,27 +91,27 @@ export default function Navbar({
     } else if (role === "parent") {
       setUrls(parentLinks);
     }
-  }, [role])
+  }, [role]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
     const fetchUserProfile = async () => {
       try {
         const res = await getUserProfile();
-        setUsername(res.name.split(' ').pop() || '');
+        setUsername(res.name.split(" ").pop() || "");
         setAvatar(res.avatarUrl);
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
-    }
+    };
     fetchUserProfile();
-  }, [])
+  }, []);
 
   return (
     <div
       className={clsx(
         "bg-white border-2 border-[rgba(0,0,0,0.1)] h-[80px] w-screen",
-        "flex items-center justify-center pl-5 pr-5"
+        "flex items-center justify-center pl-5 pr-5",
       )}
     >
       <Image src={brand} height={20} width={100} alt="dino-brand" />
@@ -120,7 +125,7 @@ export default function Navbar({
                 "flex items-center h-[50px] rounded-[25px] overflow-hidden pl-[13px] pr-[16px] transition-all duration-500 group cursor-pointer",
                 pathname.startsWith(item.pathname)
                   ? "bg-[#23BEAA] max-w-[250px]"
-                  : "bg-[rgba(0,0,0,0.1)] max-w-[50px] hover:bg-[#23BEAA] hover:max-w-[250px]"
+                  : "bg-[rgba(0,0,0,0.1)] max-w-[50px] hover:bg-[#23BEAA] hover:max-w-[250px]",
               )}
             >
               <FontAwesomeIcon
@@ -128,7 +133,7 @@ export default function Navbar({
                   "text-[20px] flex-shrink-0 transition-colors duration-300 mr-[10px]",
                   pathname.startsWith(item.pathname)
                     ? "text-white"
-                    : "text-[rgba(0,0,0,0.6)] group-hover:text-white"
+                    : "text-[rgba(0,0,0,0.6)] group-hover:text-white",
                 )}
                 icon={item.icon}
               />
@@ -138,20 +143,19 @@ export default function Navbar({
                   "whitespace-nowrap font-medium transition-all duration-300 text-center",
                   pathname.startsWith(item.pathname)
                     ? "opacity-100 text-white"
-                    : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white"
+                    : "opacity-0 text-[rgba(0,0,0,0.6)] group-hover:opacity-100 group-hover:text-white",
                 )}
               >
                 {item.name}
               </span>
             </Link>
-
           ))}
         </div>
       )}
       {!isAuthenticated ? (
         <div
           className={clsx(
-            "flex gap-[10px] items-center justify-center ml-auto mr-10px"
+            "flex gap-[10px] items-center justify-center ml-auto mr-10px",
           )}
         >
           <Link
@@ -159,19 +163,19 @@ export default function Navbar({
             onMouseEnter={() => setSignUpHover(true)}
             onMouseLeave={() => setSignUpHover(false)}
             className={clsx(
-              "h-[55px] w-[170px] bg-[#FF5964] rounded-[15px] cursor-pointer hover:opacity-90"
+              "h-[55px] w-[170px] bg-[#FF5964] rounded-[15px] cursor-pointer hover:opacity-90",
             )}
           >
             <div
               className={clsx(
                 "h-[50px] w-[166px] bg-white border-2 border-[#FF5964] rounded-[10px]",
-                "flex justify-center items-center gap-[15px]"
+                "flex justify-center items-center gap-[15px]",
               )}
             >
               <label
                 className={clsx(
                   roboto.className,
-                  "font-bold text-[18px] text-[#FF5964] select-none cursor-pointer"
+                  "font-bold text-[18px] text-[#FF5964] select-none cursor-pointer",
                 )}
               >
                 Đăng ký
@@ -187,20 +191,20 @@ export default function Navbar({
           <Link
             href="/auth"
             className={clsx(
-              "h-[55px] w-[170px] bg-[#15897A] rounded-[15px] cursor-pointer"
+              "h-[55px] w-[170px] bg-[#15897A] rounded-[15px] cursor-pointer",
             )}
           >
             <div
               className={clsx(
                 "h-[50px] w-[166px] bg-[#1DA492] rounded-[10px]",
                 "flex justify-center items-center",
-                "hover:opacity-90"
+                "hover:opacity-90",
               )}
             >
               <label
                 className={clsx(
                   roboto.className,
-                  "font-bold text-[18px] text-white select-none cursor-pointer"
+                  "font-bold text-[18px] text-white select-none cursor-pointer",
                 )}
               >
                 Đăng nhập
@@ -211,13 +215,13 @@ export default function Navbar({
       ) : (
         <div
           className={clsx(
-            "flex items-center justify-center gap-[20px] mr-[10px]"
+            "flex items-center justify-center gap-[20px] mr-[10px]",
           )}
         >
           <div
             className={clsx(
               "h-[30px] aspect-square rounded-full hover:bg-[#D9D9D9] cursor-pointer",
-              "flex items-center justify-center"
+              "flex items-center justify-center",
             )}
           >
             <FontAwesomeIcon icon={faBell} />
@@ -225,13 +229,16 @@ export default function Navbar({
           <div
             className={clsx(
               "h-[30px] aspect-square rounded-full hover:bg-[#D9D9D9] cursor-pointer",
-              "flex items-center justify-center"
-            )} onClick={() => setProfilePopupShow(true)}
+              "flex items-center justify-center",
+            )}
+            onClick={() => setProfilePopupShow(true)}
           >
             <FontAwesomeIcon icon={faUserOutlined} />
           </div>
           {avatar && (
-            <div className="relative h-[60px] aspect-square overflow-hidden rounded-full"> {/* Added 'relative' */}
+            <div className="relative h-[60px] aspect-square overflow-hidden rounded-full">
+              {" "}
+              {/* Added 'relative' */}
               <Image
                 src={avatar}
                 alt="avatar"
@@ -248,7 +255,7 @@ export default function Navbar({
             <label
               className={clsx(
                 roboto.className,
-                "text-[22px] select-none font-bold"
+                "text-[22px] select-none font-bold",
               )}
             >
               {username}

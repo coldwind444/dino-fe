@@ -1,9 +1,34 @@
-import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig, AxiosError } from "axios";
 
 export const baseURL = '/backend';
 
 const TOKEN_KEY = "accessToken";
 const ROLE_KEY = "userRole";
+
+export const ERROR = {
+  NOT_FOUND: { message: 'Không tìm thấy dữ liệu !', status: 404 },
+  FORBIDDEN: { message: 'Không có quyền truy cập !', status: 403 },
+  BAD_REQUEST: { message: 'Tham số không hợp lệ !', status: 400 },
+  UNAUTHORIZED: { message: 'Không có quyền truy cập !', status: 401 },
+  CONFLICT: { message: 'Dữ liệu đã tồn tại !', status: 409 },
+  INTERNAL_SERVER_ERROR: { message: 'Lỗi hệ thống !', status: 500 },
+}
+
+export const handleError = (error: any) => {
+  const err = error as AxiosError<{ message?: string }>;
+  const status = err.response?.status;
+
+  const errorType = Object.values(ERROR).find((e) => e.status === status);
+
+  if (errorType) {
+    throw errorType;
+  }
+
+  throw {
+    message: err.response?.data?.message || err.message || ERROR.INTERNAL_SERVER_ERROR.message,
+    status: status || 500,
+  };
+};
 
 export const setAccessToken = (token: string, role: string) => {
   if (typeof window === "undefined") return;

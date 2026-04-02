@@ -273,3 +273,21 @@ export interface AnswerResponse {
     arenaParticipationId: string,
     lectureResultId: string
 }
+
+export interface AssessmentResponse {
+    _id: string,
+    title: string,
+    description: string,
+    gradeId: string,
+    published: boolean,
+    createdAt: string,
+    updatedAt: string,
+}
+
+export interface AssessmentResultResponse {
+    assessmentId: string,
+    userId: string,
+    duration: number,
+    status: string,
+    totalScore: number,
+}

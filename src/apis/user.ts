@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import { api, handleError } from "./config";
 import { AvatarUploadResponse, UpdateUserProfileRequest, UserProfileResponse } from "@/types";
 
-export const getUserProfile = async () : Promise<UserProfileResponse> => {
+export const getUserProfile = async (): Promise<UserProfileResponse> => {
     try {
         const res = await api.get('/users/me');
         return res.data as UserProfileResponse;
@@ -36,4 +36,12 @@ export const updateUserProfile = async (req: UpdateUserProfileRequest) => {
     } catch (error) {
         handleError(error);
     }
-}
+}
+
+export const trackAccessDuration = async (seconds: number) => {
+    try {
+        await api.post('/statistics/heartbeat', { seconds: seconds })
+    } catch (error) {
+        handleError(error);
+    }
+}

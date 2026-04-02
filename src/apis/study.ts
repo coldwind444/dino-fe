@@ -1,4 +1,4 @@
-import { AnswerResponse, CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, Pagination, TermResponse, TopicResponse } from "@/types";
+import { AnswerResponse, AssessmentResponse, AssessmentResultResponse, CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, Pagination, TermResponse, TopicResponse } from "@/types";
 import { AxiosError } from "axios";
 import api, { handleError } from "./config";
 
@@ -170,6 +170,30 @@ export const getAnswers = async (params?: Record<string, any>): Promise<AnswerRe
 export const upsertAnswers = async (answers: AnswerResponse[]) => {
     try {
         await api.post('/answers/upsert', { answers: answers })
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}
+
+// Entrance test APIs
+export const getPublishedAssessmentByGradeId = async (gradeId: string): Promise<AssessmentResponse | null> => {
+    try {
+        const res = await api.get(`/assessments?gradeId=${gradeId}`)
+        const assessments = res.data.data as AssessmentResponse[]
+        if (!assessments[0] || !assessments[0].published) return null
+        return assessments[0]
+    } catch (error) {
+        handleError(error);
+        return null;
+    }
+}
+
+export const getAssessmentResult = async (assessmentId: string, userId: string): Promise<AssessmentResultResponse> => {
+    try {
+        const res = await api.get(`/assessments/results/all?assessmentId=${assessmentId}&userId=${userId}`)
+        const results = res.data.data as AssessmentResultResponse[]
+        return results[0]
     } catch (error) {
         handleError(error);
         throw error; // Never reached

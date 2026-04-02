@@ -112,14 +112,11 @@ export default function Auth() {
         } else {
           router.push("/onboarding");
         }
+      } else if (res.user.role === "admin") {
+        toast.error("Quản trị viên không có quyền truy cập vào trang này");
       }
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-        console.error(err);
-      } else {
-        toast.error("Đã xảy ra lỗi không xác định.");
-      }
+    } catch (err: any) {
+      toast.error(err.message);
     } finally {
       resetLogin();
       setLoginLoading(false);
@@ -144,12 +141,8 @@ export default function Auth() {
       });
       toast.success("Đăng ký thành công !");
       resetRegister();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      } else {
-        toast.error("Đã xảy ra lỗi không xác định.");
-      }
+    } catch (err: any) {
+      toast.error(err.message);
     } finally {
       setRegLoading(false);
     }

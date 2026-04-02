@@ -4,6 +4,7 @@ export const baseURL = '/backend';
 
 const TOKEN_KEY = "accessToken";
 const ROLE_KEY = "userRole";
+const DURATION_KEY = "duration";
 
 export const ERROR = {
   NOT_FOUND: { message: 'Không tìm thấy dữ liệu !', status: 404 },
@@ -15,7 +16,7 @@ export const ERROR = {
 }
 
 export const handleError = (error: any) => {
-  const err = error as AxiosError<{ message?: string }>;
+  const err = error as AxiosError<{ error?: string }>;
   const status = err.response?.status;
 
   const errorType = Object.values(ERROR).find((e) => e.status === status);
@@ -25,9 +26,26 @@ export const handleError = (error: any) => {
   }
 
   throw {
-    message: err.response?.data?.message || err.message || ERROR.INTERNAL_SERVER_ERROR.message,
+    message: err.response?.data?.error || err.message || ERROR.INTERNAL_SERVER_ERROR.message,
     status: status || 500,
   };
+};
+
+export const setDuration = (duration: number) => {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(DURATION_KEY, duration.toString());
+};
+
+export const getDuration = (): number | null => {
+  if (typeof window !== "undefined") {
+    return parseInt(sessionStorage.getItem(DURATION_KEY) || "0");
+  }
+  return null;
+};
+
+export const clearDuration = () => {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(DURATION_KEY);
 };
 
 export const setAccessToken = (token: string, role: string) => {

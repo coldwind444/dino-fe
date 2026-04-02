@@ -101,7 +101,6 @@ export default function Arena() {
               arenaId: currentArena._id,
             });
             if (userParticipation.length === 1) {
-              console.log(userParticipation[0].status);
               if (userParticipation[0].status === "submitted") {
                 setArenaDone(true);
               }

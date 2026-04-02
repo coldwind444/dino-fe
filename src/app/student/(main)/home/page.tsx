@@ -16,9 +16,11 @@ import { useLessonStore } from "@/stores/lessonStore";
 import { TimeCard } from "@/components/TimeCard/TimeCard";
 import EntranceTestPopup from "@/components/EntranceTestPopup/EntranceTestPopup";
 import {
+  getAssessmentResult,
   getCompletedTopics,
   getGradeById,
   getGrades,
+  getPublishedAssessmentByGradeId,
   getRecentTopics,
   getRecommendedTopicByGradeId,
   getTopicById,
@@ -38,9 +40,12 @@ export default function StudentHome() {
 
   // UI States
   const { gradeLevel, setGradeLevel } = useLessonStore();
-  const [entranceTestDone, setEntranceTestDone] = useState(false);
-  const [recommend, setRecommend] = useState(true);
-  const [isTestPopupClosed, setIsTestPopupClosed] = useState(true);
+  const [showAssessmentFloatButton, setShowAssessmentFloatButton] =
+    useState(false);
+  const [isTopicRecommendModalOpened, setIsTopicRecommendModalOpened] =
+    useState(false);
+  const [isEntranceTestModalOpened, setIsEntranceTestModalOpened] =
+    useState(true);
 
   // Data States
   const [username, setUsername] = useState("");
@@ -51,13 +56,13 @@ export default function StudentHome() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Functions
-  const closeTestPopup = () => {
-    setIsTestPopupClosed(true);
+  const closeEntranceTestModal = () => {
+    setIsEntranceTestModalOpened(false);
+    setIsTopicRecommendModalOpened(true);
   };
 
-  const closeModal = () => {
-    setRecommend(false);
-    if (!entranceTestDone) setIsTestPopupClosed(false);
+  const closeTopicRecommendModal = () => {
+    setIsTopicRecommendModalOpened(false);
   };
 
   // Effects
@@ -99,14 +104,35 @@ export default function StudentHome() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+        // User data
         const userRes = await getUserProfile();
         const lastname = userRes.name.trim().split(/\s+/).pop() ?? "";
         setUsername(lastname);
+
+        // Grade data
         if (userRes.gradeId) {
           const grade = await getGradeById(userRes.gradeId);
           if (grade && gradeLevel === "") setGradeLevel(grade.level.toString());
           const recommend = await getRecommendedTopicByGradeId(userRes.gradeId);
           setRecommendedTopic(recommend);
+        }
+
+        // Entrance test data
+        const entranceTest = await getPublishedAssessmentByGradeId(
+          userRes.gradeId,
+        );
+        if (entranceTest) {
+          const result = await getAssessmentResult(
+            entranceTest._id,
+            userRes._id,
+          );
+          if (result.status !== "in_progress") {
+            setShowAssessmentFloatButton(false);
+          } else {
+            setShowAssessmentFloatButton(true);
+          }
+        } else {
+          setShowAssessmentFloatButton(true);
         }
       } catch (err) {
         console.log("Failed to fetch data.", err);
@@ -124,10 +150,10 @@ export default function StudentHome() {
 
   return (
     <div className="w-screen min-h-screen p-6 sm:p-10 pl-[63px] pr-[69px] flex flex-col">
-      {!entranceTestDone && (
+      {showAssessmentFloatButton && (
         <div
           className="absolute h-15 w-15 top-25 right-5 cursor-pointer hover:brightness-110 z-20"
-          onClick={() => setIsTestPopupClosed(false)}
+          onClick={() => setIsEntranceTestModalOpened(true)}
         >
           {/* Ping circle */}
           <div className="absolute inset-0 m-auto h-12 w-12 bg-amber-500 rounded-full animate-ping z-10"></div>
@@ -358,9 +384,14 @@ export default function StudentHome() {
           )}
         </aside>
       </div>
-      {!isTestPopupClosed && <EntranceTestPopup close={closeTestPopup} />}
-      {recommend && (
-        <TopicRecommendPopup topic={recommendedTopic} close={closeModal} />
+      {isEntranceTestModalOpened && (
+        <EntranceTestPopup close={closeEntranceTestModal} />
+      )}
+      {isTopicRecommendModalOpened && (
+        <TopicRecommendPopup
+          topic={recommendedTopic}
+          close={closeTopicRecommendModal}
+        />
       )}
     </div>
   );

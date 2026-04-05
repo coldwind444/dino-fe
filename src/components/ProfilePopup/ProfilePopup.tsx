@@ -2,13 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faKey, faLink, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUser,
+  faKey,
+  faLink,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import ProfileTab from "./ProfileTab";
 import PasswordTab from "./PasswordTab";
 import AccountLinkTab from "./AccountLinkTab";
 import { UserProfileResponse } from "@/types";
 import { getUserProfile } from "@/apis";
 import Image from "next/image";
+import clsx from "clsx";
 
 interface ProfilePopupProps {
   isOpen: boolean;
@@ -70,23 +76,25 @@ function ContentSkeleton() {
 }
 
 export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
-  const [activeTab, setActiveTab] = useState<"profile" | "password" | "link">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "password" | "link">(
+    "profile",
+  );
 
   // Data states
   const [profile, setProfile] = useState<UserProfileResponse>();
   const [loading, setLoading] = useState(false);
 
   const fetchUserProfile = async () => {
-      try {
-        setLoading(true);
-        const res = await getUserProfile();
-        setProfile(res);
-      } catch (err) {
-        console.log("Failed to fetch user profile", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      setLoading(true);
+      const res = await getUserProfile();
+      setProfile(res);
+    } catch (err) {
+      console.log("Failed to fetch user profile", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Effects
   useEffect(() => {
@@ -133,8 +141,17 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                             Loại tài khoản:
                           </span>
                         </div>
-                        <div className="bg-[#C4F1EB] text-[#1DA492] font-medium px-3 py-1 rounded-full text-sm inline-block mt-2">
-                          {profile?.role === "student" ? "Học sinh" : "Phụ huynh"}
+                        <div
+                          className={clsx(
+                            "font-medium px-3 py-1 rounded-full text-sm inline-block mt-2",
+                            profile?.role === "student"
+                              ? "bg-[#C4F1EB] text-[#1DA492]"
+                              : "bg-orange-100 text-orange-400",
+                          )}
+                        >
+                          {profile?.role === "student"
+                            ? "Học sinh"
+                            : "Phụ huynh"}
                         </div>
                       </div>
                     </div>
@@ -145,10 +162,11 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                 <div className="space-y-2">
                   <button
                     onClick={() => setActiveTab("profile")}
-                    className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${activeTab === "profile"
+                    className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${
+                      activeTab === "profile"
                         ? "bg-[#1ABC9C] text-white"
                         : "text-gray-700 hover:bg-gray-100"
-                      } transition-colors`}
+                    } transition-colors`}
                   >
                     <FontAwesomeIcon icon={faUser} className="w-5 h-5" />
                     Thông tin cá nhân
@@ -156,10 +174,11 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
 
                   <button
                     onClick={() => setActiveTab("password")}
-                    className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${activeTab === "password"
+                    className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${
+                      activeTab === "password"
                         ? "bg-[#1ABC9C] text-white"
                         : "text-gray-700 hover:bg-gray-100"
-                      } transition-colors`}
+                    } transition-colors`}
                   >
                     <FontAwesomeIcon icon={faKey} className="w-5 h-5" />
                     Đổi mật khẩu
@@ -167,10 +186,11 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
 
                   <button
                     onClick={() => setActiveTab("link")}
-                    className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${activeTab === "link"
+                    className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${
+                      activeTab === "link"
                         ? "bg-[#1ABC9C] text-white"
                         : "text-gray-700 hover:bg-gray-100"
-                      } transition-colors`}
+                    } transition-colors`}
                   >
                     <FontAwesomeIcon icon={faLink} className="w-5 h-5" />
                     Liên kết phụ huynh và học sinh
@@ -197,7 +217,12 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
               <ContentSkeleton />
             ) : (
               <>
-                {activeTab === "profile" && <ProfileTab profileData={profile} onUpdateSuccess={fetchUserProfile}/>}
+                {activeTab === "profile" && (
+                  <ProfileTab
+                    profileData={profile}
+                    onUpdateSuccess={fetchUserProfile}
+                  />
+                )}
                 {activeTab === "password" && <PasswordTab />}
                 {activeTab === "link" && <AccountLinkTab />}
               </>

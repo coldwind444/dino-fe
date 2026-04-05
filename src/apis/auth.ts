@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { CompleteProfileRequest, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "@/types";
+import { CompleteProfileRequest, GoogleLoginRequest, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "@/types";
 import { publicApi, api, setAccessToken, clearAccessToken, handleError } from "./config";
 
 export const register = async (req: RegisterRequest): Promise<RegisterResponse> => {
@@ -30,6 +30,18 @@ export const completeProfile = async (req: CompleteProfileRequest) => {
         return res.data;
     } catch (error) {
         handleError(error);
+    }
+}
+
+export const googleLogin = async (req: GoogleLoginRequest) => {
+    try {
+        const res = await publicApi.post('/auth/google', req);
+        const resData = res.data as LoginResponse;
+        if (resData.token && resData.user.role) setAccessToken(resData.token, resData.user.role);
+        return resData;
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
     }
 }
 

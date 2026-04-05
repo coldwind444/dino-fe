@@ -18,14 +18,14 @@ import parents from "../../../public/assets/auth/parents.png";
 import leftHand from "../../../public/assets/auth/left.svg";
 import rightHand from "../../../public/assets/auth/right.svg";
 import logo from "../../../public/assets/logo.svg";
-import google from "../../../public/assets/auth/google.png";
 
 import RoundedTextBox from "@/components/RoundedTextBox/RoundedTextBox";
 import RoundedPasswordBox from "@/components/RoundedPasswordBox/RoundedPasswordBox";
 import Link from "next/link";
-import { login, register } from "@/apis";
+import { googleLogin, login, register } from "@/apis";
 import Loader from "@/components/Loader/Loader";
 import { useRouter } from "next/navigation";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
 
 const roboto = Roboto();
@@ -50,6 +50,7 @@ const AUTHSTEPS = {
 
 export default function Auth() {
   const router = useRouter();
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   // UI states
   const [tabIndex, setTabIndex] = useState(TABS.LOG_IN);
@@ -168,6 +169,26 @@ export default function Auth() {
     resetLogin();
     resetRegister();
   }, [tabIndex]);
+
+  // handle google login
+  const handleSuccess = async (credentialResponse: any) => {
+    try {
+      await googleLogin({
+        token: credentialResponse.credential,
+        role: "parent",
+        familyId: "",
+      });
+      router.push("/parent/dashboard");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      resetLogin();
+    }
+  };
+
+  const handleError = () => {
+    toast.error("Thất bại khi xác minh tài khoản Google.");
+  };
 
   return (
     <div className="w-screen h-screen bg-[#F6F6F6] flex items-center justify-center">
@@ -374,16 +395,21 @@ export default function Auth() {
                           Hoặc
                         </span>
                       </div>
-                      <div
-                        className="h-18 w-[330px] rounded-full border border-gray-300 flex flex-row items-center px-5 gap-8
-                                                          cursor-pointer hover:bg-gray-50 transition-all duration-150"
-                      >
-                        <Image src={google} alt="" height={40} width={40} />
-                        <span className="text-center">
-                          <strong>Đăng nhập với Google</strong> <br /> (chỉ dành
-                          cho Phụ huynh)
-                        </span>
-                      </div>
+                      <GoogleOAuthProvider clientId={clientId!}>
+                        <GoogleLogin
+                          size="large"
+                          shape="pill"
+                          theme="filled_blue"
+                          width={330}
+                          type="standard"
+                          onSuccess={handleSuccess}
+                          onError={handleError}
+                          useOneTap
+                        />
+                        <div className="text-gray-400 text-base">
+                          (Chỉ dành cho phụ huynh)
+                        </div>
+                      </GoogleOAuthProvider>
                     </React.Fragment>
                   </div>
                 </div>

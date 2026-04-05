@@ -62,6 +62,12 @@ export interface UpdateParticipationRequest {
     status: string
 }
 
+export interface GoogleLoginRequest {
+    token: string;
+    role: string;
+    familyId?: string;
+}
+
 // Response
 export interface UserResponse {
     id: string;

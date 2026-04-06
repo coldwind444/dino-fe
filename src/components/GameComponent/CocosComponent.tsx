@@ -8,6 +8,8 @@ import {
 } from "react";
 
 import { ExerciseResponse } from "@/types";
+import { scale } from "framer-motion";
+import { tree } from "next/dist/build/templates/app-page";
 
 const EXERCISE_TYPE_TO_GAME_INDEX: Record<string, number> = {
   matching: 0,
@@ -16,6 +18,17 @@ const EXERCISE_TYPE_TO_GAME_INDEX: Record<string, number> = {
   tutorial: 3,
   true_false: 4,
   fill_in: 5,
+  releasebird: 6,
+  scale: 7,
+  tree: 8,
+  cage: 9,
+  transport: 10,
+  set_time: 11,
+  coin: 12,
+  gumball: 13,
+  burger: 14,
+  fraction: 15,
+  manualScale: 16,
 };
 
 export interface CocosGameRef {

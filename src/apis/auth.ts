@@ -45,6 +45,24 @@ export const googleLogin = async (req: GoogleLoginRequest) => {
     }
 }
 
+export const sendOtp = async (email: string) => {
+    try {
+        const res = await publicApi.post('/auth/forgot-password', { email });
+        return res.data;
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+export const resetPassword = async (req: { email: string, otp: string, newPassword: string }) => {
+    try {
+        const res = await publicApi.post('/auth/reset-password', req);
+        return res.data;
+    } catch (error) {
+        handleError(error);
+    }
+}
+
 export const logout = async () => {
     const res = await api.post('/auth/logout');
     clearAccessToken();

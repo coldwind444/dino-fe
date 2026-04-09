@@ -7,6 +7,7 @@ import {
   getLandsByWorldId,
   getLecturesByTopicId,
   getTopicById,
+  getUserProfile,
   getWorldById,
 } from "@/apis";
 import {
@@ -16,6 +17,7 @@ import {
   WorldResponse,
   LectureResponse,
   ExerciseResponse,
+  UserProfileResponse,
 } from "@/types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 
@@ -31,6 +33,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
   const [loading, setLoading] = useState(false);
 
   // Data states
+  const [user, setUser] = useState<UserProfileResponse | null>(null);
   const [currGrade, setCurrGrade] = useState<GradeResponse | null>(null);
   const [currWorld, setCurrWorld] = useState<WorldResponse | null>(null);
   const [currTopic, setCurrTopic] = useState<TopicResponse | null>(null);
@@ -50,12 +53,14 @@ export default function LessonsPage({ params }: LessonsPageProps) {
         const lands = await getLandsByWorldId(world._id);
         const topic = await getTopicById(topicId);
         const lectures = await getLecturesByTopicId(topic._id);
+        const user = await getUserProfile();
 
         setCurrGrade(grades[0]);
         setCurrWorld(world);
         setLands(lands);
         setCurrTopic(topic);
         setLectures(lectures);
+        setUser(user);
       } catch (error) {
         console.error("Error fetching world data:", error);
       } finally {
@@ -67,7 +72,15 @@ export default function LessonsPage({ params }: LessonsPageProps) {
   }, [params]);
 
   // Return loading state if data is not ready
-  if (loading || !currGrade || !currWorld || !currTopic || !lectures || !lands)
+  if (
+    loading ||
+    !currGrade ||
+    !currWorld ||
+    !currTopic ||
+    !lectures ||
+    !lands ||
+    !user
+  )
     return <ScreenLoader />;
 
   // Pass data to client-side component
@@ -78,6 +91,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
       lands={lands}
       topic={currTopic}
       lectures={lectures}
+      user={user}
     />
   );
 }

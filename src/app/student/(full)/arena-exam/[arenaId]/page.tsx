@@ -33,7 +33,10 @@ import FillIn from "@/components/ExerciseWebUI/FillIn";
 import Matching from "@/components/ExerciseWebUI/Matching";
 import Interactive from "@/components/ExerciseWebUI/Interactive";
 import toast from "react-hot-toast";
-import { cleanedAnswerArray } from "@/helpers/utils";
+import {
+  checkAnswerForBasicExerciseType,
+  cleanedAnswerArray,
+} from "@/helpers/utils";
 
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 
@@ -201,10 +204,20 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     }
   };
 
+  const updateAnswerCorrectness = () => {
+    for (const [key, value] of answers.entries()) {
+      const exercise = exercises.find((ex) => ex._id === key);
+      if (exercise) {
+        value.isCorrect = checkAnswerForBasicExerciseType(value, exercise);
+      }
+    }
+  };
+
   const saveProgress = async () => {
     if (!participation || !arena) return;
     try {
       // Save answers
+      updateAnswerCorrectness();
       const currentAnswers = Array.from(answers.values());
       await upsertAnswers(cleanedAnswerArray(currentAnswers));
       toast.success("Đã lưu tiến độ!");
@@ -223,6 +236,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
       );
 
       // Sync answers one last time
+      updateAnswerCorrectness();
       const currentAnswers = Array.from(answers.values());
       await upsertAnswers(cleanedAnswerArray(currentAnswers));
 

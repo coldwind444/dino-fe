@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { ExerciseResponse } from "@/types/dto.types";
 import clsx from "clsx";
@@ -9,11 +9,15 @@ interface TrueFalseProps {
   onChange: (answer: any) => void;
 }
 
-export default function TrueFalse({ exercise, answer, onChange }: TrueFalseProps) {
-  const selectedOption = answer?.selectedOption || null;
+export default function TrueFalse({
+  exercise,
+  answer,
+  onChange,
+}: TrueFalseProps) {
+  const selectedOption = answer || null;
 
   const handleSelect = (option: string) => {
-    onChange({ selectedOption: option });
+    onChange(option);
   };
 
   return (
@@ -23,7 +27,7 @@ export default function TrueFalse({ exercise, answer, onChange }: TrueFalseProps
           "h-fit w-fit py-4 px-14 rounded-4xl border-2 text-balance font-bold cursor-pointer transition-all duration-200 text-xl",
           selectedOption === "true"
             ? "bg-[#D8FFFA] border-[#23BEAA] text-[#23BEAA] scale-105"
-            : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#23BEAA]"
+            : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#23BEAA]",
         )}
         onClick={() => handleSelect("true")}
       >
@@ -34,7 +38,7 @@ export default function TrueFalse({ exercise, answer, onChange }: TrueFalseProps
           "h-fit w-fit py-4 px-14 rounded-4xl border-2 text-balance font-bold cursor-pointer transition-all duration-200 text-xl",
           selectedOption === "false"
             ? "bg-[#D8FFFA] border-[#FF5964] text-[#FF5964] scale-105"
-            : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#FF5964]"
+            : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#FF5964]",
         )}
         onClick={() => handleSelect("false")}
       >

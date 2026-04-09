@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { ExerciseResponse } from "@/types/dto.types";
 import { useEffect, useState, useRef } from "react";
@@ -11,7 +11,11 @@ interface InteractiveProps {
   onChange: (answer: any) => void;
 }
 
-export default function Interactive({ exercise, answer, onChange }: InteractiveProps) {
+export default function Interactive({
+  exercise,
+  answer,
+  onChange,
+}: InteractiveProps) {
   const options = exercise.options || [];
   const metadata = (exercise.metadata as any) || {};
   const expression = metadata.expression || "";
@@ -22,9 +26,9 @@ export default function Interactive({ exercise, answer, onChange }: InteractiveP
 
   useEffect(() => {
     const numBlanks = (expression.match(/_/g) || []).length;
-    if (answer?.blanks) {
-      setBlanks(answer.blanks);
-      setUsedOptions(answer.blanks.filter((b: string) => b !== ""));
+    if (Array.isArray(answer)) {
+      setBlanks(answer);
+      setUsedOptions(answer.filter((b: string) => b !== ""));
     } else {
       setBlanks(new Array(numBlanks).fill(""));
       setUsedOptions([]);
@@ -36,13 +40,13 @@ export default function Interactive({ exercise, answer, onChange }: InteractiveP
     if (usedOptions.includes(option)) return;
 
     // Find first empty blank
-    const firstEmpty = blanks.findIndex(b => b === "");
+    const firstEmpty = blanks.findIndex((b) => b === "");
     if (firstEmpty !== -1) {
       const newBlanks = [...blanks];
       newBlanks[firstEmpty] = option;
       setBlanks(newBlanks);
       setUsedOptions([...usedOptions, option]);
-      onChange({ blanks: newBlanks });
+      onChange(newBlanks[0]);
     }
   };
 
@@ -53,8 +57,8 @@ export default function Interactive({ exercise, answer, onChange }: InteractiveP
     const newBlanks = [...blanks];
     newBlanks[idx] = "";
     setBlanks(newBlanks);
-    setUsedOptions(usedOptions.filter(o => o !== option));
-    onChange({ blanks: newBlanks });
+    setUsedOptions(usedOptions.filter((o) => o !== option));
+    onChange(newBlanks[0]);
   };
 
   const parts = expression.split("_");
@@ -70,9 +74,9 @@ export default function Interactive({ exercise, answer, onChange }: InteractiveP
               <div
                 className={clsx(
                   "min-w-[100px] h-12 border-2 rounded-lg flex items-center justify-center transition-all duration-200 cursor-pointer shadow-inner",
-                  blanks[idx] 
-                    ? "bg-[#D8FFFA] border-[#23BEAA] text-[#23BEAA] font-bold" 
-                    : "bg-[#F3F4F6] border-dashed border-[#9CA3AF] text-[#9CA3AF] text-sm"
+                  blanks[idx]
+                    ? "bg-[#D8FFFA] border-[#23BEAA] text-[#23BEAA] font-bold"
+                    : "bg-[#F3F4F6] border-dashed border-[#9CA3AF] text-[#9CA3AF] text-sm",
                 )}
                 onClick={() => removeBlank(idx)}
               >
@@ -94,9 +98,9 @@ export default function Interactive({ exercise, answer, onChange }: InteractiveP
               whileTap={!isUsed ? { scale: 0.95 } : {}}
               className={clsx(
                 "py-3 px-8 rounded-xl border-2 font-bold cursor-pointer shadow-md transition-colors",
-                isUsed 
-                  ? "bg-gray-200 border-gray-300 text-gray-400 opacity-50 cursor-not-allowed" 
-                  : "bg-white border-[#3B84F2] text-[#3B84F2] hover:bg-[#3B84F2] hover:text-white"
+                isUsed
+                  ? "bg-gray-200 border-gray-300 text-gray-400 opacity-50 cursor-not-allowed"
+                  : "bg-white border-[#3B84F2] text-[#3B84F2] hover:bg-[#3B84F2] hover:text-white",
               )}
               onClick={() => !isUsed && handleOptionClick(option)}
             >

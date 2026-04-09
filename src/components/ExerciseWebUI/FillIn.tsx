@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { ExerciseResponse } from "@/types/dto.types";
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ interface FillInProps {
 export default function FillIn({ exercise, answer, onChange }: FillInProps) {
   const metadata = (exercise.metadata as any) || {};
   const questions = metadata.questions || [];
-  
+
   // Initialize internal state from answer or default to empty strings
   const [responses, setResponses] = useState<string[]>([]);
 
@@ -28,13 +28,16 @@ export default function FillIn({ exercise, answer, onChange }: FillInProps) {
     const newResponses = [...responses];
     newResponses[idx] = value;
     setResponses(newResponses);
-    onChange({ responses: newResponses });
+    onChange(newResponses);
   };
 
   const renderQuestion = (question: string, idx: number) => {
     const parts = question.split("_");
     return (
-      <div key={idx} className="flex flex-row items-center gap-3 text-lg font-medium text-[#1B2657]">
+      <div
+        key={idx}
+        className="flex flex-row items-center gap-3 text-lg font-medium text-[#1B2657]"
+      >
         {parts.map((part, pIdx) => (
           <div key={pIdx} className="flex flex-row items-center gap-2">
             <span>{part}</span>

@@ -16,8 +16,8 @@ interface LineData {
 
 interface MatchingProps {
   exercise: ExerciseResponse;
-  answer: { pairs?: { [key: string]: string } } | null;
-  onChange: (answer: { pairs: { [key: string]: string } }) => void;
+  answer: any;
+  onChange: (answer: any) => void;
 }
 
 export default function Matching({
@@ -84,12 +84,26 @@ export default function Matching({
   }, [currentPairs, leftItems, rightItems]);
 
   useEffect(() => {
-    if (answer?.pairs) {
-      setCurrentPairs(answer.pairs);
+    if (Array.isArray(answer)) {
+      const parsedPairs: { [key: string]: string } = {};
+      answer.forEach((p: any) => {
+        if (p.left && p.right) {
+          parsedPairs[p.left] = p.right;
+        }
+      });
+      setCurrentPairs(parsedPairs);
     } else {
       setCurrentPairs({});
     }
   }, [exercise._id, answer]);
+
+  const emitChange = (pairsDict: { [key: string]: string }) => {
+    const formatted = Object.keys(pairsDict).map(k => ({
+      left: k,
+      right: pairsDict[k]
+    }));
+    onChange(formatted);
+  };
 
   const handleLeftClick = (left: string) => {
     if (selectedLeft === left) {
@@ -109,7 +123,7 @@ export default function Matching({
       newPairs[selectedLeft] = right;
       setCurrentPairs(newPairs);
       setSelectedLeft(null);
-      onChange({ pairs: newPairs });
+      emitChange(newPairs);
     }
   };
 
@@ -117,7 +131,7 @@ export default function Matching({
     const newPairs = { ...currentPairs };
     delete newPairs[left];
     setCurrentPairs(newPairs);
-    onChange({ pairs: newPairs });
+    emitChange(newPairs);
   };
 
   return (

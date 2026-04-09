@@ -33,7 +33,10 @@ import FillIn from "@/components/ExerciseWebUI/FillIn";
 import Matching from "@/components/ExerciseWebUI/Matching";
 import Interactive from "@/components/ExerciseWebUI/Interactive";
 import toast from "react-hot-toast";
-import { cleanedAnswerArray } from "@/helpers/utils";
+import {
+  checkAnswerForBasicExerciseType,
+  cleanedAnswerArray,
+} from "@/helpers/utils";
 
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 
@@ -142,6 +145,15 @@ export default function EntranceTest() {
     }
   };
 
+  const updateAnswerCorrectness = () => {
+    for (const [key, value] of answers.entries()) {
+      const exercise = exercises.find((ex) => ex._id === key);
+      if (exercise) {
+        value.isCorrect = checkAnswerForBasicExerciseType(value, exercise);
+      }
+    }
+  };
+
   const confirmSubmit = async () => {
     if (!assessment || !userProfile) return;
     try {
@@ -156,9 +168,9 @@ export default function EntranceTest() {
         totalScore: 0,
       };
       const assessmentResult = await createAssessmentResult(req);
-      const result = await submitAssessment(assessment._id, timeTaken);
 
       // Update answers and submit
+      updateAnswerCorrectness();
       const currentAnswers = Array.from(answers.values()).map((ans) => ({
         ...ans,
         assessmentResultId: assessmentResult._id,

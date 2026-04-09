@@ -147,7 +147,7 @@ export const getLecturesByTopicId = async (topicId: string): Promise<LectureResp
 
 export const createLectureResult = async (req: CreateLectureResultRequest): Promise<LectureResultResponse> => {
     try {
-        const res = await api.post('/lectures/results', req)
+        const res = await api.post('/lecture-results', req)
         return res.data.data as LectureResultResponse
     } catch (error) {
         handleError(error);

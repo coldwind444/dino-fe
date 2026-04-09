@@ -77,9 +77,10 @@ export interface CreateAssessmentResultRequest {
 }
 
 export interface CreateLectureResultRequest {
-    userId: string,
     lectureId: string,
-    totalScore: number,
+    correctCount: number,
+    totalQuestions: number,
+    timeTaken: number
 }
 
 // Response
@@ -318,6 +319,7 @@ export interface AssessmentResultResponse {
 export interface LectureResultResponse {
     _id: string,
     lectureId: string,
-    userId: string,
-    totalScore: number,
+    correctCount: number,
+    totalQuestions: number,
+    timeTaken: number
 }

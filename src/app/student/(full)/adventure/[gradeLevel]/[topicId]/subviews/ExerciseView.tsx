@@ -141,9 +141,10 @@ export default function ExerciseView({
     }
     try {
       const res = await createLectureResult({
-        userId,
         lectureId: currentLecture._id,
-        totalScore,
+        correctCount: totalScore,
+        totalQuestions: exercises.length,
+        timeTaken: 0,
       });
       const modifiedAnswers = answers.map((ans) => ({
         ...ans,

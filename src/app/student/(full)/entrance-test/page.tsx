@@ -12,19 +12,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PopupModal, { MODAL_TYPE_KEY } from "@/components/PopupModal/PopupModal";
 import {
-  createParticipation,
-  getAnswers,
   getExercises,
-  getParticipations,
   upsertAnswers,
-  getArena,
-  updateParticipation,
+  submitAssessment,
+  getPublishedAssessmentByGradeId,
+  createAssessmentResult,
 } from "@/apis";
+import { getUserProfile } from "@/apis/user";
 import {
   ExerciseResponse,
   AnswerResponse,
-  ParticipationResponse,
-  ArenaResponse,
+  AssessmentResponse,
+  UserProfileResponse,
+  CreateAssessmentResultRequest,
 } from "@/types/dto.types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import MultipleChoice from "@/components/ExerciseWebUI/MultipleChoice";
@@ -37,19 +37,14 @@ import { cleanedAnswerArray } from "@/helpers/utils";
 
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 
-type ArenaExamProps = {
-  params: {
-    arenaId: string;
-  };
-};
-
-export default function ArenaExam({ params }: ArenaExamProps) {
+export default function EntranceTest() {
   const router = useRouter();
 
   // Data state
-  const [participation, setParticipation] =
-    useState<ParticipationResponse | null>(null);
-  const [arena, setArena] = useState<ArenaResponse | null>(null);
+  const [assessment, setAssessment] = useState<AssessmentResponse | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(
+    null,
+  );
   const [exercises, setExercises] = useState<ExerciseResponse[]>([]);
   const [answers, setAnswers] = useState<Map<string, AnswerResponse>>(
     new Map(),
@@ -61,125 +56,72 @@ export default function ArenaExam({ params }: ArenaExamProps) {
   const [modalClose, setModalClose] = useState(true);
   const [modalType, setModalType] = useState<MODAL_TYPE_KEY>("SEND");
   const [loading, setLoading] = useState(true);
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [timeTaken, setTimeTaken] = useState<number>(0);
 
   //Effects
   useEffect(() => {
     const initData = async () => {
-      const { arenaId } = await params;
       try {
         setLoading(true);
 
-        // 1. Fetch Arena details
-        const arenas = await getArena({ _id: arenaId });
-        const currentArena = arenas[0];
-        if (!currentArena) {
-          toast.error("Arena not found");
-          router.push("/student/arena");
+        const currentProfile = await getUserProfile();
+        setUserProfile(currentProfile);
+
+        // 1. Fetch Assessment details
+        const assessmentData = await getPublishedAssessmentByGradeId(
+          currentProfile.gradeId,
+        );
+        if (!assessmentData) {
+          toast.error("Bài kiểm tra không tồn tại");
+          router.back();
           return;
         }
-        setArena(currentArena);
+        setAssessment(assessmentData);
 
-        // 2. Fetch or Create Participation
-        let currParticipation: ParticipationResponse | null = null;
-        try {
-          const participations = await getParticipations({ arenaId: arenaId });
-          if (participations.length > 0) {
-            currParticipation = participations[0];
-            setParticipation(currParticipation);
-          }
-        } catch (error: any) {
-          if (error?.status !== 404) {
-            throw error;
-          }
-        }
-
-        // If not found (either caught 404 or empty list), create new one
-        if (!currParticipation) {
-          currParticipation = await createParticipation({
-            arenaId: arenaId,
-            correctCount: 0,
-            timeTaken: 0,
-            score: 0,
-            status: "in_progress",
-          });
-          setParticipation(currParticipation);
-        }
-
-        // 3. Fetch Exercises
+        // 2. Fetch Exercises
         const exercisesData = await getExercises({
-          arenaId: arenaId,
+          assessmentId: assessmentData._id,
           page: 1,
           limit: 100,
         });
         setExercises(exercisesData.sort((a, b) => a.order - b.order));
 
-        // 4. Fetch Answers
-        const existingAnswers = await getAnswers({
-          participationId: currParticipation._id,
-          limit: 100,
-        });
-
+        // 3. Initialize empty answers
         const answerMap = new Map<string, AnswerResponse>();
-        if (existingAnswers.length > 0) {
-          existingAnswers.forEach((answer) => {
-            answerMap.set(answer.exerciseId, answer);
-          });
-        }
-
-        // Fill in missing answers for all exercises
         exercisesData.forEach((ex) => {
-          if (!answerMap.has(ex._id)) {
-            answerMap.set(ex._id, {
-              _id: `temp-${ex._id}`,
-              exerciseId: ex._id,
-              userId: currParticipation!.userId._id,
-              answerData: {},
-              isCorrect: false,
-              score: 0,
-              assessmentResultId: "",
-              arenaParticipationId: currParticipation!._id,
-              lectureResultId: "",
-            });
-          }
+          answerMap.set(ex._id, {
+            _id: `temp-${ex._id}`,
+            exerciseId: ex._id,
+            userId: currentProfile._id,
+            answerData: {},
+            isCorrect: false,
+            score: 0,
+            assessmentResultId: "",
+            arenaParticipationId: "",
+            lectureResultId: "",
+          });
         });
         setAnswers(answerMap);
-      } catch (error) {
-        console.error("Initialization error:", error);
-        toast.error("Failed to load exam data");
+      } catch (error: any) {
+        console.error(error?.message);
+        toast.error(error?.message || "Lỗi khi tải bài kiểm tra");
       } finally {
         setLoading(false);
       }
     };
 
     initData();
-  }, [params]);
+  }, []);
 
-  // Clock Countdown logic
+  // Clock Count up logic
   useEffect(() => {
-    if (!arena) return;
+    if (!assessment) return;
 
-    const calculateTimeLeft = () => {
-      const now = Date.now();
-      const end = new Date(arena.endTime).getTime();
-      const diff = Math.max(0, end - now);
-      setTimeLeft(diff);
-
-      if (diff === 0) {
-        // Auto-submit
-        triggerAutoSubmit();
-      }
-    };
-
-    calculateTimeLeft();
-    const interval = setInterval(calculateTimeLeft, 1000);
+    const interval = setInterval(() => {
+      setTimeTaken((prev) => prev + 1);
+    }, 1000);
     return () => clearInterval(interval);
-  }, [arena]);
-
-  const triggerAutoSubmit = async () => {
-    toast.loading("Đang tự động nộp bài...", { id: "autosubmit" });
-    await confirmSubmit(true);
-  };
+  }, [assessment]);
 
   const handleExit = () => {
     setModalType("WARNING");
@@ -194,51 +136,41 @@ export default function ArenaExam({ params }: ArenaExamProps) {
   const confirmModal = async () => {
     setModalClose(true);
     if (modalType === "WARNING") {
-      await saveProgress();
-      router.push("/student/arena");
+      router.back();
     } else {
       await confirmSubmit();
     }
   };
 
-  const saveProgress = async () => {
-    if (!participation || !arena) return;
+  const confirmSubmit = async () => {
+    if (!assessment || !userProfile) return;
     try {
-      // Save answers
-      const currentAnswers = Array.from(answers.values());
+      toast.loading("Đang nộp bài...", { id: "autosubmit" });
+
+      // Create assessment result
+      const req: CreateAssessmentResultRequest = {
+        assessmentId: assessment._id,
+        userId: userProfile._id,
+        duration: timeTaken,
+        status: "completed",
+        totalScore: 0,
+      };
+      const assessmentResult = await createAssessmentResult(req);
+      const result = await submitAssessment(assessment._id, timeTaken);
+
+      // Update answers and submit
+      const currentAnswers = Array.from(answers.values()).map((ans) => ({
+        ...ans,
+        assessmentResultId: assessmentResult._id,
+      }));
+
       await upsertAnswers(cleanedAnswerArray(currentAnswers));
-      toast.success("Đã lưu tiến độ!");
-    } catch (err) {
-      console.error("Save failed:", err);
-      toast.error("Lưu tiến độ thất bại");
-    }
-  };
-
-  const confirmSubmit = async (isAuto = false) => {
-    if (!participation || !arena) return;
-    try {
-      const timeTaken = Math.max(
-        0,
-        Math.floor((Date.now() - new Date(arena.startTime).getTime()) / 1000),
-      );
-
-      // Sync answers one last time
-      const currentAnswers = Array.from(answers.values());
-      await upsertAnswers(cleanedAnswerArray(currentAnswers));
-
-      // Update participation status
-      await updateParticipation(participation._id, {
-        timeTaken,
-        status: "graded",
-        score: 0,
-        finishedAt: new Date().toISOString(),
-        correctCount: 0,
-      });
 
       toast.success("Nộp bài thành công!", { id: "autosubmit" });
-      router.push("/student/arena");
+      router.back();
     } catch (err) {
       console.error("Submit failed:", err);
+      toast.error("Nộp bài thất bại!", { id: "autosubmit" });
     }
   };
 
@@ -259,7 +191,6 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     const data = ans.answerData as any;
     if (!data || Object.keys(data).length === 0) return false;
 
-    // Deep check if any value in the answer object is not empty
     const checkValue = (val: any): boolean => {
       if (val === null || val === undefined || val === "") return false;
       if (Array.isArray(val)) {
@@ -274,13 +205,11 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     return checkValue(data);
   };
 
-  const formatTime = (ms: number | null) => {
-    if (ms === null) return "--:--:--";
-    const totalSeconds = Math.floor(ms / 1000);
-    const h = Math.floor(totalSeconds / 3600);
-    const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60;
-    return `${h}h ${m}m ${s}s`;
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h > 0 ? `${h}h ` : ""}${m}m ${s}s`;
   };
 
   if (loading) {
@@ -327,7 +256,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
             <div className="flex flex-col justify-center px-8 mt-14 gap-3 max-h-full">
               {/** Title */}
               <label className="text-xl font-bold text-[#F9740B] leading-7 text-center">
-                {participation?.arenaId?.title}
+                {assessment?.title || "Bài kiểm tra đầu vào"}
               </label>
               {/** Questions */}
               <div className="w-full min-h-[300px] max-h-[300px] overflow-y-auto flex flex-row gap-x-2 gap-y-1 flex-wrap justify-center py-3">
@@ -427,16 +356,16 @@ export default function ArenaExam({ params }: ArenaExamProps) {
               </div>
             </div>
           </div>
-          {/* Time left */}
+          {/* Time left (Time taken) */}
           <div
             className="flex flex-col h-30 w-full bg-[#FFE3F2] border-l-0 border-t-2 border-b-2 border-r-2 border-[#FF1493]
                                      rounded-tr-2xl rounded-br-2xl items-center"
           >
             <div className="h-fit w-fit bg-[#3E1B57] text-white rounded-bl-xl rounded-br-xl px-5 py-1.5 font-medium">
-              Thời gian còn lại:
+              Thời gian đã làm:
             </div>
             <span className="text-3xl text-[#FF1493] font-bold mt-4 tabular-nums">
-              {formatTime(timeLeft)}
+              {formatTime(timeTaken)}
             </span>
           </div>
           <div
@@ -581,6 +510,11 @@ export default function ArenaExam({ params }: ArenaExamProps) {
           type={modalType}
           action={confirmModal}
           close={() => setModalClose(true)}
+          customMessage={
+            modalType === "WARNING"
+              ? "Kết quả bài kiểm tra đầu vào sẽ không được lưu nếu bạn chưa nộp bài.\n Bạn có chắc chắn muốn thoát không?"
+              : undefined
+          }
         />
       )}
     </div>

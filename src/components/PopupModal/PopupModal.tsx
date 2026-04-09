@@ -28,9 +28,10 @@ export type PopupModalParams = {
   type: MODAL_TYPE_KEY;
   action: () => void;
   close: () => void;
+  customMessage?: string;
 };
 
-export default function PopupModal({ type, action, close }: PopupModalParams) {
+export default function PopupModal({ type, action, close, customMessage }: PopupModalParams) {
   return (
     <AnimatePresence>
       <motion.div
@@ -56,7 +57,7 @@ export default function PopupModal({ type, action, close }: PopupModalParams) {
               baloo.className,
             )}
           >
-            {MODAL_TYPES[type].message}
+            {customMessage || MODAL_TYPES[type].message}
           </p>
 
           <div className="w-full flex flex-row justify-around mt-auto mb-0">

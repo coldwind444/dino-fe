@@ -68,6 +68,14 @@ export interface GoogleLoginRequest {
     familyId?: string;
 }
 
+export interface CreateAssessmentResultRequest {
+    assessmentId: string,
+    userId: string,
+    duration: number,
+    status: string,
+    totalScore: number,
+}
+
 // Response
 export interface UserResponse {
     id: string;
@@ -271,6 +279,7 @@ export interface ArenaResponse {
 export interface AnswerResponse {
     _id: string,
     exerciseId: string,
+    exercise?: ExerciseResponse,
     answerData: any,
     userId: string,
     isCorrect: boolean,
@@ -291,6 +300,7 @@ export interface AssessmentResponse {
 }
 
 export interface AssessmentResultResponse {
+    _id: string,
     assessmentId: string,
     userId: string,
     duration: number,

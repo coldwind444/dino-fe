@@ -1,4 +1,4 @@
-import { AnswerResponse, AssessmentResponse, AssessmentResultResponse, CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, Pagination, TermResponse, TopicResponse } from "@/types";
+import { AnswerResponse, AssessmentResponse, AssessmentResultResponse, CreateAssessmentResultRequest, CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, Pagination, TermResponse, TopicResponse } from "@/types";
 import { AxiosError } from "axios";
 import api, { handleError } from "./config";
 
@@ -197,5 +197,25 @@ export const getAssessmentResult = async (assessmentId: string, userId: string):
     } catch (error) {
         handleError(error);
         throw error; // Never reached
+    }
+}
+
+export const createAssessmentResult = async (req: CreateAssessmentResultRequest): Promise<AssessmentResultResponse> => {
+    try {
+        const res = await api.post(`/assessments/results/`, req);
+        return res.data.data as AssessmentResultResponse;
+    } catch (error) {
+        handleError(error);
+        throw error;
+    }
+}
+
+export const submitAssessment = async (assessmentResultId: string, duration: number): Promise<AssessmentResultResponse> => {
+    try {
+        const res = await api.post(`/assessments/submit/${assessmentResultId}`, { duration: duration });
+        return res.data.data as AssessmentResultResponse;
+    } catch (error) {
+        handleError(error);
+        throw error;
     }
 }

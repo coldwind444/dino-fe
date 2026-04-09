@@ -65,6 +65,11 @@ export default function StudentHome() {
     setIsTopicRecommendModalOpened(false);
   };
 
+  const startEntranceTest = () => {
+    closeEntranceTestModal();
+    router.push(`/student/entrance-test`);
+  };
+
   // Effects
   useEffect(() => {
     const fetchTopics = async () => {
@@ -385,7 +390,11 @@ export default function StudentHome() {
         </aside>
       </div>
       {isEntranceTestModalOpened && (
-        <EntranceTestPopup close={closeEntranceTestModal} />
+        <EntranceTestPopup
+          close={closeEntranceTestModal}
+          start={startEntranceTest}
+          lastname={username}
+        />
       )}
       {isTopicRecommendModalOpened && (
         <TopicRecommendPopup

@@ -18,6 +18,7 @@ import {
   LandResponse,
   LectureResponse,
   TopicResponse,
+  UserProfileResponse,
   WorldResponse,
 } from "@/types";
 
@@ -35,6 +36,7 @@ type LessonViewProps = {
   lands: LandResponse[];
   topic: TopicResponse;
   lectures: LectureResponse[];
+  user: UserProfileResponse;
 };
 
 export default function LessonView({
@@ -43,6 +45,7 @@ export default function LessonView({
   lands,
   topic,
   lectures,
+  user,
 }: LessonViewProps) {
   // Router
   const router = useRouter();
@@ -154,6 +157,8 @@ export default function LessonView({
           {/** Exercise view */}
           {mode === MODE.EXERCISE && (
             <ExerciseView
+              userId={user._id}
+              totalScore={totalScore}
               setTotalScore={setTotalScore}
               setTotalReward={setTotalReward}
               currentLecture={currentLecture}

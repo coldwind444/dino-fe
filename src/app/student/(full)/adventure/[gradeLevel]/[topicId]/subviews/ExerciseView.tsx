@@ -15,17 +15,20 @@ const sadFace = "/assets/exercises/sad.png";
 import CocosGameWrapper, {
   type CocosGameWrapperRef,
 } from "@/components/GameComponent/CocosGameWrapper";
-import { ExerciseResponse, LectureResponse } from "@/types";
-import { getExercises } from "@/apis";
+import { ExerciseResponse, LectureResponse, AnswerResponse } from "@/types";
+import { createLectureResult, getExercises, upsertAnswers } from "@/apis";
 import React from "react";
 import ExplainModal, { Theme } from "@/components/ExplainModal/ExplainModal";
 import { useLessonStore } from "@/stores/lessonStore";
+import { cleanedAnswerArray } from "@/helpers/utils";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 
 interface ExerciseViewProps {
   currentLecture: LectureResponse;
+  userId: string;
+  totalScore: number;
   setTotalScore: Dispatch<SetStateAction<number>>;
   setTotalReward: Dispatch<SetStateAction<number>>;
   onExit: () => void;
@@ -36,6 +39,8 @@ const THEME_ARRAY: Theme[] = ["prairie", "forest", "beach", "desert", "ruby"];
 
 export default function ExerciseView({
   currentLecture,
+  userId,
+  totalScore,
   onExit,
   onFinish,
   setTotalScore,
@@ -62,6 +67,7 @@ export default function ExerciseView({
 
   // Data states
   const [exercises, setExercises] = useState<ExerciseResponse[]>([]);
+  const [answers, setAnswers] = useState<AnswerResponse[]>([]);
   const [currExIdx, setCurrExIdx] = useState(0);
 
   // Functions
@@ -75,15 +81,20 @@ export default function ExerciseView({
     isCorrect: boolean,
     score: number,
     points: number = 0,
+    answerData: any = {},
   ) => {
-    console.log(
-      "handleAnswerChecked called - Answer result:",
+    const ans: AnswerResponse = {
+      _id: `temp-${Date.now()}-${Math.random()}`,
+      exerciseId: exercises[currExIdx]._id,
+      userId,
       isCorrect,
-      "Score:",
-      score,
-      "Points:",
-      points,
-    );
+      score: points,
+      lectureResultId: `temp-${currentLecture._id}`,
+      assessmentResultId: "",
+      arenaParticipationId: "",
+      answerData,
+    };
+    setAnswers([...answers, ans]);
     setIsAnswerCorrect(isCorrect);
 
     if (!doneExercises.includes(currExIdx)) {
@@ -122,6 +133,29 @@ export default function ExerciseView({
     }
   };
 
+  // Currently working on this
+  const submitLectureResult = async () => {
+    if (doneExercises.length !== exercises.length) {
+      alert("Vui lòng hoàn thành tất cả các câu hỏi!");
+      return;
+    }
+    try {
+      const res = await createLectureResult({
+        userId,
+        lectureId: currentLecture._id,
+        totalScore,
+      });
+      const modifiedAnswers = answers.map((ans) => ({
+        ...ans,
+        lectureResultId: res._id,
+      }));
+      await upsertAnswers(cleanedAnswerArray(modifiedAnswers));
+      onFinish(exercises.length);
+    } catch (error: any) {
+      console.error(error?.message);
+    }
+  };
+
   // Effects
   useEffect(() => {
     const fetchExercises = async () => {
@@ -130,7 +164,7 @@ export default function ExerciseView({
           lectureId: currentLecture._id,
           limit: 50,
         });
-        setExercises(exs);
+        setExercises(exs.sort((a, b) => a.order - b.order));
       } catch (error) {
         console.error("Error fetching exercises:", error);
       }
@@ -236,10 +270,7 @@ export default function ExerciseView({
             "hover:brightness-110 transition-all duration-200 overflow-hidden",
             "font-bold text-white mt-auto mb-10",
           )}
-          onClick={() => {
-            if (doneExercises.length === exercises.length)
-              onFinish(exercises.length);
-          }}
+          onClick={submitLectureResult}
         >
           <div
             className={clsx(
@@ -415,7 +446,7 @@ export default function ExerciseView({
         {/* Explain Modal */}
         <ExplainModal
           theme={THEME_ARRAY[Number(gradeLevel) - 1]}
-          explanation=""
+          explanation={exercises[currExIdx].explanation}
           isOpen={showExplainModal}
           onClose={() => setShowExplainModal(false)}
         />

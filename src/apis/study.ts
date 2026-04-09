@@ -1,4 +1,4 @@
-import { AnswerResponse, AssessmentResponse, AssessmentResultResponse, CreateAssessmentResultRequest, CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, Pagination, TermResponse, TopicResponse } from "@/types";
+import { AnswerResponse, AssessmentResponse, AssessmentResultResponse, CreateAssessmentResultRequest, CreateLectureResultRequest, CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, LectureResultResponse, Pagination, TermResponse, TopicResponse } from "@/types";
 import { AxiosError } from "axios";
 import api, { handleError } from "./config";
 
@@ -139,6 +139,16 @@ export const getLecturesByTopicId = async (topicId: string): Promise<LectureResp
         })
 
         return sortedLectures
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}
+
+export const createLectureResult = async (req: CreateLectureResultRequest): Promise<LectureResultResponse> => {
+    try {
+        const res = await api.post('/lectures/results', req)
+        return res.data.data as LectureResultResponse
     } catch (error) {
         handleError(error);
         throw error; // Never reached

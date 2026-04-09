@@ -76,6 +76,12 @@ export interface CreateAssessmentResultRequest {
     totalScore: number,
 }
 
+export interface CreateLectureResultRequest {
+    userId: string,
+    lectureId: string,
+    totalScore: number,
+}
+
 // Response
 export interface UserResponse {
     id: string;
@@ -190,6 +196,7 @@ export interface ExerciseResponse {
     lectureId: string,
     category: string;
     order: number;
+    explanation: string;
 }
 
 export interface TermResponse {
@@ -305,5 +312,12 @@ export interface AssessmentResultResponse {
     userId: string,
     duration: number,
     status: string,
+    totalScore: number,
+}
+
+export interface LectureResultResponse {
+    _id: string,
+    lectureId: string,
+    userId: string,
     totalScore: number,
 }

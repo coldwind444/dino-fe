@@ -77,13 +77,13 @@ export default function FinishView({
       setLoading(true);
       try {
         await updateUserQuartz(reward);
-        await createProgress({
-          topicId: topic._id,
-          lectureId: currentLecture._id,
-          completion: 100,
-          averageScore: score,
-          status: "completed",
-        });
+        // await createProgress({
+        //   topicId: topic._id,
+        //   lectureId: currentLecture._id,
+        //   completion: 100,
+        //   averageScore: score,
+        //   status: "completed",
+        // });
       } catch (error) {
         console.log("Failed to update quartz.", error);
         hasUpdatedRef.current = false;

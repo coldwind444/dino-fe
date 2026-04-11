@@ -66,6 +66,12 @@ export default function LessonView({
   const [maxScore, setMaxScore] = useState(0);
 
   // Functions
+  const onExit = () => {
+    setMode(MODE.LECTURE);
+    setTotalScore(0);
+    setTotalReward(0);
+  };
+
   const onFinish = (max: number) => {
     setMaxScore(max);
     setMode(MODE.FINISH);
@@ -162,7 +168,7 @@ export default function LessonView({
               setTotalScore={setTotalScore}
               setTotalReward={setTotalReward}
               currentLecture={currentLecture}
-              onExit={() => setMode(MODE.LECTURE)}
+              onExit={onExit}
               onFinish={onFinish}
             />
           )}

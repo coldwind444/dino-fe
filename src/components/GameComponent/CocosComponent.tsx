@@ -43,7 +43,12 @@ export interface CocosGameRef {
     questionData?: unknown,
     questionIndex?: number,
   ) => void;
-  onAnswerChecked?: (isCorrect: boolean, score: number) => void;
+  onAnswerChecked?: (
+    isCorrect: boolean,
+    score: number,
+    points?: number,
+    userAnswer?: object,
+  ) => void;
 }
 
 interface CocosGameProps {
@@ -53,6 +58,7 @@ interface CocosGameProps {
     isCorrect: boolean,
     score: number,
     points?: number,
+    userAnswer?: object,
   ) => void;
 }
 
@@ -163,8 +169,14 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
               payload.isCorrect,
               payload.score,
               payload.points,
+              payload.userAnswer,
             );
-            onAnswerChecked(payload.isCorrect, payload.score, payload.points);
+            onAnswerChecked(
+              payload.isCorrect,
+              payload.score,
+              payload.points,
+              payload.userAnswer,
+            );
           }
           break;
         case "QUIZ_RESTARTED":

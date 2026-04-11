@@ -6,7 +6,11 @@ import { SetStateAction } from "react";
 import { useSpring, animated } from "@react-spring/web";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleDoubleRight, faClose } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDoubleRight,
+  faClose,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
 import { Roboto, Righteous } from "next/font/google";
 
 const congrats = "/assets/exercises/praise.png";
@@ -69,6 +73,7 @@ export default function ExerciseView({
   const [exercises, setExercises] = useState<ExerciseResponse[]>([]);
   const [answers, setAnswers] = useState<AnswerResponse[]>([]);
   const [currExIdx, setCurrExIdx] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Functions
   const handleCheckAnswer = () => {
@@ -81,7 +86,7 @@ export default function ExerciseView({
     isCorrect: boolean,
     score: number,
     points: number = 0,
-    userAnswer: any = {},
+    userAnswer?: object,
   ) => {
     const ans: AnswerResponse = {
       _id: `temp-${Date.now()}-${Math.random()}`,
@@ -96,6 +101,7 @@ export default function ExerciseView({
     };
     setAnswers([...answers, ans]);
     setIsAnswerCorrect(isCorrect);
+    console.log("userAnswer: ", JSON.stringify(userAnswer));
 
     if (!doneExercises.includes(currExIdx)) {
       setShowSubmitBanner(true);
@@ -108,7 +114,7 @@ export default function ExerciseView({
     }
   };
 
-  const handleContinueAfterAnswer = () => {
+  const handleContinueAfterAnswer = async () => {
     setShowSubmitBanner(false);
     setShowExplainButton(false);
 
@@ -118,11 +124,8 @@ export default function ExerciseView({
     ) {
       setCurrExIdx(currExIdx + 1);
     } else {
-      if (onFinish) {
-        onFinish(exercises.length);
-      } else {
-        onExit();
-      }
+      onFinish(exercises.length);
+      submitLectureResult();
     }
   };
 
@@ -139,6 +142,9 @@ export default function ExerciseView({
       alert("Vui lòng hoàn thành tất cả các câu hỏi!");
       return;
     }
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     try {
       const res = await createLectureResult({
         lectureId: currentLecture._id,
@@ -154,6 +160,7 @@ export default function ExerciseView({
       onFinish(exercises.length);
     } catch (error: any) {
       console.error(error?.message);
+      setIsSubmitting(false);
     }
   };
 
@@ -267,27 +274,38 @@ export default function ExerciseView({
         {/* Submit button */}
         <div
           className={clsx(
-            "h-[60px] w-[230px] bg-amber-700 rounded-[15px] cursor-pointer",
-            "hover:brightness-110 transition-all duration-200 overflow-hidden",
-            "font-bold text-white mt-auto mb-10",
+            "h-[60px] w-[230px] bg-amber-700 rounded-[15px]",
+            isSubmitting
+              ? "cursor-not-allowed opacity-70"
+              : "cursor-pointer hover:brightness-110",
+            "transition-all duration-200 overflow-hidden font-bold text-white mt-auto mb-10",
           )}
-          onClick={submitLectureResult}
+          onClick={isSubmitting ? undefined : submitLectureResult}
         >
           <div
             className={clsx(
-              "h-full w-full bg-amber-600 cursor-pointer relative",
+              "h-full w-full bg-amber-600 relative",
               "flex items-center justify-center",
               "font-bold text-white text-[20px]",
               "rounded-tl-[40px] rounded-br-[40px]",
             )}
           >
-            Nộp bài
-            <span
-              className={clsx(
-                "h-[20px] aspect-square bg-[rgba(255,255,255,0.3)] absolute",
-                "top-0 right-0 -translate-x-[50%] translate-y-[30%] rounded-full",
-              )}
-            ></span>
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faSpinner} spin />
+                Đang nộp...
+              </div>
+            ) : (
+              "Nộp bài"
+            )}
+            {!isSubmitting && (
+              <span
+                className={clsx(
+                  "h-[20px] aspect-square bg-[rgba(255,255,255,0.3)] absolute",
+                  "top-0 right-0 -translate-x-[50%] translate-y-[30%] rounded-full",
+                )}
+              ></span>
+            )}
           </div>
         </div>
       </div>

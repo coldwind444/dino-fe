@@ -1,108 +1,138 @@
-'use client'
+"use client";
 
 import { useLessonStore } from "@/stores/lessonStore";
 import LessonView from "./LessonView";
 import { useEffect, useState } from "react";
 import { GradeProgressResponse, GradeResponse, TopicResponse } from "@/types";
-import { getGradeByLevel, getGradeProgress, getTopicsByGradeId, getUserProfile, getRecentTopics, getTopicById, getCompletedTopics } from "@/apis";
+import {
+  getGrades,
+  getGradeProgress,
+  getTopics,
+  getUserProfile,
+  getRecentTopics,
+  getTopicById,
+  getCompletedTopics,
+  PaginationTopicResponse,
+} from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 
-export default function LessonsPage() {
-  const { gradeLevel } = useLessonStore()
+const TOPICS_PER_PAGE = 4;
 
+export default function LessonsPage() {
+  const { gradeLevel } = useLessonStore();
+
+  // Data state
   const [grade, setGrade] = useState<GradeResponse | null>(null);
-  const [topics, setTopics] = useState<TopicResponse[]>([])
+  const [topicsPgRes, setTopicsPgRes] =
+    useState<PaginationTopicResponse | null>(null);
   const [userQuartz, setUserQuartz] = useState<number | undefined>();
-  const [gradeProgress, setGradeProgress] = useState<GradeProgressResponse | null>();
+  const [gradeProgress, setGradeProgress] =
+    useState<GradeProgressResponse | null>();
   const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
-  const [noCompletedTopics, setNoCompletedTopics] = useState(0)
-  const [noUnlockedTopics, setNoUnlockedTopics] = useState(0)
+  const [noCompletedTopics, setNoCompletedTopics] = useState(0);
+  const [noUnlockedTopics, setNoUnlockedTopics] = useState(0);
+  const [firstTopic, setFirstTopic] = useState<TopicResponse | null>(null);
+
+  // Loading state
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Handle
+  const handleChangePage = (isNext: boolean) => {
+    if (isNext) {
+      if (currentPage < topicsPgRes?.pagination.totalPages!) {
+        setCurrentPage(currentPage + 1);
+      }
+    } else {
+      if (currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    }
+  };
 
   // Init fetch grade and user data
   useEffect(() => {
-    const fetchGradeData = async () => {
+    const fetchProfileData = async () => {
+      setProfileLoading(true);
       try {
-        const res = await getGradeByLevel(Number(gradeLevel));
-        setGrade(res[0]);
+        const [grades, profile] = await Promise.all([
+          getGrades({ level: gradeLevel }),
+          getUserProfile(),
+        ]);
+        setGrade(grades[0]);
+        setUserQuartz(profile.quartz);
       } catch (error) {
-        console.error("Error fetching grade data:", error);
+        console.error("Error fetching profile data:", error);
+      } finally {
+        setProfileLoading(false);
       }
-    }
+    };
 
-    const fetchUserData = async () => {
-      try {
-        const res = await getUserProfile()
-        setUserQuartz(res.quartz);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    }
-
-    fetchUserData();
-    fetchGradeData();
-  }, [])
+    fetchProfileData();
+  }, [gradeLevel]);
 
   // Fetch related data when grade is set
   useEffect(() => {
     if (!grade) return;
 
-    // Topics list
-    const fetchTopicsData = async () => {
+    const fetchLessonData = async () => {
+      setDataLoading(true);
       try {
-        const res = await getTopicsByGradeId(grade._id);
-        setTopics(res);
+        const [topics, progress, recent] = await Promise.all([
+          getTopics({
+            gradeId: grade._id,
+            limit: TOPICS_PER_PAGE,
+            page: currentPage,
+          }),
+          getGradeProgress(grade._id),
+          getRecentTopics(1),
+        ]);
+
+        if (topics.pagination.page === 1) {
+          setFirstTopic(topics.items[0]);
+        }
+        setTopicsPgRes(topics);
+        setGradeProgress(progress);
+
+        if (recent?.length > 0 && recent[0]) {
+          const filteredTopics = recent.filter((t) => t.gradeId === grade._id);
+          setRecentTopic(filteredTopics[0]);
+        }
       } catch (error) {
-        console.error("Error fetching lessons data:", error);
+        console.error("Error fetching lesson data:", error);
+      } finally {
+        setDataLoading(false);
       }
-    }
+    };
 
-    // Grade progress
-    const fetchGradeProgress = async () => {
-      try {
-        const res = await getGradeProgress(grade._id);
-        setGradeProgress(res);
-      } catch (error) {
-        console.error("Error fetching grade progress:", error);
-      }
-    }
+    fetchLessonData();
+  }, [grade, currentPage]);
 
-    // Recent topics
-    const fetchRecentTopics = async () => {
-      try {
-        const res = await getRecentTopics(1);
-        const rtopic = await getTopicById(res[0])
-        setRecentTopic(rtopic)
-      } catch (error) {
-        console.error("Error fetching recent topics:", error);
-      }
-    }
-
-    // Complete topics
-    const fetchCompleteTopics = async () => {
-      try {
-        const res = await getCompletedTopics();
-        const rtopic = await getTopicById(res[0])
-        setRecentTopic(rtopic)
-      } catch (error) {
-        console.error("Error fetching recent topics:", error);
-      }
-    }
-
-    fetchTopicsData();
-    fetchGradeProgress();
-    fetchRecentTopics()
-  }, [grade])
-
-  if (!grade || userQuartz === undefined || !topics || !gradeProgress) {
+  if (
+    profileLoading ||
+    dataLoading ||
+    !grade ||
+    !topicsPgRes ||
+    !gradeProgress ||
+    !userQuartz
+  ) {
     return <ScreenLoader />;
   }
 
-  return <LessonView
-    topics={topics}
-    grade={grade!}
-    userQuartz={userQuartz}
-    gradeProgress={gradeProgress!} 
-    noComplete={noCompletedTopics}
-    noUnlocked={noUnlockedTopics}
+  return (
+    <LessonView
+      topics={topicsPgRes}
+      grade={grade}
+      userQuartz={userQuartz}
+      gradeProgress={gradeProgress}
+      noComplete={noCompletedTopics}
+      noUnlocked={noUnlockedTopics}
+      changePage={handleChangePage}
+      recentTopic={recentTopic!}
+      firstTopic={firstTopic!}
     />
+  );
 }

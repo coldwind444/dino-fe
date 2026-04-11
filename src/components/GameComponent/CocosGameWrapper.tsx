@@ -13,14 +13,19 @@ export interface CocosGameWrapperRef {
   switchGame: (
     gameIndex: number,
     questionData?: unknown,
-    questionIndex?: number
+    questionIndex?: number,
   ) => void;
 }
 
 interface CocosGameWrapperProps {
   exercises: ExerciseResponse[];
   currentExerciseIndex?: number;
-  onAnswerChecked?: (isCorrect: boolean, score: number, points?: number) => void;
+  onAnswerChecked?: (
+    isCorrect: boolean,
+    score: number,
+    points?: number,
+    userAnswer?: object,
+  ) => void;
 }
 
 const CocosGameWrapper = forwardRef<CocosGameWrapperRef, CocosGameWrapperProps>(
@@ -59,22 +64,29 @@ const CocosGameWrapper = forwardRef<CocosGameWrapperRef, CocosGameWrapperProps>(
         switchGame: (
           gameIndex: number,
           questionData?: unknown,
-          questionIndex?: number
+          questionIndex?: number,
         ) => {
           if (cocosGameRef.current) {
             cocosGameRef.current.switchGame(
               gameIndex,
               questionData,
-              questionIndex
+              questionIndex,
             );
           }
         },
       }),
-      []
+      [],
     );
 
-    return <CocosGame ref={cocosGameRef} onAnswerChecked={onAnswerChecked} exercises={exercises} currentExerciseIndex={currentExerciseIndex} />;
-  }
+    return (
+      <CocosGame
+        ref={cocosGameRef}
+        onAnswerChecked={onAnswerChecked}
+        exercises={exercises}
+        currentExerciseIndex={currentExerciseIndex}
+      />
+    );
+  },
 );
 
 CocosGameWrapper.displayName = "CocosGameWrapper";

@@ -1,5 +1,6 @@
 // Request
 export interface RegisterRequest {
+    username: string;
     email: string;
     password: string;
     role: string;
@@ -9,7 +10,7 @@ export interface RegisterRequest {
 }
 
 export interface LoginRequest {
-    email: string;
+    identifier: string;
     password: string;
 }
 
@@ -34,6 +35,54 @@ export interface UpdateUserProfileRequest {
     gradeId?: string
 }
 
+export interface CreateAnswerRequest {
+    userId: string,
+    exerciseId: string,
+    answerData: object,
+    isCorrect: boolean,
+    score: number,
+    assessmentResultId: string,
+    arenaParticipationId: string,
+    lectureResultId: string
+}
+
+export interface CreateParticipationRequest {
+    arenaId: string,
+    correctCount: number,
+    timeTaken: number,
+    score: number,
+    status: string
+}
+
+export interface UpdateParticipationRequest {
+    correctCount: number,
+    timeTaken: number,
+    score: number,
+    finishedAt: string,
+    status: string
+}
+
+export interface GoogleLoginRequest {
+    token: string;
+    role: string;
+    familyId?: string;
+}
+
+export interface CreateAssessmentResultRequest {
+    assessmentId: string,
+    userId: string,
+    duration: number,
+    status: string,
+    totalScore: number,
+}
+
+export interface CreateLectureResultRequest {
+    lectureId: string,
+    correctCount: number,
+    totalQuestions: number,
+    timeTaken: number
+}
+
 // Response
 export interface UserResponse {
     id: string;
@@ -51,7 +100,13 @@ export interface RegisterResponse {
 export interface LoginResponse {
     message: string;
     token: string;
-    user: UserResponse
+    user: {
+        id: string;
+        email: string;
+        role: string;
+        name: string;
+        avatarUrl: string;
+    }
 }
 
 export interface UserProfileResponse {
@@ -67,11 +122,11 @@ export interface UserProfileResponse {
     avatarUrl: string;
     role: string;
     status: string;
-    students: string[];
     createdAt: string;
     updatedAt: string;
     familyId: string;
     gradeId: string;
+    rankId: string;
 };
 
 export interface AvatarUploadResponse {
@@ -115,7 +170,8 @@ export interface TopicResponse {
     description: string,
     gradeId: string,
     termId: string,
-    weekNumbers: number[]
+    weekNumbers: number[],
+    level: number
 }
 
 export interface LectureResponse {
@@ -124,7 +180,8 @@ export interface LectureResponse {
     contentType: string,
     description: string,
     difficulty: string,
-    topicId: string
+    topicId: string,
+    order: number
 }
 
 export interface ExerciseResponse {
@@ -138,7 +195,9 @@ export interface ExerciseResponse {
     metadata: object,
     difficulty: string,
     lectureId: string,
-    category: string
+    category: string;
+    order: number;
+    explanation: string;
 }
 
 export interface TermResponse {
@@ -153,4 +212,114 @@ export interface TermResponse {
     createdAt: string,
     updatedAt: string,
     __v: number
+}
+
+export interface RankResponse {
+    _id: string,
+    title: string,
+    badge: string,
+    color: string,
+    __v: number
+}
+
+export interface ParticipationResponse {
+    _id: string,
+    userId: {
+        _id: string,
+        name: string,
+        avatarUrl: string,
+        email: string,
+    },
+    arenaId: {
+        _id: string,
+        title: string,
+        description: string,
+        startTime: string,
+        endTime: string
+    },
+    correctCount: number,
+    timeTaken: number,
+    score: number,
+    finishedAt: string,
+    createdAt: string,
+    updatedAt: string,
+    __v: number,
+    status: string
+}
+
+export interface LeaderboardResponse {
+    arena: {
+        id: string,
+        title: string,
+        description: string
+    },
+    leaderboard: {
+        _id: string,
+        user: {
+            _id: string,
+            name: string,
+            email: string,
+            avatarUrl: string
+        },
+        arenaId: string,
+        correctCount: number,
+        timeTaken: number,
+        score: number
+    }[],
+    total: number
+}
+
+export interface ArenaResponse {
+    _id: string,
+    title: string,
+    description: string,
+    period: string,
+    startTime: string,
+    endTime: string,
+    gradeId: string,
+    isActive: boolean,
+    createdAt: string,
+    updatedAt: string,
+    __v: number,
+    status: string
+}
+
+export interface AnswerResponse {
+    _id: string,
+    exerciseId: string,
+    exercise?: ExerciseResponse,
+    answerData: any,
+    userId: string,
+    isCorrect: boolean,
+    score: number,
+    assessmentResultId: string,
+    arenaParticipationId: string,
+    lectureResultId: string
+}
+
+export interface AssessmentResponse {
+    _id: string,
+    title: string,
+    description: string,
+    gradeId: string,
+    published: boolean,
+    createdAt: string,
+    updatedAt: string,
+}
+
+export interface AssessmentResultResponse {
+    _id: string,
+    assessmentId: string,
+    userId: string,
+    duration: number,
+    status: string,
+    totalScore: number,
+}
+
+export interface LectureResultResponse {
+    _id: string,
+    lectureId: string,
+    correctCount: number,
+    totalQuestions: number,
+    timeTaken: number
 }

@@ -51,3 +51,27 @@ iframe {
 ::-webkit-scrollbar-thumb:hover {
   background: #888;
 }
+
+/* ExplainModal custom scrollbar */
+.explain-modal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.explain-modal-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+}
+
+.explain-modal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 9999px;
+}
+
+.explain-modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.explain-modal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.9) rgba(255, 255, 255, 0.2);
+}

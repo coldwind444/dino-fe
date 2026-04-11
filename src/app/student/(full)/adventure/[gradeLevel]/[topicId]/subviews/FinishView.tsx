@@ -4,7 +4,14 @@ import { motion } from "framer-motion";
 import { Roboto, Coiny } from "next/font/google";
 import { useSpring, animated } from "@react-spring/web";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faBook, faCoins, faGift, faGraduationCap, faStar } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faBook,
+  faCoins,
+  faGift,
+  faGraduationCap,
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
 import { LectureResponse, TopicResponse } from "@/types";
 import { useEffect, useState, useRef } from "react";
 import { createProgress, updateUserQuartz } from "@/apis";
@@ -26,60 +33,67 @@ interface FinishViewProps {
   onContinue: () => void;
 }
 
-export default function FinishView({ grade, topic, currentLecture, score, reward, maxScore, onContinue }: FinishViewProps) {
+export default function FinishView({
+  grade,
+  topic,
+  currentLecture,
+  score,
+  reward,
+  maxScore,
+  onContinue,
+}: FinishViewProps) {
   // Rising animated points
-  const [animatedScore, setAnimatedScore] = useState(0)
-  const [animatedReward, setAnimatedReward] = useState(0)
+  const [animatedScore, setAnimatedScore] = useState(0);
+  const [animatedReward, setAnimatedReward] = useState(0);
   const spring = useSpring({
     from: {
       reward: 0,
       score: 0,
     },
     to: {
-      reward: reward,
-      score: score,
+      reward: animatedReward,
+      score: animatedScore,
     },
     config: { duration: 800 },
   });
 
   // UI States
-  const [loading, setLoading] = useState(false)
-  const hasUpdatedRef = useRef(false)
+  const [loading, setLoading] = useState(false);
+  const hasUpdatedRef = useRef(false);
 
   // Effects
   useEffect(() => {
     setTimeout(() => {
-      setAnimatedScore(score)
-      setAnimatedReward(reward)
-    }, 300)
-  }, [])
+      setAnimatedScore(score);
+      setAnimatedReward(reward);
+    }, 300);
+  }, []);
 
   useEffect(() => {
-    if (!reward || !score || hasUpdatedRef.current) return
+    if (!reward || !score || hasUpdatedRef.current) return;
 
     const updateResult = async () => {
-      hasUpdatedRef.current = true
-      setLoading(true)
+      hasUpdatedRef.current = true;
+      setLoading(true);
       try {
-        await updateUserQuartz(reward)
-        await createProgress({
-          topicId: topic._id,
-          lectureId: currentLecture._id,
-          completion: 100,
-          averageScore: score,
-          status: 'completed',
-        })
+        await updateUserQuartz(reward);
+        // await createProgress({
+        //   topicId: topic._id,
+        //   lectureId: currentLecture._id,
+        //   completion: 100,
+        //   averageScore: score,
+        //   status: "completed",
+        // });
       } catch (error) {
-        console.log("Failed to update quartz.", error)
-        hasUpdatedRef.current = false // optional rollback
+        console.log("Failed to update quartz.", error);
+        hasUpdatedRef.current = false;
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    updateResult()
-  }, [reward, score])
-
+    updateResult();
+  }, [reward, score]);
 
   return (
     <motion.div
@@ -100,7 +114,7 @@ export default function FinishView({ grade, topic, currentLecture, score, reward
                 className={clsx(
                   "text-white font-bold mt-2",
                   coiny.className,
-                  "text-3xl"
+                  "text-3xl",
                 )}
               >
                 CHÚC MỪNG
@@ -166,7 +180,9 @@ export default function FinishView({ grade, topic, currentLecture, score, reward
                   <label className="text-[16px]">Tổng điểm</label>
                 </div>
                 <div className="flex flex-row gap-2">
-                  <animated.span className="font-medium text-3xl">{spring.score.to(n => Math.floor(n))}</animated.span>
+                  <animated.span className="font-medium text-3xl">
+                    {spring.score.to((n) => Math.floor(n))}
+                  </animated.span>
                   <span className="font-medium text-3xl">{`/ ${maxScore}`}</span>
                 </div>
               </div>
@@ -183,16 +199,20 @@ export default function FinishView({ grade, topic, currentLecture, score, reward
                     alt=""
                     className="inline-block mr-2"
                   />
-                  <animated.span>{spring.reward.to(n => Math.floor(n))}</animated.span>
+                  <animated.span>
+                    {spring.reward.to((n) => Math.floor(n))}
+                  </animated.span>
                 </div>
               </div>
             </div>
             {/** Continue Button */}
-            <button disabled={loading}
+            <button
+              disabled={loading}
               className="flex flex-row h-[50px] text-white items-center justify-center w-2/3 ml-auto mr-auto 
                     cursor-pointer hover:opacity-90 transition-all duration-200 bg-[#4F46E5] rounded-[15px] px-10 gap-5 mt-3
                     disabled:opacity-80 disabled:cursor-not-allowed relative"
-              onClick={onContinue}>
+              onClick={onContinue}
+            >
               <label className="cursor-pointer">Tiếp tục</label>
               <FontAwesomeIcon icon={faArrowRight} />
               <div className="absolute left-2">

@@ -1,35 +1,74 @@
-import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig, AxiosError } from "axios";
 
-// =========================
-// 🔧 Base URL
-// =========================
-export const baseURL = process.env.NEXT_PUBLIC_API_URL;
+export const baseURL = '/backend';
 
-// =========================
-// 🧠 Token Management (sessionStorage only, SSR-safe)
-// =========================
-export const setAccessToken = (token: string) => {
-  if (typeof window !== "undefined") {
-    sessionStorage.setItem("accessToken", token);
+const TOKEN_KEY = "accessToken";
+const ROLE_KEY = "userRole";
+const DURATION_KEY = "duration";
+
+export const ERROR = {
+  NOT_FOUND: { message: 'Không tìm thấy dữ liệu !', status: 404 },
+  FORBIDDEN: { message: 'Không có quyền truy cập !', status: 403 },
+  BAD_REQUEST: { message: 'Tham số không hợp lệ !', status: 400 },
+  UNAUTHORIZED: { message: 'Không có quyền truy cập !', status: 401 },
+  CONFLICT: { message: 'Dữ liệu đã tồn tại !', status: 409 },
+  INTERNAL_SERVER_ERROR: { message: 'Lỗi hệ thống !', status: 500 },
+}
+
+export const handleError = (error: any) => {
+  const err = error as AxiosError<{ error?: string }>;
+  const status = err.response?.status;
+
+  const errorType = Object.values(ERROR).find((e) => e.status === status);
+
+  if (errorType) {
+    throw errorType;
   }
+
+  throw {
+    message: err.response?.data?.error || err.message || ERROR.INTERNAL_SERVER_ERROR.message,
+    status: status || 500,
+  };
+};
+
+export const setDuration = (duration: number) => {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(DURATION_KEY, duration.toString());
+};
+
+export const getDuration = (): number | null => {
+  if (typeof window !== "undefined") {
+    return parseInt(sessionStorage.getItem(DURATION_KEY) || "0");
+  }
+  return null;
+};
+
+export const clearDuration = () => {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(DURATION_KEY);
+};
+
+export const setAccessToken = (token: string, role: string) => {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(TOKEN_KEY, token);
+  document.cookie = `${TOKEN_KEY}=${token}; path=/; SameSite=Strict`;
+  document.cookie = `${ROLE_KEY}=${role}; path=/; SameSite=Strict`;
 };
 
 export const getAccessToken = (): string | null => {
   if (typeof window !== "undefined") {
-    return sessionStorage.getItem("accessToken");
+    return sessionStorage.getItem(TOKEN_KEY);
   }
   return null;
 };
 
 export const clearAccessToken = () => {
-  if (typeof window !== "undefined") {
-    sessionStorage.removeItem("accessToken");
-  }
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(TOKEN_KEY);
+  document.cookie = `${TOKEN_KEY}=; path=/; max-age=0; SameSite=Strict`;
+  document.cookie = `${ROLE_KEY}=; path=/; max-age=0; SameSite=Strict`;
 };
 
-// =========================
-// 🧩 Axios Instances
-// =========================
 export const publicApi: AxiosInstance = axios.create({
   baseURL,
   headers: { "Content-Type": "application/json" },
@@ -40,9 +79,6 @@ export const api: AxiosInstance = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// =========================
-// 🛡️ Request Interceptor (adds token automatically)
-// =========================
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = getAccessToken();
@@ -54,24 +90,15 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// =========================
-// ⚠️ Response Interceptor (redirect on 401)
-// =========================
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      console.warn("Unauthorized: Token may be invalid or expired.");
+    if (error.response?.status === 403) {
+      console.warn("Forbidden: Token may be invalid or expired.");
       clearAccessToken();
-      if (typeof window !== "undefined") {
-        window.location.href = "/auth";
-      }
     }
     return Promise.reject(error);
   }
 );
 
-// =========================
-// ✅ Export
-// =========================
 export default api;

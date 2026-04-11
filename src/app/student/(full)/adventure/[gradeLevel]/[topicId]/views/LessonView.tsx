@@ -1,6 +1,5 @@
 "use client";
 
-
 import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -8,15 +7,20 @@ import { AnimatePresence } from "framer-motion";
 import { Roboto } from "next/font/google";
 import { useRouter } from "next/navigation";
 import Confetti from "react-confetti";
-import { useSpring, animated } from "@react-spring/web";
 
 import Volume from "@/components/Volume/Volume";
-import MilestonesView from '../subviews/MilestonesView';
-import ExerciseView from '../subviews/ExerciseView';
-import FinishView from '../subviews/FinishView';
+import MilestonesView from "../subviews/MilestonesView";
+import ExerciseView from "../subviews/ExerciseView";
+import FinishView from "../subviews/FinishView";
 
-import { useLessonStore } from "@/stores/lessonStore";
-import { GradeResponse, LandResponse, LectureResponse, TopicResponse, WorldResponse } from "@/types";
+import {
+  GradeResponse,
+  LandResponse,
+  LectureResponse,
+  TopicResponse,
+  UserProfileResponse,
+  WorldResponse,
+} from "@/types";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 
@@ -32,9 +36,17 @@ type LessonViewProps = {
   lands: LandResponse[];
   topic: TopicResponse;
   lectures: LectureResponse[];
+  user: UserProfileResponse;
 };
 
-export default function LessonView({ grade, world, lands, topic, lectures }: LessonViewProps) {
+export default function LessonView({
+  grade,
+  world,
+  lands,
+  topic,
+  lectures,
+  user,
+}: LessonViewProps) {
   // Router
   const router = useRouter();
 
@@ -43,35 +55,48 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
   const [isCelebrating, setIsCelebrating] = useState(false);
 
   // Data states
-  const { lectureIdx } = useLessonStore();
-  const [currLand, setCurrLand] = useState<LandResponse>(lands.filter(land => land.difficulty === 'easy')[0]);
-  const [currentLecture, setCurrentLecture] = useState<LectureResponse | null>(null);
+  const [currLand, setCurrLand] = useState<LandResponse>(
+    lands.find((land) => land.difficulty === "easy")!,
+  );
+  const [currentLecture, setCurrentLecture] = useState<LectureResponse>(
+    lectures[0],
+  );
   const [totalScore, setTotalScore] = useState(0);
   const [totalReward, setTotalReward] = useState(0);
-  const [maxScore, setMaxScore] = useState(0)
+  const [maxScore, setMaxScore] = useState(0);
 
   // Functions
+  const onExit = () => {
+    setMode(MODE.LECTURE);
+    setTotalScore(0);
+    setTotalReward(0);
+  };
+
   const onFinish = (max: number) => {
-    setMaxScore(max)
+    setMaxScore(max);
     setMode(MODE.FINISH);
-  }
+  };
 
   const onContinue = () => {
-    setIsCelebrating(false)
+    setIsCelebrating(false);
     setMode(MODE.LECTURE);
-    setTotalReward(0)
-    setTotalScore(0)
-  }
+    setTotalReward(0);
+    setTotalScore(0);
+  };
 
-  // Effects
-  useEffect(() => {
-    const difficulty = lectures[lectureIdx].difficulty;
-    const selectedLand = lands.find(land => land.difficulty === difficulty);
-    if (selectedLand) setCurrLand(selectedLand);
-    if (lectures[lectureIdx]) {
-      setCurrentLecture(lectures[lectureIdx]);
+  const doExercise = () => {
+    setMode(MODE.EXERCISE);
+  };
+
+  const handleLectureChange = (lecture: LectureResponse) => {
+    const newLand = lands.find(
+      (land) => land.difficulty === lecture.difficulty,
+    );
+    if (newLand) {
+      setCurrLand(newLand);
     }
-  }, [lectureIdx])
+    setCurrentLecture(lecture);
+  };
 
   useEffect(() => {
     if (mode === MODE.FINISH) {
@@ -83,10 +108,6 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
     }
   }, [mode]);
 
-  const doExercise = () => {
-    setMode(MODE.EXERCISE);
-  };
-
   return (
     <div className="h-screen w-screen relative overflow-hidden">
       {/** Full screen confetti for finish view */}
@@ -95,7 +116,7 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
         height={window.innerHeight}
         className={clsx(
           isCelebrating ? "opacity-100" : "opacity-0",
-          "transition-opacity duration-200"
+          "transition-opacity duration-200",
         )}
       />
 
@@ -103,7 +124,7 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
       <Image
         className="h-full w-full object-cover"
         fill
-        src={currLand.imageUrl || ''}
+        src={currLand.imageUrl || ""}
         alt=""
       />
 
@@ -136,15 +157,18 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
               lectures={lectures}
               onBack={() => router.back()}
               onDoExercise={doExercise}
+              onLectureChange={handleLectureChange}
             />
           )}
           {/** Exercise view */}
           {mode === MODE.EXERCISE && (
             <ExerciseView
+              userId={user._id}
+              totalScore={totalScore}
               setTotalScore={setTotalScore}
               setTotalReward={setTotalReward}
-              currentLecture={currentLecture!}
-              onExit={() => setMode(MODE.LECTURE)}
+              currentLecture={currentLecture}
+              onExit={onExit}
               onFinish={onFinish}
             />
           )}
@@ -155,7 +179,7 @@ export default function LessonView({ grade, world, lands, topic, lectures }: Les
               topic={topic}
               score={totalScore}
               reward={totalReward}
-              currentLecture={lectures[lectureIdx]}
+              currentLecture={currentLecture!}
               maxScore={maxScore}
               onContinue={onContinue}
             />

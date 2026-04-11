@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
+import { Lobster } from "next/font/google";
+
+const lobster = Lobster({ subsets: ["latin"], weight: ["400"] });
 
 export type Theme = "prairie" | "forest" | "beach" | "desert" | "ruby";
 
@@ -94,8 +97,8 @@ export default function ExplainModal({
             {/* Explanation text */}
             <div
               className={clsx(
-                "absolute  left-[12%] right-[15%] bottom-[18%] flex justify-center",
-                "overflow-y-auto px-20 pb-2 explain-modal-scrollbar",
+                "absolute  left-[12%] right-[15%] bottom-[18%] flex justify-start",
+                "overflow-y-auto px-20 pb-2 explain-modal-scrollbar flex flex-col gap-8 items-center",
                 theme === "prairie" ||
                   theme === "forest" ||
                   theme === "desert" ||
@@ -106,6 +109,15 @@ export default function ExplainModal({
                     : "",
               )}
             >
+              <h1
+                className={clsx(
+                  "text-5xl font-bold",
+                  lobster.className,
+                  theme === "ruby" ? "text-white" : "text-amber-800",
+                )}
+              >
+                Giải thích đáp án
+              </h1>
               <p
                 className={clsx(
                   "text-lg leading-relaxed text-justify whitespace-pre-wrap break-words",

@@ -125,7 +125,7 @@ const DIFFICULTY_ORDER = new Map<string, number>([
 
 export const getLecturesByTopicId = async (topicId: string): Promise<LectureResponse[]> => {
     try {
-        const res = await api.get(`/lectures?topicId=${topicId}&page=1&limit=100000`)
+        const res = await api.get(`/lectures?topicId=${topicId}&page=1&limit=100000&status=active`)
         const pgData = res.data as PaginationLectureResponse
         const lectures = pgData.items as LectureResponse[]
         const sortedLectures = lectures.sort((a, b) => {

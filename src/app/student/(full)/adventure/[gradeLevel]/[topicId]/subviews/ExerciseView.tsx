@@ -81,7 +81,7 @@ export default function ExerciseView({
     isCorrect: boolean,
     score: number,
     points: number = 0,
-    answerData: any = {},
+    userAnswer: any = {},
   ) => {
     const ans: AnswerResponse = {
       _id: `temp-${Date.now()}-${Math.random()}`,
@@ -92,7 +92,7 @@ export default function ExerciseView({
       lectureResultId: `temp-${currentLecture._id}`,
       assessmentResultId: "",
       arenaParticipationId: "",
-      answerData,
+      answerData: userAnswer,
     };
     setAnswers([...answers, ans]);
     setIsAnswerCorrect(isCorrect);
@@ -447,7 +447,7 @@ export default function ExerciseView({
         {/* Explain Modal */}
         <ExplainModal
           theme={THEME_ARRAY[Number(gradeLevel) - 1]}
-          explanation={exercises[currExIdx].explanation}
+          explanation={exercises[currExIdx]?.explanation}
           isOpen={showExplainModal}
           onClose={() => setShowExplainModal(false)}
         />

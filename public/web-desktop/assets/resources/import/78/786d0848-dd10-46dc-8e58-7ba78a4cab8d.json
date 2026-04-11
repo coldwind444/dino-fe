@@ -1,1 +1,1 @@
-[1,0,0,[["cc.JsonAsset",["_name","json"],1]],[[0,0,1,3]],[[0,"CoinQuestion",{"exercises":[{"question":"Món đồ giá 67đ. Khách hàng đưa 100đ. Hãy đổi tiền để thối lại cho khách.","type":"coin","correctAnswer":"33","difficulty":"hard","options":[0,0,1]}]}]],0,0,[],[],[]]
+[1,0,0,[["cc.JsonAsset",["_name","json"],1]],[[0,0,1,3]],[[0,"CoinQuestion",{"exercises":[{"question":"Món đồ giá 67 đồng. Khách hàng đưa 100 đồng. Hãy đổi tiền để thối lại cho khách.","type":"coin","correctAnswer":"33","difficulty":"hard","options":[0,0,1]}]}]],0,0,[],[],[]]

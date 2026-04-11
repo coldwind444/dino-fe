@@ -29,6 +29,7 @@ const EXERCISE_TYPE_TO_GAME_INDEX: Record<string, number> = {
   burger: 14,
   fraction: 15,
   manualScale: 16,
+  draw: 17,
 };
 
 export interface CocosGameRef {
@@ -40,7 +41,7 @@ export interface CocosGameRef {
   switchGame: (
     gameIndex: number,
     questionData?: unknown,
-    questionIndex?: number
+    questionIndex?: number,
   ) => void;
   onAnswerChecked?: (isCorrect: boolean, score: number) => void;
 }
@@ -48,7 +49,11 @@ export interface CocosGameRef {
 interface CocosGameProps {
   exercises: ExerciseResponse[];
   currentExerciseIndex?: number;
-  onAnswerChecked?: (isCorrect: boolean, score: number, points?: number) => void;
+  onAnswerChecked?: (
+    isCorrect: boolean,
+    score: number,
+    points?: number,
+  ) => void;
 }
 
 const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
@@ -83,11 +88,15 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
 
     const gameIndex = EXERCISE_TYPE_TO_GAME_INDEX[exercise.type];
     if (gameIndex === undefined) {
-      console.warn(`Unknown exercise type: ${exercise.type}, defaulting to choice (index 1)`);
+      console.warn(
+        `Unknown exercise type: ${exercise.type}, defaulting to choice (index 1)`,
+      );
       return 1;
     }
 
-    console.log(`Exercise type '${exercise.type}' mapped to game index ${gameIndex}`);
+    console.log(
+      `Exercise type '${exercise.type}' mapped to game index ${gameIndex}`,
+    );
     return gameIndex;
   };
 
@@ -97,7 +106,7 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
     const transformedExercise = {
       question: exercise.question,
       type: exercise.type,
-      difficulty: exercise.difficulty || 'easy',
+      difficulty: exercise.difficulty || "easy",
       ...(exercise.options && { options: exercise.options }),
       ...(exercise.pairs && { pairs: exercise.pairs }),
       ...(exercise.correctAnswer && { correctAnswer: exercise.correctAnswer }),
@@ -106,7 +115,8 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
     };
 
     return transformedExercise;
-  }; useEffect(() => {
+  };
+  useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (!event.data || typeof event.data !== "object") return;
       const { type, payload } = event.data;
@@ -130,10 +140,21 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
         case "ANSWER_CHECKED":
           console.log("Answer checked:", payload);
           if (payload.isCorrect) {
-            console.log("Correct answer! Score:", payload.score, "Points:", payload.points);
+            console.log(
+              "Correct answer! Score:",
+              payload.score,
+              "Points:",
+              payload.points,
+            );
           } else {
-            console.log("Wrong answer. Score:", payload.score, "Points:", payload.points);
+            console.log(
+              "Wrong answer. Score:",
+              payload.score,
+              "Points:",
+              payload.points,
+            );
           }
+
           // Call callback to parent component
           console.log("onAnswerChecked callback exists?", !!onAnswerChecked);
           if (onAnswerChecked) {
@@ -141,7 +162,7 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
               "Calling onAnswerChecked with:",
               payload.isCorrect,
               payload.score,
-              payload.points
+              payload.points,
             );
             onAnswerChecked(payload.isCorrect, payload.score, payload.points);
           }
@@ -251,7 +272,7 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
         iframeRef.current.contentWindow.postMessage({ type, payload }, "*");
       }
     },
-    [isReady]
+    [isReady],
   );
 
   const checkAnswer = useCallback(() => {
@@ -283,7 +304,9 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
 
     const gameIndex = getGameIndexFromExercise(currentExercise);
     const transformedExercise = transformExerciseForCocos(currentExercise);
-    console.log(`Resetting question for exercise type: ${currentExercise.type}, game index: ${gameIndex}`);
+    console.log(
+      `Resetting question for exercise type: ${currentExercise.type}, game index: ${gameIndex}`,
+    );
 
     // Send the current exercise as question data
     sendToCocos("SWITCH_GAME", {
@@ -330,7 +353,7 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
         sendToCocos("SWITCH_GAME", { gameIndex, questionData });
       }
     },
-    [sendToCocos, exercises, currentExercise]
+    [sendToCocos, exercises, currentExercise],
   );
 
   useImperativeHandle(
@@ -350,18 +373,28 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
       resetCurrentQuestion,
       showCorrectAnswer,
       switchGame,
-    ]
+    ],
   );
 
   useEffect(() => {
-    console.log("useEffect triggered - isReady:", isReady, "currentExercise:", currentExercise);
+    console.log(
+      "useEffect triggered - isReady:",
+      isReady,
+      "currentExercise:",
+      currentExercise,
+    );
     if (isReady && currentExercise) {
       setTimeout(() => {
         const gameIndex = getGameIndexFromExercise(currentExercise);
         const transformedExercise = transformExerciseForCocos(currentExercise);
 
-        console.log(`Switching to exercise ${currentExerciseIndex}:`, currentExercise);
-        console.log(`Using game index: ${gameIndex} for type: ${currentExercise.type}`);
+        console.log(
+          `Switching to exercise ${currentExerciseIndex}:`,
+          currentExercise,
+        );
+        console.log(
+          `Using game index: ${gameIndex} for type: ${currentExercise.type}`,
+        );
         console.log("Sending transformed data to Cocos:", transformedExercise);
 
         sendToCocos("SWITCH_GAME", {
@@ -370,7 +403,12 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
         });
       }, 100);
     } else {
-      console.log("useEffect: Not ready yet - isReady:", isReady, "currentExercise exists:", !!currentExercise);
+      console.log(
+        "useEffect: Not ready yet - isReady:",
+        isReady,
+        "currentExercise exists:",
+        !!currentExercise,
+      );
     }
   }, [isReady, currentExercise, sendToCocos, currentExerciseIndex]);
 

@@ -351,6 +351,7 @@ export default function ProfileTab({
                           currSysAvatarIndex === idx ? "ring-4 scale-125" : "",
                         )}
                       >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={avatar}
                           alt={`avatar ${idx + 1}`}

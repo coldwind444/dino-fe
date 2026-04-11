@@ -8,7 +8,9 @@ import {
 } from "react";
 
 import { ExerciseResponse } from "@/types";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { scale } from "framer-motion";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { tree } from "next/dist/build/templates/app-page";
 
 const EXERCISE_TYPE_TO_GAME_INDEX: Record<string, number> = {

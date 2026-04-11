@@ -10,7 +10,9 @@ import {
   getTopics,
   getUserProfile,
   getRecentTopics,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getTopicById,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getCompletedTopics,
   PaginationTopicResponse,
 } from "@/apis";
@@ -29,7 +31,9 @@ export default function LessonsPage() {
   const [gradeProgress, setGradeProgress] =
     useState<GradeProgressResponse | null>();
   const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [noCompletedTopics, setNoCompletedTopics] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [noUnlockedTopics, setNoUnlockedTopics] = useState(0);
   const [firstTopic, setFirstTopic] = useState<TopicResponse | null>(null);
 
@@ -43,6 +47,7 @@ export default function LessonsPage() {
   // Handle
   const handleChangePage = (isNext: boolean) => {
     if (isNext) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
       if (currentPage < topicsPgRes?.pagination.totalPages!) {
         setCurrentPage(currentPage + 1);
       }

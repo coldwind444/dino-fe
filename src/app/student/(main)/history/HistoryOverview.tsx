@@ -25,6 +25,7 @@ const defaultRecords: HistoryRecord[] = [
 ]
 
 export default function HistoryOverview({ records = defaultRecords, onViewDetail }: HistoryOverviewProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleFilter = (studentId?: string, startDate?: Date, endDate?: Date, category?: string, keyword?: string) => {
         alert('Filter clicked !')
     }

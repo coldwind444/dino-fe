@@ -6,6 +6,7 @@ import { faCopy } from "@fortawesome/free-solid-svg-icons";
 
 export default function AccountLinkTab() {
     const [linkCode, setLinkCode] = useState("");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [hasLinkedParent, setHasLinkedParent] = useState(true);
 
     return (

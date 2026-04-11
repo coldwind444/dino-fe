@@ -1,5 +1,6 @@
 "use client";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

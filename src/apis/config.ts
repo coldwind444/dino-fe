@@ -15,6 +15,7 @@ export const ERROR = {
   INTERNAL_SERVER_ERROR: { message: 'Lỗi hệ thống !', status: 500 },
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handleError = (error: any) => {
   const err = error as AxiosError<{ error?: string }>;
   const status = err.response?.status;

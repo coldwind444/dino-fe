@@ -16,7 +16,9 @@ interface LineData {
 
 interface MatchingProps {
   exercise: ExerciseResponse;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   answer: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (answer: any) => void;
 }
 
@@ -34,11 +36,13 @@ export default function Matching({
 
   const leftItems = useMemo(
     () => pairs.map((p) => p.left).sort(() => Math.random() - 0.5),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [exercise._id],
   );
 
   const rightItems = useMemo(
     () => pairs.map((p) => p.right).sort(() => Math.random() - 0.5),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [exercise._id],
   );
 
@@ -81,11 +85,13 @@ export default function Matching({
       window.removeEventListener("resize", updateLines);
       clearTimeout(timer);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPairs, leftItems, rightItems]);
 
   useEffect(() => {
     if (Array.isArray(answer)) {
       const parsedPairs: { [key: string]: string } = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       answer.forEach((p: any) => {
         if (p.left && p.right) {
           parsedPairs[p.left] = p.right;

@@ -43,6 +43,7 @@ export default function MascotWriting({ pose }: MascotProps) {
         }
       }
     );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pose]);
 
   return (

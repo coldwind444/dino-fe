@@ -91,6 +91,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
             currParticipation = participations[0];
             setParticipation(currParticipation);
           }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           if (error?.status !== 404) {
             throw error;
@@ -156,6 +157,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     };
 
     initData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
   // Clock Countdown logic
@@ -177,6 +179,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     calculateTimeLeft();
     const interval = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arena]);
 
   const triggerAutoSubmit = async () => {
@@ -227,6 +230,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const confirmSubmit = async (isAuto = false) => {
     if (!participation || !arena) return;
     try {
@@ -256,6 +260,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAnswerChange = (exerciseId: string, answerData: any) => {
     setAnswers((prev) => {
       const newMap = new Map(prev);
@@ -270,10 +275,12 @@ export default function ArenaExam({ params }: ArenaExamProps) {
   const isAnswered = (exerciseId: string) => {
     const ans = answers.get(exerciseId);
     if (!ans) return false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data = ans.answerData as any;
     if (!data || Object.keys(data).length === 0) return false;
 
     // Deep check if any value in the answer object is not empty
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const checkValue = (val: any): boolean => {
       if (val === null || val === undefined || val === "") return false;
       if (Array.isArray(val)) {

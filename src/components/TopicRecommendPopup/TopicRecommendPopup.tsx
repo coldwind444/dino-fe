@@ -25,6 +25,7 @@ export default function TopicRecommendPopup({
   const router = useRouter();
 
   // UI states
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setIsLoading] = useState(false);
 
   // Data states

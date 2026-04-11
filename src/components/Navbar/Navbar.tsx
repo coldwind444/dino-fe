@@ -56,6 +56,7 @@ const parentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
 export default function Navbar({
   isAuthenticated = false,
   role = null,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   notifications = [],
 }: {
   isAuthenticated: boolean;
@@ -69,6 +70,7 @@ export default function Navbar({
   const [urls, setUrls] = useState<
     { name: string; icon: IconDefinition; pathname: string }[]
   >([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
   const [username, setUsername] = useState("");
@@ -105,6 +107,7 @@ export default function Navbar({
       }
     };
     fetchUserProfile();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

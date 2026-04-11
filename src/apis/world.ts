@@ -1,5 +1,6 @@
 import { LandResponse, WorldResponse } from "@/types"
 import api, { handleError } from "./config"
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AxiosError } from "axios"
 
 

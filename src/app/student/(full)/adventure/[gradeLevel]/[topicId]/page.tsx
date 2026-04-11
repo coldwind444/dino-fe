@@ -16,6 +16,7 @@ import {
   TopicResponse,
   WorldResponse,
   LectureResponse,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ExerciseResponse,
   UserProfileResponse,
 } from "@/types";

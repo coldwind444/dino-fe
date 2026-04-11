@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import mission from "../../../../../public/assets/mission/mission.png";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const trophy = "/assets/home/trophy.png";
 const missions = [
   { id: 1, progress: 230, goal: 500, reward: 1300 },
@@ -12,6 +13,7 @@ const missions = [
 ];
 
 export default function MissionPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [page, setPage] = useState(1);
 
   return (

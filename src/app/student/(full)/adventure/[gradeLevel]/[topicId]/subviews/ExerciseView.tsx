@@ -125,7 +125,7 @@ export default function ExerciseView({
       setCurrExIdx(currExIdx + 1);
     } else {
       onFinish(exercises.length);
-      submitLectureResult();
+      await submitLectureResult();
     }
   };
 
@@ -158,6 +158,7 @@ export default function ExerciseView({
       }));
       await upsertAnswers(cleanedAnswerArray(modifiedAnswers));
       onFinish(exercises.length);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error?.message);
       setIsSubmitting(false);
@@ -178,6 +179,7 @@ export default function ExerciseView({
       }
     };
     fetchExercises();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

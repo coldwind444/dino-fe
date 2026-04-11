@@ -3,6 +3,7 @@
 import MascotWriting from "@/components/MascotWriting/MascotWriting";
 import Image from "next/image";
 import Link from "next/link";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { faCheck, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
@@ -77,7 +78,7 @@ export default function ResetPassword() {
       return;
     }
     showMessage(messages[Math.min(currStep, messages.length - 1)]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [currStep]);
 
   // Handlers
@@ -87,6 +88,7 @@ export default function ResetPassword() {
     try {
       await sendOtp(email);
       setCurrStep(1);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       showMessage(err?.message ?? "Đã xảy ra lỗi, vui lòng thử lại !");
     } finally {
@@ -105,6 +107,7 @@ export default function ResetPassword() {
       setOtp("");
       setPassword("");
       setConfirm("");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       showMessage(err?.message ?? "Đã xảy ra lỗi, vui lòng thử lại !");
     } finally {

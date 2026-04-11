@@ -158,6 +158,7 @@ export default function LessonView({
                     className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative cursor-pointer"
                     onClick={() =>
                       navigateToLecture(
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
                         recentTopic ? recentTopic?._id : firstTopic?._id!,
                       )
                     }

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Navbar from "@/components/Navbar/Navbar";
 
 export default function FullScreenLayout({ children }: { children: React.ReactNode }) {

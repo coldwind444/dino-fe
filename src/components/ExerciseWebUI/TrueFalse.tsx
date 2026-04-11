@@ -5,11 +5,14 @@ import clsx from "clsx";
 
 interface TrueFalseProps {
   exercise: ExerciseResponse;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   answer: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (answer: any) => void;
 }
 
 export default function TrueFalse({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   exercise,
   answer,
   onChange,

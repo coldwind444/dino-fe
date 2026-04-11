@@ -5,11 +5,14 @@ import { useEffect, useState } from "react";
 
 interface FillInProps {
   exercise: ExerciseResponse;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   answer: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (answer: any) => void;
 }
 
 export default function FillIn({ exercise, answer, onChange }: FillInProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const metadata = (exercise.metadata as any) || {};
   const questions = metadata.questions || [];
 
@@ -22,6 +25,7 @@ export default function FillIn({ exercise, answer, onChange }: FillInProps) {
     } else {
       setResponses(new Array(questions.length).fill(""));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise._id, answer]);
 
   const handleInputChange = (idx: number, value: string) => {

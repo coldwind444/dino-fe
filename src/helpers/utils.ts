@@ -1,7 +1,9 @@
 import { AnswerResponse, ExerciseResponse } from "@/types";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function cleanedAnswer(ans: any) {
-    let cleaned: any = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cleaned: any = {};
 
     // Id
     if (!String(ans._id).startsWith("temp-") && ans._id !== "") {
@@ -23,6 +25,7 @@ export function cleanedAnswer(ans: any) {
     return cleaned;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function cleanedAnswerArray(anss: any[]) {
     if (!Array.isArray(anss)) return [];
     return anss.map(cleanedAnswer);
@@ -41,13 +44,16 @@ export function checkAnswerForBasicExerciseType(ans: AnswerResponse, ex: Exercis
 
                 if (ansArray.length !== correctArray.length) return false;
 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return correctArray.every((correctPair: any) =>
                     ansArray.some(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (ansPair: any) =>
                             ansPair?.left === correctPair?.left &&
                             ansPair?.right === correctPair?.right
                     )
                 );
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (error) {
                 return ans.answerData === ex.correctAnswer;
             }

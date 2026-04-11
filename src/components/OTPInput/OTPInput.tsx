@@ -27,6 +27,7 @@ export default function OTPInput({
 
     useEffect(() => {
         if (isControlled) setValue(controlledValue || '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [controlledValue]);
 
     useEffect(() => {

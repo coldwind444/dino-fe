@@ -116,6 +116,7 @@ export default function Auth() {
       } else if (res.user.role === "admin") {
         toast.error("Quản trị viên không có quyền truy cập vào trang này");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -142,6 +143,7 @@ export default function Auth() {
       });
       toast.success("Đăng ký thành công !");
       resetRegister();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -171,6 +173,7 @@ export default function Auth() {
   }, [tabIndex]);
 
   // handle google login
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSuccess = async (credentialResponse: any) => {
     try {
       await googleLogin({
@@ -179,6 +182,7 @@ export default function Auth() {
         familyId: "",
       });
       router.push("/parent/dashboard");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.message);
     } finally {

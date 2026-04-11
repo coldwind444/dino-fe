@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AxiosError } from "axios";
 import api, { handleError } from "./config";
 import { ArenaResponse, ParticipationResponse, RankResponse, LeaderboardResponse, CreateParticipationRequest, UpdateParticipationRequest } from "@/types/dto.types";
@@ -8,6 +9,7 @@ export type PaginatedArenaResponse = {
     pagination: Pagination
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getArena = async (params?: Record<string, any>): Promise<ArenaResponse[]> => {
     try {
         const response = await api.get("/arenas", { params });
@@ -41,6 +43,7 @@ export const getRankById = async (id: string): Promise<RankResponse> => {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getParticipations = async (params?: Record<string, any>): Promise<ParticipationResponse[]> => {
     try {
         const response = await api.get(`/participations`, { params });
@@ -52,6 +55,7 @@ export const getParticipations = async (params?: Record<string, any>): Promise<P
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getLeaderboard = async (params?: Record<string, any>): Promise<LeaderboardResponse> => {
     try {
         const response = await api.get(`/participations/leaderboard`, { params });

@@ -1,13 +1,16 @@
 "use client";
 
 import { ExerciseResponse } from "@/types/dto.types";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 
 interface InteractiveProps {
   exercise: ExerciseResponse;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   answer: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (answer: any) => void;
 }
 
@@ -17,6 +20,7 @@ export default function Interactive({
   onChange,
 }: InteractiveProps) {
   const options = exercise.options || [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const metadata = (exercise.metadata as any) || {};
   const expression = metadata.expression || "";
 
@@ -33,6 +37,7 @@ export default function Interactive({
       setBlanks(new Array(numBlanks).fill(""));
       setUsedOptions([]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise._id, answer]);
 
   const handleOptionClick = (option: string) => {

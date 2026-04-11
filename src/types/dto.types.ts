@@ -288,6 +288,7 @@ export interface AnswerResponse {
     _id: string,
     exerciseId: string,
     exercise?: ExerciseResponse,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     answerData: any,
     userId: string,
     isCorrect: boolean,

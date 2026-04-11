@@ -14,6 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { LectureResponse, TopicResponse } from "@/types";
 import { useEffect, useState, useRef } from "react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { createProgress, updateUserQuartz } from "@/apis";
 import Loader from "@/components/Loader/Loader";
 
@@ -67,6 +68,7 @@ export default function FinishView({
       setAnimatedScore(score);
       setAnimatedReward(reward);
     }, 300);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

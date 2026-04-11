@@ -1,4 +1,5 @@
 import { AnswerResponse, AssessmentResponse, AssessmentResultResponse, CreateAssessmentResultRequest, CreateLectureResultRequest, CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, LectureResultResponse, Pagination, TermResponse, TopicResponse } from "@/types";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AxiosError } from "axios";
 import api, { handleError } from "./config";
 
@@ -14,6 +15,7 @@ export const getTermById = async (termid: string): Promise<TermResponse> => {
 }
 
 // Grade APIs
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getGrades = async (params?: Record<string, any>): Promise<GradeResponse[]> => {
     try {
         const res = await api.get(`/grades`, { params })
@@ -70,6 +72,7 @@ export const getRecentTopics = async (limit: number): Promise<TopicResponse[]> =
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getTopics = async (params?: Record<string, any>): Promise<PaginationTopicResponse> => {
     try {
         const res = await api.get(`/topics`, { params })
@@ -156,6 +159,7 @@ export const createLectureResult = async (req: CreateLectureResultRequest): Prom
 }
 
 // Exercise APIs
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getExercises = async (params?: Record<string, any>): Promise<ExerciseResponse[]> => {
     try {
         const res = await api.get('/exercises', { params });
@@ -167,6 +171,7 @@ export const getExercises = async (params?: Record<string, any>): Promise<Exerci
 }
 
 // Answer APIs
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getAnswers = async (params?: Record<string, any>): Promise<AnswerResponse[]> => {
     try {
         const res = await api.get('/answers', { params });

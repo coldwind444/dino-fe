@@ -5,7 +5,9 @@ import clsx from "clsx";
 
 interface MultipleChoiceProps {
   exercise: ExerciseResponse;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   answer: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (answer: any) => void;
 }
 

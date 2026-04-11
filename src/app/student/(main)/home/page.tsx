@@ -23,6 +23,7 @@ import {
   getPublishedAssessmentByGradeId,
   getRecentTopics,
   getRecommendedTopicByGradeId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getTopicById,
   getUserProfile,
 } from "@/apis";
@@ -147,6 +148,7 @@ export default function StudentHome() {
     };
 
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading || !username) {

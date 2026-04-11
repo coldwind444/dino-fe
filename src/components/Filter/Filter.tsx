@@ -14,6 +14,7 @@ type FilterParams = {
 
 const roboto = Roboto()
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Filter({ hasStudentSelectBox = false, hasSearchBox = false, hasCategorySelectBox = false, filter }: FilterParams) {
     return (
         <div className="bg-white rounded-2xl h-full min-w-[420px] shadow-[0_0_10px_rgba(0,0,0,0.25)] flex flex-col gap-4 p-5">

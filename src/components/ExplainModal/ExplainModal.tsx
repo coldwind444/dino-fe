@@ -17,7 +17,7 @@ interface ExplainModalProps {
   onClose: () => void;
 }
 
-const themeBackgrounds: Record<Theme, string> = {
+export const themeBackgrounds: Record<Theme, string> = {
   prairie: "/assets/exercises/prairie.png",
   forest: "/assets/exercises/forest.png",
   beach: "/assets/exercises/beach.png",

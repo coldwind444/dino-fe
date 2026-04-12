@@ -111,71 +111,82 @@ export default function TopicRecommendPopup({
             >
               GỢI Ý CHƯƠNG TRÌNH HỌC
             </h1>
-            {/** Image placeholder */}
-            {topic && (
-              <Image
-                src={topic?.description || ""}
-                height={120}
-                width={120}
-                alt=""
-              />
-            )}
-            {/** Topic info */}
-            <div
-              className={clsx(
-                "flex flex-col gap-3 items-center justify-center w-full",
-                baloo.className,
-              )}
-            >
-              <div
-                className={clsx(
-                  "rounded-full h-fit bg-amber-500 w-fit px-3 py-1.5 flex items-center justify-center text-white font-bold text-sm",
-                )}
-              >
-                {topic ? `Chủ đề ${topic.weekNumbers[0]}` : "Chủ đề ##"}
+            {topic ? (
+              <>
+                {/** Image placeholder */}
+                <Image
+                  src={topic.description || ""}
+                  height={120}
+                  width={120}
+                  alt=""
+                />
+                {/** Topic info */}
+                <div
+                  className={clsx(
+                    "flex flex-col gap-3 items-center justify-center w-full",
+                    baloo.className,
+                  )}
+                >
+                  <div
+                    className={clsx(
+                      "rounded-full h-fit bg-amber-500 w-fit px-3 py-1.5 flex items-center justify-center text-white font-bold text-sm",
+                    )}
+                  >
+                    {`Chủ đề ${topic.weekNumbers[0]}`}
+                  </div>
+                  <p className="text-2xl text-amber-500 font-bold max-h-20 max-w-[85%] text-center text-wrap">
+                    {topic.title}
+                  </p>
+                </div>
+                {/** Time */}
+                <div
+                  className={clsx(
+                    "flex flex-col items-center justify-center w-full",
+                    baloo.className,
+                  )}
+                >
+                  <p className="text-xl text-[#1DA492] font-bold max-h-20 max-w-[80%] text-center text-wrap">
+                    {`Học kỳ ${term?.name || ""} - Lớp ${gradeLevel}`}
+                  </p>
+                  <p className="text-3xl text-[#1DA492] font-bold max-h-20 max-w-[80%] text-center text-wrap">
+                    {today}
+                  </p>
+                </div>
+                {/** Learn button */}
+                <div
+                  className="flex flex-row gap-5 w-40 text-white text-xl font-bold h-16 rounded-full 
+                                            bg-pink-500 absolute items-center justify-center -right-15
+                                            translate-y-50 shadow-[0_0_10px_rgba(0,0,0,0.25)]
+                                            cursor-pointer hover:brightness-110 transition-all duration-200
+                                            hover:gap-7"
+                  onClick={() => {
+                    if (topic && topic._id) {
+                      router.push(`/student/adventure/${gradeLevel}/${topic?._id}`);
+                    }
+                  }}
+                >
+                  <span
+                    className={clsx("text-center leading-tight", baloo.className)}
+                  >
+                    HỌC <br /> NGAY
+                  </span>
+                  <FontAwesomeIcon className="text-xl" icon={faArrowRight} />
+                  <span
+                    className="absolute [clip-path:ellipse(50%_50%_at_50%_50%)] h-4 w-6 bg-[rgba(255,255,255,0.4)]
+                                                top-2 right-2 rotate-45"
+                  ></span>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full gap-5 pb-10">
+                <p className={clsx(baloo.className, "text-2xl text-amber-500 font-bold text-center leading-relaxed px-5")}>
+                  Hiện tại chưa có chủ đề gợi ý nào mới cho bạn hôm nay!
+                </p>
+                <p className={clsx(baloo.className, "text-lg text-gray-500 font-medium text-center")}>
+                  Hãy quay lại sau hoặc chọn một chủ đề khác để học nhé.
+                </p>
               </div>
-              <p className="text-2xl text-amber-500 font-bold max-h-20 max-w-[85%] text-center text-wrap">
-                {topic ? topic.title : ""}
-              </p>
-            </div>
-            {/** Time */}
-            <div
-              className={clsx(
-                "flex flex-col items-center justify-center w-full",
-                baloo.className,
-              )}
-            >
-              <p className="text-xl text-[#1DA492] font-bold max-h-20 max-w-[80%] text-center text-wrap">
-                {topic ? `Học kỳ ${term?.name} - Lớp ${gradeLevel}` : ""}
-              </p>
-              <p className="text-3xl text-[#1DA492] font-bold max-h-20 max-w-[80%] text-center text-wrap">
-                {today}
-              </p>
-            </div>
-            {/** Learn button */}
-            <div
-              className="flex flex-row gap-5 w-40 text-white text-xl font-bold h-16 rounded-full 
-                                        bg-pink-500 absolute items-center justify-center -right-15
-                                        translate-y-50 shadow-[0_0_10px_rgba(0,0,0,0.25)]
-                                        cursor-pointer hover:brightness-110 transition-all duration-200
-                                        hover:gap-7"
-              onClick={() => {
-                if (topic && topic._id) {
-                  router.push(`/student/adventure/${gradeLevel}/${topic?._id}`);
-                }
-              }}
-            >
-              <span
-                className={clsx("text-center leading-tight", baloo.className)}
-              >
-                HỌC <br /> NGAY
-              </span>
-              <FontAwesomeIcon className="text-xl" icon={faArrowRight} />
-              <span
-                className="absolute [clip-path:ellipse(50%_50%_at_50%_50%)] h-4 w-6 bg-[rgba(255,255,255,0.4)]
-                                            top-2 right-2 rotate-45"
-              ></span>
-            </div>
+            )}
           </div>
         </motion.div>
       </motion.div>

@@ -22,7 +22,10 @@ import CocosGameWrapper, {
 import { ExerciseResponse, LectureResponse, AnswerResponse } from "@/types";
 import { createLectureResult, getExercises, upsertAnswers } from "@/apis";
 import React from "react";
-import ExplainModal, { Theme } from "@/components/ExplainModal/ExplainModal";
+import ExplainModal, {
+  Theme,
+  themeBackgrounds,
+} from "@/components/ExplainModal/ExplainModal";
 import { useLessonStore } from "@/stores/lessonStore";
 import { cleanedAnswerArray } from "@/helpers/utils";
 
@@ -462,6 +465,18 @@ export default function ExerciseView({
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+        {/* Preload theme background */}
+        <div>
+          <Image
+            src={themeBackgrounds[THEME_ARRAY[Number(gradeLevel) - 1]]}
+            alt="preload"
+            width={850}
+            height={850}
+            className="hidden"
+            priority
+          />
         </div>
 
         {/* Explain Modal */}

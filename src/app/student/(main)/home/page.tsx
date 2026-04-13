@@ -46,7 +46,8 @@ export default function StudentHome() {
   const [isTopicRecommendModalOpened, setIsTopicRecommendModalOpened] =
     useState(false);
   const [isEntranceTestModalOpened, setIsEntranceTestModalOpened] =
-    useState(true);
+    useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Data States
   const [username, setUsername] = useState("");
@@ -59,7 +60,10 @@ export default function StudentHome() {
   // Functions
   const closeEntranceTestModal = () => {
     setIsEntranceTestModalOpened(false);
-    setIsTopicRecommendModalOpened(true);
+    if (isInitialLoad) {
+      setIsTopicRecommendModalOpened(true);
+      setIsInitialLoad(false);
+    }
   };
 
   const closeTopicRecommendModal = () => {
@@ -67,7 +71,8 @@ export default function StudentHome() {
   };
 
   const startEntranceTest = () => {
-    closeEntranceTestModal();
+    setIsEntranceTestModalOpened(false);
+    setIsInitialLoad(false);
     router.push(`/student/entrance-test`);
   };
 
@@ -132,13 +137,18 @@ export default function StudentHome() {
             entranceTest._id,
             userRes._id,
           );
-          if (result.status !== "in_progress") {
+          if (
+            result &&
+            (result.status === "completed" || result.status === "in_progress")
+          ) {
             setShowAssessmentFloatButton(false);
           } else {
             setShowAssessmentFloatButton(true);
+            setIsEntranceTestModalOpened(true);
           }
         } else {
-          setShowAssessmentFloatButton(true);
+          setShowAssessmentFloatButton(false);
+          setIsTopicRecommendModalOpened(true);
         }
       } catch (err) {
         console.log("Failed to fetch data.", err);
@@ -148,7 +158,7 @@ export default function StudentHome() {
     };
 
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading || !username) {

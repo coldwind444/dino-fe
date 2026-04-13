@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { AxiosError } from "axios";
 import api, { handleError } from "./config";
 import { ArenaResponse, ParticipationResponse, RankResponse, LeaderboardResponse, CreateParticipationRequest, UpdateParticipationRequest } from "@/types/dto.types";
 import { Pagination } from "@/types";

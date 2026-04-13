@@ -83,6 +83,11 @@ export interface CreateLectureResultRequest {
     timeTaken: number
 }
 
+export interface UpdateMissionProgressRequest {
+    unitType: string,
+    amount: number,
+}
+
 // Response
 export interface UserResponse {
     id: string;
@@ -323,4 +328,18 @@ export interface LectureResultResponse {
     correctCount: number,
     totalQuestions: number,
     timeTaken: number
+}
+
+export interface AchievementResponse {
+    _id: string, // Mission ID
+    title: string,
+    description: string,
+    unitType: string,
+    goal: number,
+    rewardType: string,
+    reward: number,
+    progress: number,
+    finished: boolean,
+    claimed: boolean,
+    achievementId: string
 }

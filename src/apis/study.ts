@@ -1,6 +1,4 @@
 import { AnswerResponse, AssessmentResponse, AssessmentResultResponse, CreateAssessmentResultRequest, CreateLectureResultRequest, CreateProgressRequest, ExerciseResponse, GradeProgressResponse, GradeResponse, LectureResponse, LectureResultResponse, Pagination, TermResponse, TopicResponse } from "@/types";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { AxiosError } from "axios";
 import api, { handleError } from "./config";
 
 // Term APIs

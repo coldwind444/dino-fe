@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { AxiosError } from "axios";
 import { CompleteProfileRequest, GoogleLoginRequest, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "@/types";
 import { publicApi, api, setAccessToken, clearAccessToken, handleError } from "./config";
 

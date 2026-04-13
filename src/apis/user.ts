@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { AxiosError } from "axios";
 import { api, handleError } from "./config";
 import { AvatarUploadResponse, UpdateUserProfileRequest, UserProfileResponse } from "@/types";
 

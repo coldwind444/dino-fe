@@ -1,7 +1,5 @@
 import { LandResponse, WorldResponse } from "@/types"
 import api, { handleError } from "./config"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { AxiosError } from "axios"
 
 
 export const getWorldById = async (id: string): Promise<WorldResponse> => {
@@ -14,7 +12,7 @@ export const getWorldById = async (id: string): Promise<WorldResponse> => {
     }
 }
 
-export const getLandsByWorldId = async (worldId: string) : Promise<LandResponse[]> => {
+export const getLandsByWorldId = async (worldId: string): Promise<LandResponse[]> => {
     try {
         const res = await api.get(`/lands?worldId=${worldId}`)
         return res.data.items as LandResponse[]

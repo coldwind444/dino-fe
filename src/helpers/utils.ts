@@ -34,38 +34,32 @@ export function cleanedAnswerArray(anss: any[]) {
 export function checkAnswerForBasicExerciseType(ans: AnswerResponse, ex: ExerciseResponse): boolean {
     switch (ex.type) {
         case "matching": {
-            try {
-                const ansArray = typeof ans.answerData === "string" ? JSON.parse(ans.answerData) : (ans.answerData || []);
-                const correctArray = typeof ex.correctAnswer === "string" ? JSON.parse(ex.correctAnswer) : (ex.correctAnswer || []);
-
-                if (!Array.isArray(ansArray) || !Array.isArray(correctArray)) {
-                    return ans.answerData === ex.correctAnswer;
-                }
-
-                if (ansArray.length !== correctArray.length) return false;
-
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                return correctArray.every((correctPair: any) =>
-                    ansArray.some(
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (ansPair: any) =>
-                            ansPair?.left === correctPair?.left &&
-                            ansPair?.right === correctPair?.right
-                    )
-                );
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (error) {
-                return ans.answerData === ex.correctAnswer;
+            for (const val of ans.answerData as { answer: string, placedCorrectly: boolean }[]) {
+                if (val.placedCorrectly === false) return false;
             }
+            return true;
         }
-        case "choice":
-            return ans.answerData === ex.correctAnswer;
+        case "choice": {
+            const userAnswer = ex.options[ans.answerData.selectedIndex];
+            return userAnswer === ex.correctAnswer;
+        }
         case "interactive":
-            return ans.answerData === ex.correctAnswer;
-        case "fill_in":
-            return ans.answerData === ex.correctAnswer;
-        case "true_false":
-            return ans.answerData === ex.correctAnswer;
+            return ans.answerData.answer === ex.correctAnswer;
+        case "fill_in": {
+            const correctAnswerArray = ex.correctAnswer.split(",");
+            let index = 0;
+            for (const key in ans.answerData) {
+                if (ans.answerData[key] !== correctAnswerArray[index]) {
+                    return false;
+                }
+                index++;
+            }
+            return true;
+        }
+        case "true_false": {
+            const boolAns = ex.correctAnswer === "true" ? true : false;
+            return ans.answerData.selectedAnswer === boolAns;
+        }
     }
     throw new Error("Invalid exercise type");
 }

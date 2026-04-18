@@ -37,7 +37,7 @@ export default function Interactive({
       setBlanks(new Array(numBlanks).fill(""));
       setUsedOptions([]);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise._id, answer]);
 
   const handleOptionClick = (option: string) => {
@@ -51,7 +51,7 @@ export default function Interactive({
       newBlanks[firstEmpty] = option;
       setBlanks(newBlanks);
       setUsedOptions([...usedOptions, option]);
-      onChange(newBlanks[0]);
+      onChange({ answer: newBlanks[0] });
     }
   };
 
@@ -63,7 +63,7 @@ export default function Interactive({
     newBlanks[idx] = "";
     setBlanks(newBlanks);
     setUsedOptions(usedOptions.filter((o) => o !== option));
-    onChange(newBlanks[0]);
+    onChange({ answer: newBlanks[0] });
   };
 
   const parts = expression.split("_");

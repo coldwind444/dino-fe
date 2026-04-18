@@ -25,7 +25,6 @@ export interface CreateProgressRequest {
     topicId: string,
     lectureId: string,
     completion: number,
-    averageScore: number,
     status: string
 }
 

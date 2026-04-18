@@ -32,6 +32,7 @@ import TopicRecommendPopup from "@/components/TopicRecommendPopup/TopicRecommend
 import { TopicResponse } from "@/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { updateMissionProgress } from "@/apis/mission";
 
 const fredoka = Fredoka();
 const trophy = "/assets/home/trophy.png";
@@ -157,8 +158,19 @@ export default function StudentHome() {
       }
     };
 
+    const updateLogin = async () => {
+      try {
+        await updateMissionProgress({
+          unitType: "daily_login",
+          amount: 1,
+        });
+      } catch (error) {
+        console.log("Failed to update login.", error);
+      }
+    };
+
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    updateLogin();
   }, []);
 
   if (isLoading || !username) {

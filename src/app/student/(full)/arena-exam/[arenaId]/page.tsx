@@ -37,6 +37,7 @@ import {
   checkAnswerForBasicExerciseType,
   cleanedAnswerArray,
 } from "@/helpers/utils";
+import { updateMissionProgress } from "@/apis/mission";
 
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 
@@ -91,7 +92,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
             currParticipation = participations[0];
             setParticipation(currParticipation);
           }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           if (error?.status !== 404) {
             throw error;
@@ -157,7 +158,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     };
 
     initData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
   // Clock Countdown logic
@@ -179,7 +180,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     calculateTimeLeft();
     const interval = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arena]);
 
   const triggerAutoSubmit = async () => {
@@ -251,6 +252,11 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         score: 0,
         finishedAt: new Date().toISOString(),
         correctCount: 0,
+      });
+
+      await updateMissionProgress({
+        unitType: "arena",
+        amount: 1,
       });
 
       toast.success("Nộp bài thành công!", { id: "autosubmit" });

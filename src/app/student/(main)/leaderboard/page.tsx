@@ -2,17 +2,18 @@
 
 import Image from "next/image";
 import { Roboto } from "next/font/google";
+import poly4 from "@/assets/leaderboard/Polygon 4.svg";
+import poly5 from "@/assets/leaderboard/Polygon 5.svg";
+import crown from "@/assets/leaderboard/image 68.png";
+import dino from "@/assets/leaderboard/dino_trophy.png";
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
   subsets: ["latin"],
 });
 
-const avatar = "https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540871/avt_04_aqs4zn.svg";
-const poly4 = "/assets/leaderboard/Polygon 4.svg";
-const poly5 = "/assets/leaderboard/Polygon 5.svg";
-const crown = "/assets/leaderboard/image 68.png";
-const dino = "/assets/leaderboard/dino_trophy.png";
+const avatar =
+  "https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540871/avt_04_aqs4zn.svg";
 const usersData = [
   { name: "Lê Phúc Nguyên", points: 12000 },
   { name: "Hoàng Minh Nhật", points: 11000 },
@@ -208,7 +209,7 @@ export default function LeaderboardContent() {
             <div
               key={user.rank}
               className={`bg-gradient-to-r ${getRandomColor(
-                index
+                index,
               )} rounded-2xl px-6 py-4 flex items-center justify-between shadow-md`}
             >
               <div className="flex items-center gap-4">

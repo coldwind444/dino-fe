@@ -20,7 +20,7 @@ export default function MissionPage() {
   const [activeTab, setActiveTab] = useState<"incomplete" | "complete">(
     "incomplete",
   );
-  const [showRewardModal, setShowRewardModal] = useState(true);
+  const [showRewardModal, setShowRewardModal] = useState(false);
   const [rewardAmount, setRewardAmount] = useState(0);
 
   // Functions

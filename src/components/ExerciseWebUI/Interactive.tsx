@@ -29,8 +29,14 @@ export default function Interactive({
   const [usedOptions, setUsedOptions] = useState<string[]>([]);
 
   useEffect(() => {
-    const numBlanks = (expression.match(/_/g) || []).length;
-    if (Array.isArray(answer)) {
+    const numBlanks = (expression.match(/_/g) || []).length || 1;
+    if (answer && typeof answer.answer === "string") {
+      const val = answer.answer;
+      const arr = new Array(numBlanks).fill("");
+      if (val) arr[0] = val;
+      setBlanks(arr);
+      setUsedOptions(val ? [val] : []);
+    } else if (Array.isArray(answer)) {
       setBlanks(answer);
       setUsedOptions(answer.filter((b: string) => b !== ""));
     } else {
@@ -51,7 +57,7 @@ export default function Interactive({
       newBlanks[firstEmpty] = option;
       setBlanks(newBlanks);
       setUsedOptions([...usedOptions, option]);
-      onChange({ answer: newBlanks[0] });
+      onChange({ answer: newBlanks[0] || "" });
     }
   };
 
@@ -63,7 +69,7 @@ export default function Interactive({
     newBlanks[idx] = "";
     setBlanks(newBlanks);
     setUsedOptions(usedOptions.filter((o) => o !== option));
-    onChange({ answer: newBlanks[0] });
+    onChange({ answer: newBlanks[0] || "" });
   };
 
   const parts = expression.split("_");

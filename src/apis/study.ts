@@ -213,9 +213,9 @@ export const getAssessmentResult = async (assessmentId: string, userId: string):
     }
 }
 
-export const createAssessmentResult = async (req: CreateAssessmentResultRequest): Promise<AssessmentResultResponse> => {
+export const startAssessment = async (assessmentId: string): Promise<AssessmentResultResponse> => {
     try {
-        const res = await api.post(`/assessments/results/`, req);
+        const res = await api.post(`/assessments/start/${assessmentId}`);
         return res.data.data as AssessmentResultResponse;
     } catch (error) {
         handleError(error);

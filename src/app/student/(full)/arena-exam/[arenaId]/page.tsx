@@ -184,7 +184,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
   }, [arena]);
 
   const triggerAutoSubmit = async () => {
-    toast.loading("Đang tự động nộp bài...", { id: "autosubmit" });
+    toast.loading("Đang tự động nộp bài...", { id: "arena-submit" });
     await confirmSubmit(true);
   };
 
@@ -259,7 +259,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         amount: 1,
       });
 
-      toast.success("Nộp bài thành công!", { id: "autosubmit" });
+      toast.success("Nộp bài thành công!", { id: "arena-submit" });
       router.push("/student/arena");
     } catch (err) {
       console.error("Submit failed:", err);

@@ -140,7 +140,7 @@ export default function StudentHome() {
           );
           if (
             result &&
-            (result.status === "completed" || result.status === "in_progress")
+            (result.status === "submitted" || result.status === "graded")
           ) {
             setShowAssessmentFloatButton(false);
           } else {

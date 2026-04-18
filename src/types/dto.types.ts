@@ -343,3 +343,35 @@ export interface AchievementResponse {
     claimed: boolean,
     achievementId: string
 }
+
+export interface MiniGameResponse {
+    _id: string;
+    title: string;
+    description: string;
+    thumbnail: string;
+    gameType: string;
+    gameUrl: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+}
+
+export interface StudentStatsResponse {
+    summary: {
+        totalExercisesDone: number,
+        accuracy: number
+    },
+    study: {
+        topicsLearned: number,
+        correctRate: number,
+        activeHours: number,
+    },
+    arena: {
+        currentRank: string | RankResponse,
+        battlePoints: number,
+        weeklyRank: number,
+        overallRank: number,
+        correctRate: number,
+    }
+}

@@ -44,16 +44,16 @@ export const googleLogin = async (req: GoogleLoginRequest) => {
     }
 }
 
-export const sendOtp = async (email: string) => {
+export const sendOtp = async (identifier: string) => {
     try {
-        const res = await publicApi.post('/auth/forgot-password', { email });
+        const res = await publicApi.post('/auth/forgot-password', { identifier });
         return res.data;
     } catch (error) {
         handleError(error);
     }
 }
 
-export const resetPassword = async (req: { email: string, otp: string, newPassword: string }) => {
+export const resetPassword = async (req: { identifier: string, otp: string, newPassword: string }) => {
     try {
         const res = await publicApi.post('/auth/reset-password', req);
         return res.data;

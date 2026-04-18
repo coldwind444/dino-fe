@@ -3,7 +3,6 @@
 import MascotWriting from "@/components/MascotWriting/MascotWriting";
 import Image from "next/image";
 import Link from "next/link";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { faCheck, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
@@ -17,13 +16,16 @@ import RoundedPasswordBox from "@/components/RoundedPasswordBox/RoundedPasswordB
 import OTPInput from "@/components/OTPInput/OTPInput";
 import { sendOtp, resetPassword } from "@/apis/auth";
 
-// Steps: 0 = Send OTP, 1 = Verify OTP + Set New Password
-const steps = ["Gửi OTP về Email", "Xác thực & Đặt lại mật khẩu"];
-const messages = [
-  "Vui lòng nhập email mà bạn đã dùng để đăng ký tài khoản của mình nhé !",
-  "Nhập mã OTP từ email và đặt mật khẩu mới của bạn nhé !",
-  "Tuyệt vời ! Mật khẩu mới, khởi đầu mới đúng không nè !",
-];
+const STEPS = ["Gửi OTP về Email", "Xác thực & Đặt lại mật khẩu"];
+
+const MESSAGES = {
+  INPUT_IDENTIFIER:
+    "Vui lòng nhập email (nếu bạn là Phụ huynh) hoặc tên đăng nhập (nếu bạn là Học sinh) để xác thực tài khoản nhé !",
+  INPUT_OTP_STUDENT: "Nhập mã OTP từ email và đặt mật khẩu mới của bạn nhé !",
+  INPUT_OTP_PARENT:
+    "Vui lòng liên hệ với Phụ huynh của bạn để lấy mã OTP và đặt lại mật khẩu nhé !",
+  SUCCESS: "Tuyệt vời ! Mật khẩu mới, khởi đầu mới đúng không nè !",
+};
 
 export default function ResetPassword() {
   const isFirstRender = useRef(true);
@@ -31,22 +33,28 @@ export default function ResetPassword() {
   // UI states
   const [currStep, setCurrStep] = useState(0);
   const [pose, setPose] = useState<"IDLE" | "TALKING" | "WRITING">("IDLE");
-  const [msg, setMsg] = useState(messages[0]);
+  const [msg, setMsg] = useState(MESSAGES.INPUT_IDENTIFIER);
 
   // Loading states
   const [sendingOtp, setSendingOtp] = useState(false);
   const [resettingPassword, setResettingPassword] = useState(false);
 
   // Data states
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
   // Validation helpers
-  const isValidEmail = () => {
-    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return validEmail.test(email);
+  const isParent = () => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(identifier);
+  };
+
+  const isValidIdentifier = () => {
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return usernameRegex.test(identifier) || emailRegex.test(identifier);
   };
 
   const isStrongPassword = () => {
@@ -77,18 +85,21 @@ export default function ResetPassword() {
       isFirstRender.current = false;
       return;
     }
-    showMessage(messages[Math.min(currStep, messages.length - 1)]);
-     
+    showMessage(MESSAGES.INPUT_IDENTIFIER);
   }, [currStep]);
 
   // Handlers
   const handleSendOtp = async () => {
-    if (!isValidEmail() || sendingOtp) return;
+    if (!isValidIdentifier() || sendingOtp) return;
     setSendingOtp(true);
     try {
-      await sendOtp(email);
+      await sendOtp(identifier);
       setCurrStep(1);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (isParent()) {
+        showMessage(MESSAGES.INPUT_OTP_PARENT);
+      } else {
+        showMessage(MESSAGES.INPUT_OTP_STUDENT);
+      }
     } catch (err: any) {
       showMessage(err?.message ?? "Đã xảy ra lỗi, vui lòng thử lại !");
     } finally {
@@ -100,14 +111,14 @@ export default function ResetPassword() {
     if (!isValidPassword() || otp.length < 5 || resettingPassword) return;
     setResettingPassword(true);
     try {
-      await resetPassword({ email, otp, newPassword: password });
-      showMessage(messages[2]);
+      await resetPassword({ identifier, otp, newPassword: password });
+      showMessage(MESSAGES.SUCCESS);
       setCurrStep(0);
-      setEmail("");
+      setIdentifier("");
       setOtp("");
       setPassword("");
       setConfirm("");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       showMessage(err?.message ?? "Đã xảy ra lỗi, vui lòng thử lại !");
     } finally {
@@ -119,7 +130,7 @@ export default function ResetPassword() {
     <div className="h-screen w-screen flex flex-row p-[20px]">
       {/** Process bar */}
       <div className="w-1/4 h-full border-2 border-[rgba(0,0,0,0.1)] rounded-[20px] flex flex-col justify-between">
-        {steps.map((val, idx) => (
+        {STEPS.map((val, idx) => (
           // Steps
           <div className="flex flex-col" key={idx}>
             <div
@@ -183,10 +194,10 @@ export default function ResetPassword() {
                 </div>
               </div>
             </div>
-            {idx < steps.length - 1 && (
+            {idx < STEPS.length - 1 && (
               <div
                 className={clsx(
-                  "absolute w-[5px] h-[280px] translate-y-[52%] translate-x-[52px] rounded-full",
+                  "absolute w-[5px] h-[450px] translate-y-[30%] translate-x-[52px] rounded-full",
                   "bg-[rgba(0,0,0,0.1)]",
                 )}
               >
@@ -231,12 +242,12 @@ export default function ResetPassword() {
               Xác thực tài khoản
             </label>
             <RoundedTextBox
-              value={email}
-              placeholder="Email"
-              onChange={(e) => setEmail(e.target.value)}
+              value={identifier}
+              placeholder="Email hoặc tên đăng nhập"
+              onChange={(e) => setIdentifier(e.target.value)}
             />
             <button
-              disabled={!isValidEmail() || sendingOtp}
+              disabled={!isValidIdentifier() || sendingOtp}
               className={clsx(
                 "h-[50px] w-[400px] rounded-full cursor-pointer bg-[#23BEAA]",
                 "text-white font-medium text-[18px] hover:opacity-90",
@@ -305,7 +316,9 @@ export default function ResetPassword() {
             />
 
             <button
-              disabled={!isValidPassword() || otp.length < 5 || resettingPassword}
+              disabled={
+                !isValidPassword() || otp.length < 5 || resettingPassword
+              }
               className={clsx(
                 "h-[50px] w-[400px] rounded-full cursor-pointer bg-[#23BEAA]",
                 "text-white font-medium text-[18px] hover:opacity-90",

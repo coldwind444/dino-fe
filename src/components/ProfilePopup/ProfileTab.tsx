@@ -436,7 +436,14 @@ export default function ProfileTab({
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-6">
+        <div
+          className={clsx(
+            "gap-6",
+            profileData.role === "parent"
+              ? "grid grid-cols-1"
+              : "grid grid-cols-2",
+          )}
+        >
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Email
@@ -452,32 +459,34 @@ export default function ProfileTab({
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Khối lớp
-            </label>
-            <div className="relative">
-              <select
-                value={getGradeLevelById(formData.gradeId!)}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    gradeId: getGradeIdByLevel(Number(e.target.value)),
-                  })
-                }
-                className="w-full p-3 pl-5 font-medium pr-10 border border-gray-300 rounded-lg focus:border-[#1ABC9C] focus:outline-none appearance-none text-[#1ABC9C]"
-              >
-                <option value={1}>Khối 1</option>
-                <option value={2}>Khối 2</option>
-                <option value={3}>Khối 3</option>
-                <option value={4}>Khối 4</option>
-                <option value={5}>Khối 5</option>
-              </select>
-              <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-                <FontAwesomeIcon icon={faChevronDown} className="w-3 h-3" />
-              </button>
+          {profileData.role !== "parent" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Khối lớp
+              </label>
+              <div className="relative">
+                <select
+                  value={getGradeLevelById(formData.gradeId!)}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      gradeId: getGradeIdByLevel(Number(e.target.value)),
+                    })
+                  }
+                  className="w-full p-3 pl-5 font-medium pr-10 border border-gray-300 rounded-lg focus:border-[#1ABC9C] focus:outline-none appearance-none text-[#1ABC9C]"
+                >
+                  <option value={1}>Khối 1</option>
+                  <option value={2}>Khối 2</option>
+                  <option value={3}>Khối 3</option>
+                  <option value={4}>Khối 4</option>
+                  <option value={5}>Khối 5</option>
+                </select>
+                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                  <FontAwesomeIcon icon={faChevronDown} className="w-3 h-3" />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       {/** Update button */}

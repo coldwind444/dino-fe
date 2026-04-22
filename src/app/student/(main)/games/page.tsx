@@ -3,7 +3,12 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { faCrown, faPlay, faSearch, faBoxOpen } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCrown,
+  faPlay,
+  faSearch,
+  faBoxOpen,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -24,11 +29,12 @@ export default function Games() {
 
   // Fetch data
   useEffect(() => {
+    let ignore = false;
     const fetchMinigames = async () => {
       try {
         setLoading(true);
         const minigames = await getMinigames({ isActive: true });
-        setMinigames(minigames);
+        if (!ignore) setMinigames(minigames);
       } catch (error: any) {
         console.error(error?.message);
       } finally {
@@ -36,6 +42,9 @@ export default function Games() {
       }
     };
     fetchMinigames();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (loading) return <ScreenLoader />;
@@ -191,7 +200,9 @@ export default function Games() {
               return (
                 <div className="w-full mt-20 flex flex-col items-center justify-center gap-4 text-gray-400">
                   <FontAwesomeIcon icon={faBoxOpen} className="text-6xl" />
-                  <label className="text-xl font-medium">Không có trò chơi nào</label>
+                  <label className="text-xl font-medium">
+                    Không có trò chơi nào
+                  </label>
                 </div>
               );
             }

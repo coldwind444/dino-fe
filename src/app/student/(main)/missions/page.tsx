@@ -67,11 +67,13 @@ export default function MissionPage() {
 
   // Effects
   useEffect(() => {
+    let ignore = false;
+
     const fetchMissions = async () => {
       try {
         setLoading(true);
         const data = await getMyMission();
-        setAchievements(data);
+        if (!ignore) setAchievements(data);
       } catch (error) {
         console.error("Error fetching missions:", error);
       } finally {
@@ -79,6 +81,10 @@ export default function MissionPage() {
       }
     };
     fetchMissions();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const filteredAchievements = achievements?.filter((m) =>

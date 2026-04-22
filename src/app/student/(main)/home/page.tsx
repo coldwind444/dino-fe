@@ -79,6 +79,7 @@ export default function StudentHome() {
 
   // Effects
   useEffect(() => {
+    let ignore = false;
     const fetchTopics = async () => {
       try {
         setIsLoading(true);
@@ -93,7 +94,7 @@ export default function StudentHome() {
           const filteredTopics = recentTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
-          setRecentTopic(filteredTopics[0]);
+          if (!ignore) setRecentTopic(filteredTopics[0]);
         }
 
         // Fetch completed topics
@@ -101,7 +102,7 @@ export default function StudentHome() {
           const filteredTopics = compTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
-          setCompletedTopics(filteredTopics);
+          if (!ignore) setCompletedTopics(filteredTopics);
         }
       } catch (error) {
         console.error(error);
@@ -110,9 +111,13 @@ export default function StudentHome() {
       }
     };
     fetchTopics();
+    return () => {
+      ignore = true;
+    };
   }, [gradeLevel]);
 
   useEffect(() => {
+    let ignore = false;
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -126,7 +131,7 @@ export default function StudentHome() {
           const grade = await getGradeById(userRes.gradeId);
           if (grade && gradeLevel === "") setGradeLevel(grade.level.toString());
           const recommend = await getRecommendedTopicByGradeId(userRes.gradeId);
-          setRecommendedTopic(recommend);
+          if (!ignore) setRecommendedTopic(recommend);
         }
 
         // Entrance test data
@@ -171,6 +176,10 @@ export default function StudentHome() {
 
     fetchData();
     updateLogin();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (isLoading || !username) {

@@ -108,7 +108,7 @@ export const getParticipationsPaginated = async (
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getLeaderboard = async (
+export const getArenaLeaderboard = async (
   params?: Record<string, any>,
 ): Promise<LeaderboardResponse> => {
   try {

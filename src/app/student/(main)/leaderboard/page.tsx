@@ -8,7 +8,7 @@ import top3 from "../../../../../public/assets/leaderboard/top3.svg";
 import dino from "../../../../../public/assets/leaderboard/dino_trophy.png";
 import { QuartzLeaderboardItemResponse, UserProfileResponse } from "@/types";
 import { useEffect, useState } from "react";
-import { getLeaderboard, getUserProfile } from "@/apis/user";
+import { getQuartzLeaderboard, getUserProfile } from "@/apis/user";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { formatNumberAbbreviation, isValidUrl } from "@/helpers/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -49,7 +49,7 @@ export default function LeaderboardContent() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const leaderboardData = await getLeaderboard(11);
+        const leaderboardData = await getQuartzLeaderboard(11);
         const myProfile = await getUserProfile();
         if (!ignore) {
           setMyProfile(myProfile);

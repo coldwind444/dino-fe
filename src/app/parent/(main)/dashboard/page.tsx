@@ -57,6 +57,7 @@ export default function Dashboard() {
 
   // Effects
   useEffect(() => {
+    let ignore = false;
     const fetchData = async () => {
       try {
         setIsPageLoading(true);
@@ -66,7 +67,8 @@ export default function Dashboard() {
           page: 1,
           limit: 100,
         });
-        setStudentList(studentList.filter((user) => user.role === "student"));
+        if (!ignore)
+          setStudentList(studentList.filter((user) => user.role === "student"));
       } catch (error: any) {
         console.log(error?.message);
       } finally {
@@ -75,6 +77,10 @@ export default function Dashboard() {
     };
 
     fetchData();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (isPageLoading) {

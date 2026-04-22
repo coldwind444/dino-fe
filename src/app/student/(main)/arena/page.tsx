@@ -38,9 +38,10 @@ import {
   getParticipations,
   getRankById,
   getArena,
-  getLeaderboard,
+  getArenaLeaderboard,
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { formatNumberAbbreviation } from "@/helpers/utils";
 
 const roboto = Roboto();
 const baloo = Baloo_2();
@@ -88,6 +89,8 @@ export default function Arena() {
   };
 
   useEffect(() => {
+    let ignore = false;
+
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -100,7 +103,7 @@ export default function Arena() {
               userId: userProfile._id,
               arenaId: currentArena._id,
             });
-            if (userParticipation.length === 1) {
+            if (!ignore && userParticipation.length === 1) {
               if (userParticipation[0].status === "submitted") {
                 setArenaDone(true);
               }
@@ -126,10 +129,10 @@ export default function Arena() {
               b.startTime.localeCompare(a.startTime),
             )[0];
 
-            if (previousArena) {
+            if (!ignore && previousArena) {
               setPreviousArena(previousArena);
               try {
-                const leaderboard = await getLeaderboard({
+                const leaderboard = await getArenaLeaderboard({
                   arenaId: previousArena._id,
                   limit: 20,
                 });
@@ -146,7 +149,7 @@ export default function Arena() {
         const fetchArenaData = async () => {
           try {
             const currentArena = await getCurrentArena(userProfile.gradeId);
-            setCurrentArena(currentArena);
+            if (!ignore) setCurrentArena(currentArena);
 
             await Promise.allSettled([
               fetchParticipationData(currentArena),
@@ -160,7 +163,7 @@ export default function Arena() {
         const fetchRankData = async () => {
           try {
             const rank = await getRankById(userProfile.rankId);
-            setUserRank(rank);
+            if (!ignore) setUserRank(rank);
           } catch (error) {
             console.error(error);
           }
@@ -174,6 +177,10 @@ export default function Arena() {
       }
     };
     fetchData();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -849,9 +856,9 @@ export default function Arena() {
                 >
                   <label
                     className={clsx(roboto.className)}
-                  >{`${userProfile?.battlePoints}`}</label>
+                  >{`${formatNumberAbbreviation(userProfile?.battlePoints || 0)}`}</label>
                   <label className={clsx(roboto.className)}>
-                    {findUserRank()}
+                    {formatNumberAbbreviation(findUserRank())}
                   </label>
                 </div>
               </div>

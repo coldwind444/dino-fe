@@ -55,7 +55,7 @@ export const trackAccessDuration = async (seconds: number) => {
     }
 }
 
-export const getLeaderboard = async (limit: number = 8): Promise<QuartzLeaderboardItemResponse[]> => {
+export const getQuartzLeaderboard = async (limit: number = 8): Promise<QuartzLeaderboardItemResponse[]> => {
     try {
         const res = await api.get('/users/leaderboard/quartz', { params: { limit: limit } });
         return res.data.leaderboard as QuartzLeaderboardItemResponse[];

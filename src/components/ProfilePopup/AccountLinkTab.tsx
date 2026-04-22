@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { UserProfileResponse } from "@/types";
-import { getFamilyCode, getUsers } from "@/apis";
+import { getFamilyCode, getUsers, getMyFamilyMembers } from "@/apis";
+import Image from "next/image";
 
 type AccountLinkTabProps = {
   profile: UserProfileResponse;
@@ -15,6 +16,7 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
   const [linkedStudents, setLinkedStudents] = useState<UserProfileResponse[]>(
     [],
   );
+  const [parent, setParent] = useState<UserProfileResponse>();
   const [copied, setCopied] = useState(false);
 
   const isParent = profile.role === "parent";
@@ -30,6 +32,19 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
         }
       } catch (err) {
         console.error("Failed to fetch family code", err);
+      }
+    };
+
+    const fetchParentData = async () => {
+      if (isParent) return;
+      try {
+        const res = await getMyFamilyMembers();
+        if (!ignore && res.length > 0) {
+          const familyParent = res.find((u) => u.role === "parent");
+          setParent(familyParent);
+        }
+      } catch (err) {
+        console.error("Failed to fetch parent data", err);
       }
     };
 
@@ -52,6 +67,8 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
       fetchFamilyCode();
       if (isParent) {
         fetchLinkedStudents();
+      } else {
+        fetchParentData();
       }
     }
 
@@ -81,14 +98,24 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
             </h4>
             <div className="bg-white border border-gray-200 rounded-lg p-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-[#C5EDE5] flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">👤</span>
+                <div className="w-16 h-16 rounded-full bg-[#C5EDE5] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {parent?.avatarUrl ? (
+                    <Image
+                      width={64}
+                      height={64}
+                      src={parent.avatarUrl}
+                      alt={parent.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-2xl">👤</span>
+                  )}
                 </div>
                 <div className="flex-1">
                   <h5 className="font-bold text-lg text-gray-800">
-                    Nguyễn Văn H
+                    {parent?.name}
                   </h5>
-                  <p className="text-sm text-gray-500">vanh@gmail.com</p>
+                  <p className="text-sm text-gray-500">{parent?.email}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-2">
@@ -154,7 +181,7 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
                 >
                   <div className="w-12 h-12 rounded-full bg-[#D6F8EB] flex items-center justify-center overflow-hidden flex-shrink-0">
                     {student.avatarUrl ? (
-                      <img
+                      <Image
                         src={student.avatarUrl}
                         alt={student.name}
                         className="w-full h-full object-cover"

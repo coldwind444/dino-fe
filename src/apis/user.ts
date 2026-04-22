@@ -84,3 +84,13 @@ export const getFamilyCode = async (familyId: string): Promise<string> => {
         throw error; // Never reached
     }
 }
+
+export const getMyFamilyMembers = async () => {
+    try {
+        const res = await api.get('/users/me/family');
+        return res.data.members as UserProfileResponse[];
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}

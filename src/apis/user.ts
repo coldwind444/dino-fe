@@ -55,6 +55,16 @@ export const trackAccessDuration = async (seconds: number) => {
     }
 }
 
+export const getLeaderboard = async (limit: number = 8) => {
+    try {
+        const res = await api.get('/users/leaderboard/quartz', { params: { limit: limit } });
+        return res.data.leaderboard as UserProfileResponse[];
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}
+
 export const getStudentStats = async (userId: string, startDate: string, endDate: string) => {
     try {
         const res = await api.get(`/statistics/student?userId=${userId}&startDate=${startDate}&endDate=${endDate}`);

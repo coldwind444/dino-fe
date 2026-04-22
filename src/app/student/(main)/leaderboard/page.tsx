@@ -6,35 +6,16 @@ import poly4 from "@/assets/leaderboard/Polygon 4.svg";
 import poly5 from "@/assets/leaderboard/Polygon 5.svg";
 import crown from "@/assets/leaderboard/image 68.png";
 import dino from "@/assets/leaderboard/dino_trophy.png";
+import { UserProfileResponse } from "@/types";
+import { useEffect, useState } from "react";
+import { getLeaderboard, getUserProfile } from "@/apis/user";
+import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { formatNumberAbbreviation } from "@/helpers/utils";
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
   subsets: ["latin"],
 });
-
-const avatar =
-  "https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540871/avt_04_aqs4zn.svg";
-const usersData = [
-  { name: "Lê Phúc Nguyên", points: 12000 },
-  { name: "Hoàng Minh Nhật", points: 11000 },
-  { name: "Nguyễn Thị Thu Trang", points: 10000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-];
-
-const sortedUsers = usersData
-  .sort((a, b) => b.points - a.points)
-  .map((user, index) => ({
-    ...user,
-    rank: index + 1,
-    pointsFormatted: `${user.points.toLocaleString()} PTS`,
-  }));
-
-const topThree = sortedUsers.slice(0, 3);
-const leaderboardList = sortedUsers;
 
 const gradientColors = [
   "from-yellow-400 to-orange-400",
@@ -52,6 +33,38 @@ const getRandomColor = (index: number) => {
 };
 
 export default function LeaderboardContent() {
+  // Data
+  const [leaderboardData, setLeaderboardData] = useState<UserProfileResponse[]>(
+    [],
+  );
+  const [myProfile, setMyProfile] = useState<UserProfileResponse | null>(null);
+
+  // Loading
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const leaderboardData = await getLeaderboard(11);
+        const myProfile = await getUserProfile();
+        setMyProfile(myProfile);
+        setLeaderboardData(leaderboardData);
+      } catch (error) {
+        console.error("Error fetching leaderboard data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) return <ScreenLoader />;
+
+  const topThree = leaderboardData.slice(0, 3);
+  const remaining = leaderboardData.slice(3);
+
   return (
     <div
       className={`${roboto.className} flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100`}
@@ -92,7 +105,7 @@ export default function LeaderboardContent() {
                 tích lũy được
               </p>
               <p className="text-center text-5xl font-bold text-orange-500 mb-2">
-                1280
+                {myProfile?.quartz}
               </p>
               <p className="text-center text-xs text-orange-400 uppercase tracking-wide font-medium">
                 Tinh thể thạch anh
@@ -103,8 +116,8 @@ export default function LeaderboardContent() {
           {/* Rank Card */}
           <div className="flex justify-center">
             <div className="rounded-t-3xl p-8 text-white text-center">
-              <p className="text-sm font-medium mb-4">Xếp hạng hiện tại</p>
-              <p className="text-6xl font-bold">10901</p>
+              <p className="text-sm font-medium mb-4">Vị trí của bạn</p>
+              <p className="text-6xl font-bold">--</p>
             </div>
           </div>
         </div>
@@ -129,7 +142,7 @@ export default function LeaderboardContent() {
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-3 border-4 border-blue-400 relative">
                 <Image
-                  src={avatar}
+                  src={topThree[1]?.avatarUrl}
                   alt="avatar"
                   width={96}
                   height={96}
@@ -155,7 +168,7 @@ export default function LeaderboardContent() {
             <div className="flex flex-col items-center -mt-8">
               <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-xl mb-3 border-4 border-yellow-400 relative">
                 <Image
-                  src={avatar}
+                  src={topThree[0]?.avatarUrl}
                   alt="avatar"
                   width={112}
                   height={112}
@@ -179,7 +192,7 @@ export default function LeaderboardContent() {
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-3 border-4 border-pink-400 relative">
                 <Image
-                  src={avatar}
+                  src={topThree[2]?.avatarUrl}
                   alt="avatar"
                   width={96}
                   height={96}
@@ -205,20 +218,20 @@ export default function LeaderboardContent() {
 
         {/* Leaderboard List */}
         <div className="grid grid-cols-2 gap-4">
-          {leaderboardList.map((user, index) => (
+          {remaining.map((user, index) => (
             <div
-              key={user.rank}
+              key={index}
               className={`bg-gradient-to-r ${getRandomColor(
                 index,
               )} rounded-2xl px-6 py-4 flex items-center justify-between shadow-md`}
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-gray-700">
-                  {user.rank}
+                  {index + 4}
                 </div>
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden">
                   <Image
-                    src={avatar}
+                    src={user.avatarUrl}
                     alt="avatar"
                     width={48}
                     height={48}
@@ -228,7 +241,7 @@ export default function LeaderboardContent() {
                 <p className="text-white font-semibold">{user.name}</p>
               </div>
               <p className="text-white font-bold text-lg">
-                {user.pointsFormatted}
+                {formatNumberAbbreviation(user.quartz)}
               </p>
             </div>
           ))}

@@ -10,6 +10,7 @@ import {
 } from "@/types";
 import { getUserProfile, getStudentStats, getUsers, getRankById } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { formatNumberAbbreviation } from "@/helpers/utils";
 
 export default function Dashboard() {
   // Data state
@@ -230,7 +231,9 @@ export default function Dashboard() {
                       Battle Points
                     </label>
                     <span className="text-5xl font-bold mt-2 text-[#C03603] mr-auto ml-auto select-none">
-                      {studentStats.arena.battlePoints}
+                      {formatNumberAbbreviation(
+                        studentStats.arena.battlePoints,
+                      )}
                     </span>
                   </div>
                 </div>

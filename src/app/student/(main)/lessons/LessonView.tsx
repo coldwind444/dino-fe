@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { GradeProgressResponse, GradeResponse, TopicResponse } from "@/types";
 import { PaginationTopicResponse } from "@/apis";
 import { useLessonStore } from "@/stores/lessonStore";
+import { formatNumberAbbreviation } from "@/helpers/utils";
 
 interface LessonClientProps {
   topics: PaginationTopicResponse;
@@ -103,7 +104,7 @@ export default function LessonView({
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <div className="text-4xl font-bold text-[#FF9600] leading-none mb-1">
-                    {userQuartz}
+                    {formatNumberAbbreviation(userQuartz)}
                   </div>
                   <div className="text-xs text-[#FF9600] font-bold uppercase tracking-wide">
                     Tinh thể thạch anh

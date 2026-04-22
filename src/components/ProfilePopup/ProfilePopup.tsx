@@ -242,7 +242,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                   />
                 )}
                 {activeTab === "password" && <PasswordTab />}
-                {activeTab === "link" && <AccountLinkTab />}
+                {activeTab === "link" && <AccountLinkTab profile={profile} />}
                 {activeTab === "upgrade" && isParent && <UpgradeTab />}
               </>
             )}

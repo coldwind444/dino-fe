@@ -74,3 +74,13 @@ export const getStudentStats = async (userId: string, startDate: string, endDate
         throw error; // Never reached
     }
 }
+
+export const getFamilyCode = async (familyId: string): Promise<string> => {
+    try {
+        const res = await api.get(`/families/${familyId}/invite-code`);
+        return res.data.inviteCode as string;
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}

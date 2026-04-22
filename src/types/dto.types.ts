@@ -446,3 +446,11 @@ export interface HistoryRecord {
   totalQuestions?: number;
   studentName?: string;
 }
+
+export interface QuartzLeaderboardItemResponse {
+  _id: string;
+  name: string;
+  avatarUrl: string;
+  quartz: number;
+  battlePoints: number;
+}

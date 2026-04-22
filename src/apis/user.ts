@@ -1,5 +1,5 @@
 import { api, handleError } from "./config";
-import { AvatarUploadResponse, StudentStatsResponse, UpdateUserProfileRequest, UserProfileResponse } from "@/types";
+import { AvatarUploadResponse, QuartzLeaderboardItemResponse, StudentStatsResponse, UpdateUserProfileRequest, UserProfileResponse } from "@/types";
 
 export const getUserProfile = async (): Promise<UserProfileResponse> => {
     try {
@@ -55,10 +55,10 @@ export const trackAccessDuration = async (seconds: number) => {
     }
 }
 
-export const getLeaderboard = async (limit: number = 8) => {
+export const getLeaderboard = async (limit: number = 8): Promise<QuartzLeaderboardItemResponse[]> => {
     try {
         const res = await api.get('/users/leaderboard/quartz', { params: { limit: limit } });
-        return res.data.leaderboard as UserProfileResponse[];
+        return res.data.leaderboard as QuartzLeaderboardItemResponse[];
     } catch (error) {
         handleError(error);
         throw error; // Never reached

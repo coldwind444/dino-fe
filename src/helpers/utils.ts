@@ -1,5 +1,14 @@
 import { AnswerResponse, ExerciseResponse } from "@/types";
 
+export const isValidUrl = (url: string) => {
+    try {
+        new URL(url);
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function cleanedAnswer(ans: any) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

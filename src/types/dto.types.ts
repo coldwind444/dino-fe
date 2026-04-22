@@ -193,6 +193,11 @@ export interface LectureResponse {
   difficulty: string;
   topicId: string;
   order: number;
+  theory: {
+    content: string;
+    videoUrl?: string;
+    imageUrls?: string[];
+  };
 }
 
 export interface ExerciseResponse {

@@ -118,6 +118,12 @@ export interface UserProfileResponse {
     language: string;
     notifications: boolean;
   };
+  premium: {
+    isPremium: boolean;
+    packageId: string;
+    startDate: string;
+    expiryDate: string;
+  };
   _id: string;
   quartz: number;
   battlePoints: number;
@@ -175,6 +181,7 @@ export interface TopicResponse {
   gradeId: string;
   termId: string;
   weekNumbers: number[];
+  isPremium: boolean;
   level: number;
 }
 
@@ -215,6 +222,7 @@ export interface TermResponse {
   notes: string;
   createdAt: string;
   updatedAt: string;
+  isOngoing: boolean;
   __v: number;
 }
 
@@ -400,22 +408,22 @@ export interface AssessmentResultDetailedResponse {
 export interface ParticipationDetailedResponse {
   _id: string;
   userId:
-    | {
-        _id: string;
-        name: string;
-        avatarUrl: string;
-        email: string;
-      }
-    | string;
+  | {
+    _id: string;
+    name: string;
+    avatarUrl: string;
+    email: string;
+  }
+  | string;
   arenaId:
-    | {
-        _id: string;
-        title: string;
-        description: string;
-        startTime: string;
-        endTime: string;
-      }
-    | string;
+  | {
+    _id: string;
+    title: string;
+    description: string;
+    startTime: string;
+    endTime: string;
+  }
+  | string;
   correctCount: number;
   timeTaken: number;
   score: number;

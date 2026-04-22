@@ -29,6 +29,22 @@ export const getTermById = async (termid: string): Promise<TermResponse> => {
   }
 };
 
+export const getOngoingTerm = async (): Promise<TermResponse> => {
+  try {
+    const params = {
+      limit: 100,
+      page: 1,
+      isActive: true,
+    }
+    const res = await api.get(`/academic-terms`, { params });
+    const ongoingTerm = res.data.items.find((term: TermResponse) => term.isOngoing);
+    return ongoingTerm as TermResponse;
+  } catch (error) {
+    handleError(error);
+    throw error; // Never reached
+  }
+};
+
 // Grade APIs
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getGrades = async (
@@ -112,6 +128,18 @@ export const getCompletedTopics = async (
   try {
     const res = await api.get(`/progress/completed?limit=${limit}`);
     return res.data.items as TopicResponse[];
+  } catch (error) {
+    handleError(error);
+    throw error; // Never reached
+  }
+};
+
+export const getNoCompletedTopics = async (
+  limit?: number,
+): Promise<number> => {
+  try {
+    const res = await api.get(`/progress/completed?limit=${limit}`);
+    return res.data.total;
   } catch (error) {
     handleError(error);
     throw error; // Never reached

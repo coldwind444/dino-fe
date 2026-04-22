@@ -1,6 +1,6 @@
 "use client";
 
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faCrown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -13,11 +13,11 @@ interface LessonClientProps {
   grade: GradeResponse;
   userQuartz: number;
   gradeProgress: GradeProgressResponse;
-  noUnlocked: number;
   noComplete: number;
   recentTopic?: TopicResponse;
   firstTopic?: TopicResponse;
   changePage: (isNext: boolean) => void;
+  isPremiumUser: boolean;
 }
 
 export default function LessonView({
@@ -25,11 +25,11 @@ export default function LessonView({
   grade,
   userQuartz,
   gradeProgress,
-  noUnlocked,
   noComplete,
   recentTopic,
   firstTopic,
   changePage,
+  isPremiumUser,
 }: LessonClientProps) {
   const router = useRouter();
   const { gradeLevel } = useLessonStore();
@@ -37,6 +37,10 @@ export default function LessonView({
   const navigateToLecture = (topicId: string) => {
     router.push(`/student/adventure/${gradeLevel}/${topicId}`);
   };
+
+  const topicsWithPremiumRequiredFlag = topics.items.map((topic) => {
+    return { ...topic, premiumRequired: topic.isPremium && !isPremiumUser };
+  });
 
   return (
     <div className="w-full min-h-screen">
@@ -114,10 +118,6 @@ export default function LessonView({
                 <div>
                   Số chủ đề đã học: <strong>{noComplete}</strong>
                 </div>
-                <div>
-                  Số chủ đề đã mở khóa:{" "}
-                  <strong>{`${noUnlocked}/${topics?.pagination.total}`}</strong>
-                </div>
               </div>
             </div>
           </div>
@@ -175,7 +175,32 @@ export default function LessonView({
 
           {/* Topic Grid */}
           <div className="grid grid-cols-4 gap-6 mb-6">
-            {topics?.items?.map((topic, index) => {
+            {topicsWithPremiumRequiredFlag?.map((topic, index) => {
+              if (topic.premiumRequired) {
+                return (
+                  <div
+                    key={index}
+                    className="relative h-[320px] transition-all hover:scale-105 cursor-pointer"
+                  >
+                    <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#FF9600]" />
+                    <div
+                      className="relative h-full bg-white rounded-3xl border-[3px] border-[#FF9600] 
+                                flex flex-col gap-6 items-center justify-center p-6"
+                    >
+                      <div className="mb-6">
+                        <FontAwesomeIcon
+                          icon={faCrown}
+                          className="text-[#FF9600] text-6xl"
+                        />
+                      </div>
+                      <p className="text-base font-bold text-[#FF9600] text-center mb-6 px-2 cursor-pointer">
+                        {`Bạn cần nâng cấp tài khoản để mở khóa chủ đề ${topic.level}.`}
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+
               return (
                 <div
                   key={index}

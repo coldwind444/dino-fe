@@ -15,7 +15,6 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
   const [linkedStudents, setLinkedStudents] = useState<UserProfileResponse[]>(
     [],
   );
-  const [email, setEmail] = useState("");
   const [copied, setCopied] = useState(false);
 
   const isParent = profile.role === "parent";

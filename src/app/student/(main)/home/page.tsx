@@ -23,8 +23,6 @@ import {
   getPublishedAssessmentByGradeId,
   getRecentTopics,
   getRecommendedTopicByGradeId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getTopicById,
   getUserProfile,
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";

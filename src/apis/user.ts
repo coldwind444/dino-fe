@@ -1,5 +1,5 @@
 import { api, handleError } from "./config";
-import { AvatarUploadResponse, QuartzLeaderboardItemResponse, StudentStatsResponse, UpdateUserProfileRequest, UserProfileResponse } from "@/types";
+import { AvatarUploadResponse, MyPositionInRankResponse, QuartzLeaderboardItemResponse, StudentStatsResponse, UpdateUserProfileRequest, UserProfileResponse } from "@/types";
 
 export const getUserProfile = async (): Promise<UserProfileResponse> => {
     try {
@@ -90,6 +90,16 @@ export const getMyFamilyMembers = async () => {
     try {
         const res = await api.get('/users/me/family');
         return res.data.members as UserProfileResponse[];
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}
+
+export const getMyRank = async (): Promise<MyPositionInRankResponse> => {
+    try {
+        const res = await api.get(`/users/me/rank`);
+        return res.data as MyPositionInRankResponse;
     } catch (error) {
         handleError(error);
         throw error; // Never reached

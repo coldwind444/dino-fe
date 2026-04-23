@@ -488,3 +488,18 @@ export interface PackageResponse {
   updatedAt: string;
   __v: number;
 }
+
+export interface MyPositionInRankResponse {
+  userId: string;
+  quartz: {
+    value: number;
+    rank: number | null;
+  };
+  arena: {
+    global: {
+      value: number;
+      rank: number | null;
+    };
+    recentMatches: any[];
+  };
+}

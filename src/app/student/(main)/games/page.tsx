@@ -17,6 +17,7 @@ import pvp from "../../../../../public/assets/games/pvp.png";
 import { getMinigames } from "@/apis/minigame";
 import { MiniGameResponse } from "@/types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { APIError } from "@/apis/config";
 
 export default function Games() {
   // Data state
@@ -35,8 +36,10 @@ export default function Games() {
         setLoading(true);
         const minigames = await getMinigames({ isActive: true });
         if (!ignore) setMinigames(minigames);
-      } catch (error: any) {
-        console.error(error?.message);
+      } catch (error) {
+        if (error instanceof APIError) {
+          console.error(error.message);
+        }
       } finally {
         setLoading(false);
       }

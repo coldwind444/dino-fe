@@ -3,7 +3,7 @@
 import MascotWriting from "@/components/MascotWriting/MascotWriting";
 import Image from "next/image";
 import Link from "next/link";
-import { faCheck, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { useState } from "react";
@@ -13,6 +13,7 @@ import RoundedTextBox from "@/components/RoundedTextBox/RoundedTextBox";
 import RoundedPasswordBox from "@/components/RoundedPasswordBox/RoundedPasswordBox";
 import OTPInput from "@/components/OTPInput/OTPInput";
 import { sendOtp, resetPassword } from "@/apis/auth";
+import { APIError } from "@/apis/config";
 
 const STEPS = ["Gửi OTP về Email", "Xác thực & Đặt lại mật khẩu"];
 
@@ -89,8 +90,10 @@ export default function ResetPassword() {
       } else {
         showMessage(MESSAGES.INPUT_OTP_STUDENT);
       }
-    } catch (err: any) {
-      showMessage(err?.message ?? "Đã xảy ra lỗi, vui lòng thử lại !");
+    } catch (err) {
+      if (err instanceof APIError) {
+        showMessage(err.message);
+      }
     } finally {
       setSendingOtp(false);
     }
@@ -111,9 +114,10 @@ export default function ResetPassword() {
       setTimeout(() => {
         router.push("/auth");
       }, 3000);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      showMessage(err?.message ?? "Đã xảy ra lỗi, vui lòng thử lại !");
+    } catch (err) {
+      if (err instanceof APIError) {
+        showMessage(err.message);
+      }
     } finally {
       setResettingPassword(false);
     }

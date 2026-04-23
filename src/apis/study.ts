@@ -46,8 +46,9 @@ export const getOngoingTerm = async (): Promise<TermResponse> => {
 };
 
 // Grade APIs
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getGrades = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<GradeResponse[]> => {
   try {
@@ -109,8 +110,9 @@ export const getRecentTopics = async (
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getTopics = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<PaginationTopicResponse> => {
   try {
@@ -228,8 +230,9 @@ export type PaginatedLectureResultDetailedResponse = {
   pagination: Pagination;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getLectureResults = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<PaginatedLectureResultDetailedResponse> => {
   try {
@@ -281,8 +284,9 @@ export type PaginatedAssessmentResultDetailedResponse = {
   pagination?: Pagination;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getAssessmentResultsList = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<{
   items: AssessmentResultDetailedResponse[];
@@ -302,8 +306,9 @@ export const getAssessmentResultsList = async (
 };
 
 // Exercise APIs
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getExercises = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<ExerciseResponse[]> => {
   try {
@@ -316,8 +321,9 @@ export const getExercises = async (
 };
 
 // Answer APIs
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getAnswers = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<AnswerResponse[]> => {
   try {

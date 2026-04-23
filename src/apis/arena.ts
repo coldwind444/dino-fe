@@ -15,8 +15,9 @@ export type PaginatedArenaResponse = {
   pagination: Pagination;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getArena = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<ArenaResponse[]> => {
   try {
@@ -66,8 +67,9 @@ export const getRankById = async (id: string): Promise<RankResponse> => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getParticipations = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<ParticipationResponse[]> => {
   try {
@@ -85,8 +87,9 @@ export type PaginatedParticipationDetailedResponse = {
   pagination: Pagination;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getParticipationsPaginated = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<PaginatedParticipationDetailedResponse> => {
   try {
@@ -107,8 +110,9 @@ export const getParticipationsPaginated = async (
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getArenaLeaderboard = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<LeaderboardResponse> => {
   try {

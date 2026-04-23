@@ -1,7 +1,7 @@
 "use client";
 
 import { trackAccessDuration } from "@/apis";
-import { getAccessToken } from "@/apis/config";
+import { APIError, getAccessToken } from "@/apis/config";
 import { useEffect, useRef } from "react";
 
 export default function StudentLayout({
@@ -18,9 +18,10 @@ export default function StudentLayout({
       if (!token) return;
       try {
         await trackAccessDuration(seconds);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error(error.message);
+      } catch (error) {
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       }
     };
 

@@ -12,6 +12,7 @@ import { UserProfileResponse } from "@/types";
 import OTPInput from "@/components/OTPInput/OTPInput";
 import { sendOtp, resetPassword } from "@/apis/auth";
 import toast from "react-hot-toast";
+import { APIError } from "@/apis/config";
 
 export default function PasswordTab({
   profile,
@@ -54,8 +55,10 @@ export default function PasswordTab({
           : "Đã gửi mã xác thực đến email của Phụ huynh!",
       );
       setCountdown(600); // 10 minutes = 600 seconds
-    } catch (err: any) {
-      toast.error(err?.message ?? "Đã xảy ra lỗi khi gửi mã OTP!");
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       setSendingOtp(false);
     }
@@ -87,8 +90,10 @@ export default function PasswordTab({
       toast.success("Đổi mật khẩu thành công!");
       setPasswordData({ otp: "", newPassword: "", confirmPassword: "" });
       setCountdown(0);
-    } catch (err: any) {
-      toast.error(err?.message ?? "Đã xảy ra lỗi khi đổi mật khẩu!");
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       setResettingPassword(false);
     }

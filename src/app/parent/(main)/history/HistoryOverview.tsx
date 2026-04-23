@@ -51,6 +51,7 @@ function formatDuration(timeValue: number | undefined | null): string {
   return secs > 0 ? `${mins} phút ${secs} giây` : `${mins} phút`;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getSafeDuration(item: any): number {
   const apiTime = item.timeTaken ?? item.duration;
   if (typeof apiTime === "number" && !isNaN(apiTime) && apiTime > 0) {

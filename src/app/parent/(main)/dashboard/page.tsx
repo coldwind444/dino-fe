@@ -11,6 +11,7 @@ import {
 import { getUserProfile, getStudentStats, getUsers, getRankById } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { formatNumberAbbreviation } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 export default function Dashboard() {
   // Data state
@@ -49,8 +50,10 @@ export default function Dashboard() {
       const rank = await getRankById(currStudent?.rankId || "");
       setStudentStats(stats);
       setSelectedStudentRank(rank);
-    } catch (error: any) {
-      console.log(error?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     } finally {
       setIsFilterLoading(false);
     }
@@ -70,8 +73,10 @@ export default function Dashboard() {
         });
         if (!ignore)
           setStudentList(studentList.filter((user) => user.role === "student"));
-      } catch (error: any) {
-        console.log(error?.message);
+      } catch (error) {
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsPageLoading(false);
       }

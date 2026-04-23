@@ -25,6 +25,7 @@ import ExplainModal, {
 } from "@/components/ExplainModal/ExplainModal";
 import { useLessonStore } from "@/stores/lessonStore";
 import { cleanedAnswerArray } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
@@ -158,9 +159,10 @@ export default function ExerciseView({
       }));
       await upsertAnswers(cleanedAnswerArray(modifiedAnswers));
       onFinish(exercises.length);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error(error?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.error(error.message);
+      }
       setIsSubmitting(false);
     }
   };

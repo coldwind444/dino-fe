@@ -27,6 +27,7 @@ import Loader from "@/components/Loader/Loader";
 import { useRouter } from "next/navigation";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
+import { APIError } from "@/apis/config";
 
 const roboto = Roboto();
 const fredoka = Fredoka();
@@ -117,9 +118,10 @@ export default function Auth() {
       } else if (res.user.role === "admin") {
         toast.error("Quản trị viên không có quyền truy cập vào trang này");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       resetLogin();
       setLoginLoading(false);
@@ -144,9 +146,10 @@ export default function Auth() {
       });
       toast.success("Đăng ký thành công !");
       resetRegister();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       setRegLoading(false);
     }
@@ -183,9 +186,10 @@ export default function Auth() {
         familyId: "",
       });
       router.push("/parent/dashboard");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       resetLogin();
     }

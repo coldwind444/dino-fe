@@ -76,7 +76,7 @@ function formatDateForPicker(value?: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 export default function Filter({
   hasStudentSelectBox = false,
   hasSearchBox = false,

@@ -14,7 +14,6 @@ import PopupModal, { MODAL_TYPE_KEY } from "@/components/PopupModal/PopupModal";
 import {
   getExercises,
   upsertAnswers,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   submitAssessment,
   getPublishedAssessmentByGradeId,
   startAssessment,
@@ -34,6 +33,7 @@ import {
   cleanedAnswerArray,
 } from "@/helpers/utils";
 import { Toaster } from "react-hot-toast";
+import { APIError } from "@/apis/config";
 
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 
@@ -107,10 +107,10 @@ export default function EntranceTest() {
           });
         });
         setAnswers(answerMap);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error(error?.message);
-        toast.error(error?.message || "Lỗi khi tải bài kiểm tra");
+      } catch (error) {
+        if (error instanceof APIError) {
+          toast.error(error.message);
+        }
       } finally {
         setLoading(false);
       }
@@ -177,11 +177,10 @@ export default function EntranceTest() {
       toast.dismiss("test-submit");
       toast.success("Nộp bài thành công!", { toasterId: "test-submit" });
       router.back();
-    } catch (err: any) {
-      toast.dismiss("test-submit");
-      toast.error(err?.message || "Nộp bài thất bại!", {
-        toasterId: "test-submit",
-      });
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       toast.dismissAll("test-submit");
     }

@@ -11,6 +11,7 @@ export const getUserProfile = async (): Promise<UserProfileResponse> => {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getUsers = async (req?: Record<string, any>): Promise<UserProfileResponse[]> => {
     try {
         const res = await api.get('/users', { params: req });

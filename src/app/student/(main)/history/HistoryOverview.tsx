@@ -69,6 +69,7 @@ function formatDate(dateStr: string): string {
   return `${days[d.getDay()]}, ${h}:${m} ${dd}-${mm}-${d.getFullYear()}`;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getSafeDuration(item: any): number {
   // Lấy thời gian từ API gửi nếu có
   const apiTime = item.timeTaken ?? item.duration;

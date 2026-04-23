@@ -38,6 +38,7 @@ import {
   cleanedAnswerArray,
 } from "@/helpers/utils";
 import { updateMissionProgress } from "@/apis/mission";
+import { APIError } from "@/apis/config";
 
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 
@@ -92,9 +93,8 @@ export default function ArenaExam({ params }: ArenaExamProps) {
             currParticipation = participations[0];
             setParticipation(currParticipation);
           }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
-          if (error?.status !== 404) {
+        } catch (error) {
+          if (error instanceof APIError && error.status !== 404) {
             throw error;
           }
         }

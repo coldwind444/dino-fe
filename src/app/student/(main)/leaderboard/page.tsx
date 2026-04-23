@@ -6,9 +6,13 @@ import top1 from "../../../../../public/assets/leaderboard/top1.png";
 import top2 from "../../../../../public/assets/leaderboard/top2.svg";
 import top3 from "../../../../../public/assets/leaderboard/top3.svg";
 import dino from "../../../../../public/assets/leaderboard/dino_trophy.png";
-import { QuartzLeaderboardItemResponse, UserProfileResponse } from "@/types";
+import {
+  MyPositionInRankResponse,
+  QuartzLeaderboardItemResponse,
+  UserProfileResponse,
+} from "@/types";
 import { useEffect, useState } from "react";
-import { getQuartzLeaderboard, getUserProfile } from "@/apis/user";
+import { getMyRank, getQuartzLeaderboard, getUserProfile } from "@/apis/user";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { formatNumberAbbreviation, isValidUrl } from "@/helpers/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,6 +44,8 @@ export default function LeaderboardContent() {
     QuartzLeaderboardItemResponse[]
   >([]);
   const [myProfile, setMyProfile] = useState<UserProfileResponse | null>(null);
+  const [leaderboardMyRank, setLeaderboardMyRank] =
+    useState<MyPositionInRankResponse | null>(null);
 
   // Loading
   const [isLoading, setIsLoading] = useState(false);
@@ -51,9 +57,11 @@ export default function LeaderboardContent() {
         setIsLoading(true);
         const leaderboardData = await getQuartzLeaderboard(11);
         const myProfile = await getUserProfile();
+        const myRank = await getMyRank();
         if (!ignore) {
           setMyProfile(myProfile);
           setLeaderboardData(leaderboardData);
+          setLeaderboardMyRank(myRank);
         }
       } catch (error) {
         console.error("Error fetching leaderboard data:", error);
@@ -111,7 +119,7 @@ export default function LeaderboardContent() {
                 tích lũy được
               </p>
               <p className="text-center text-5xl font-bold text-orange-500 mb-2">
-                {myProfile?.quartz}
+                {formatNumberAbbreviation(myProfile.quartz || 0)}
               </p>
               <p className="text-center text-xs text-orange-400 uppercase tracking-wide font-medium">
                 Tinh thể thạch anh
@@ -123,7 +131,11 @@ export default function LeaderboardContent() {
           <div className="flex justify-center">
             <div className="rounded-t-3xl p-8 text-white text-center">
               <p className="text-sm font-medium mb-4">Vị trí của bạn</p>
-              <p className="text-6xl font-bold">--</p>
+              <p className="text-6xl font-bold">
+                {leaderboardMyRank?.quartz?.rank
+                  ? formatNumberAbbreviation(leaderboardMyRank?.quartz?.rank)
+                  : "--"}
+              </p>
             </div>
           </div>
         </div>

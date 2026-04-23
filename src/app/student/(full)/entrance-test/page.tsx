@@ -61,11 +61,14 @@ export default function EntranceTest() {
 
   //Effects
   useEffect(() => {
+    let ignore = false;
+
     const initData = async () => {
       try {
         setLoading(true);
 
         const currentProfile = await getUserProfile();
+        if (ignore) return;
         setUserProfile(currentProfile);
 
         // 1. Fetch Assessment details
@@ -78,11 +81,6 @@ export default function EntranceTest() {
           return;
         }
 
-        // Start assessment
-        const assessmentResult = await startAssessment(assessmentData._id);
-        setArId(assessmentResult._id);
-        setAssessment(assessmentData);
-
         // 2. Fetch Exercises
         const exercisesData = await getExercises({
           assessmentId: assessmentData._id,
@@ -90,6 +88,11 @@ export default function EntranceTest() {
           limit: 100,
         });
         setExercises(exercisesData.sort((a, b) => a.order - b.order));
+
+        // Start assessment
+        const assessmentResult = await startAssessment(assessmentData._id);
+        setArId(assessmentResult._id);
+        setAssessment(assessmentData);
 
         // 3. Initialize empty answers
         const answerMap = new Map<string, AnswerResponse>();
@@ -117,7 +120,10 @@ export default function EntranceTest() {
     };
 
     initData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   // Clock Count up logic

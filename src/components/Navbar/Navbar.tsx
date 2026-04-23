@@ -31,6 +31,7 @@ import Link from "next/link";
 import ProfilePopup from "../ProfilePopup/ProfilePopup";
 import { getUserProfile } from "@/apis/user";
 import { logout } from "@/apis/auth";
+import { useLessonStore } from "@/stores/lessonStore";
 
 const roboto = Roboto({ subsets: ["latin"] });
 const righteous = Righteous({ weight: "400" });
@@ -66,6 +67,7 @@ export default function Navbar({
   notifications?: { title: string; content: string }[];
 }) {
   const router = useRouter();
+  const { clear: clearLessonStore } = useLessonStore();
   const [signUpHover, setSignUpHover] = useState(false);
   const [urls, setUrls] = useState<
     { name: string; icon: IconDefinition; pathname: string }[]
@@ -81,6 +83,7 @@ export default function Navbar({
   const handleLogout = async () => {
     try {
       await logout();
+      clearLessonStore();
       router.push("/auth");
     } catch (error) {
       console.error("Logout failed:", error);

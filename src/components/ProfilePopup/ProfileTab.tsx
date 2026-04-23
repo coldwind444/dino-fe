@@ -136,7 +136,12 @@ export default function ProfileTab({
       onUpdateSuccess();
 
       // 3. Refresh the router to fetch new data from server
-      router.refresh();
+      const confirmReload = confirm(
+        "Cập nhật thông tin thành công! Bạn cần tải lại trang để cập nhật nội dung mới nhất.",
+      );
+      if (confirmReload) {
+        window.location.reload();
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);

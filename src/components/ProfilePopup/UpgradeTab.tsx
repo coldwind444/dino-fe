@@ -1,14 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { faCheck, faCrown, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
+import {
+  faCheck,
+  faCrown,
+  faSpinner,
+  faGem,
+  faBookOpen,
+  faGamepad,
+  faUsers,
+  faRobot,
+  faChartLine,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-
-const premiumFeatures = [
-  "Không giới hạn chủ đề học tập",
-  "Không giới hạn Minigames",
-];
+import { confirmPayment, getPackages, purchasePremium } from "@/apis/payment";
+import { PackageResponse, UserProfileResponse } from "@/types";
 
 const freeFeatures = [
   "Tính năng cơ bản",
@@ -38,30 +45,142 @@ function PaymentImagePlaceholder({
   );
 }
 
-export default function UpgradeTab() {
+export default function UpgradeTab({
+  profile,
+}: {
+  profile: UserProfileResponse;
+}) {
   const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(
     null,
   );
+  const [plan, setPlan] = useState<PackageResponse>();
 
-  const startPayment = () => {
+  const startPayment = async () => {
     const generatedOrderCode = `WH${Date.now().toString().slice(-10)}`;
-
     setPaymentSession({
       orderCode: generatedOrderCode,
-      amountLabel: "599,000 VND",
+      amountLabel:
+        plan?.price.toLocaleString("vi-VN", { currency: "VND" }) || "--",
       expiresIn: "14:30",
     });
+
+    try {
+      const res = await purchasePremium({
+        packageId: plan?._id as string,
+        paymentMethod: "vnpay",
+      });
+      await confirmPayment(res.transactionId);
+      const reloadConfirm = confirm(
+        "Thanh toán thành công! Bạn cần tải lại trang để cập nhật trạng thái.",
+      );
+      if (reloadConfirm) {
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const cancelPayment = () => {
     setPaymentSession(null);
   };
 
+  // Effects
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchPackages = async () => {
+      try {
+        const res = await getPackages();
+        if (!ignore && res.length > 0) setPlan(res[0]);
+      } catch (error) {
+        console.error("Error fetching packages:", error);
+      }
+    };
+    fetchPackages();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <>
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Nâng cấp</h2>
 
-      {paymentSession ? (
+      {profile?.premium?.isPremium ? (
+        <div className="flex flex-col items-center justify-center pt-6 pb-10 w-full max-w-5xl bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 mt-4 px-6">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-orange-200 blur-xl opacity-50 rounded-full animate-pulse"></div>
+            <FontAwesomeIcon
+              icon={faGem}
+              className="relative text-[#FF9F1C] text-[60px] drop-shadow-md"
+            />
+          </div>
+
+          <h3 className="text-2xl font-bold text-[#FF9F1C] mb-3 text-center">
+            Tài khoản của bạn đã được nâng cấp !
+          </h3>
+          <p className="text-gray-500 text-center max-w-lg mb-8 leading-relaxed">
+            Tài khoản của bạn và các học sinh trong Gia đình đang sử dụng dịch
+            vụ từ Gói Cao cấp của Dino Math.
+          </p>
+
+          <div className="w-full relative max-w-3xl mb-8">
+            <div
+              className="absolute inset-0 flex items-center"
+              aria-hidden="true"
+            >
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-white px-4 text-[15px] font-semibold text-[#FF9F1C]">
+                Phúc lợi
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-4 w-full max-w-4xl">
+            {plan?.features?.map((featureText, idx) => {
+              const styles = [
+                { icon: faBookOpen, color: "text-blue-500", bg: "bg-blue-50" },
+                {
+                  icon: faGamepad,
+                  color: "text-purple-500",
+                  bg: "bg-purple-50",
+                },
+                { icon: faUsers, color: "text-pink-500", bg: "bg-pink-50" },
+                { icon: faRobot, color: "text-teal-500", bg: "bg-teal-50" },
+                {
+                  icon: faChartLine,
+                  color: "text-indigo-500",
+                  bg: "bg-indigo-50",
+                },
+              ];
+              const style = styles[idx % styles.length];
+
+              return (
+                <div
+                  key={idx}
+                  className="flex flex-col items-center text-center p-5 border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow bg-white w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)]"
+                >
+                  <div
+                    className={`w-14 h-14 rounded-full ${style.bg} flex items-center justify-center mb-4`}
+                  >
+                    <FontAwesomeIcon
+                      icon={style.icon}
+                      className={`w-6 h-6 ${style.color}`}
+                    />
+                  </div>
+                  <p className="text-gray-700 font-medium text-sm leading-snug">
+                    {featureText}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : paymentSession ? (
         <div className="mt-4 w-full max-w-5xl">
           <div className="mb-4 flex items-center justify-between border-b border-gray-200 pb-3">
             <div className="text-[24px] font-medium text-gray-500">
@@ -194,11 +313,11 @@ export default function UpgradeTab() {
               </div>
 
               <div className="mb-5 text-4xl font-bold text-gray-800">
-                599,000đ
+                {plan?.price.toLocaleString("vi-VN", { currency: "VND" })}
               </div>
 
               <div className="space-y-3 text-gray-600">
-                {premiumFeatures.map((feature) => (
+                {plan?.features.map((feature) => (
                   <div
                     key={feature}
                     className="flex items-center gap-3 text-sm"

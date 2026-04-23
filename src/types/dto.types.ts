@@ -87,6 +87,11 @@ export interface UpdateMissionProgressRequest {
   amount: number;
 }
 
+export interface PurchasePremiumRequest {
+  packageId: string;
+  paymentMethod: 'momo' | 'zalopay' | 'vnpay' | 'bank_transfer';
+}
+
 // Response
 export interface UserResponse {
   id: string;
@@ -129,6 +134,7 @@ export interface UserProfileResponse {
   battlePoints: number;
   name: string;
   email: string;
+  username: string;
   avatarUrl: string;
   role: string;
   status: string;
@@ -458,4 +464,27 @@ export interface QuartzLeaderboardItemResponse {
   avatarUrl: string;
   quartz: number;
   battlePoints: number;
+}
+
+export interface TransactionResponse {
+  userId: string;
+  packageId: string;
+  amount: number;
+  paymentMethod: "momo" | "zalopay" | "vnpay" | "bank_transfer" | "internal";
+  status: "pending" | "completed" | "failed";
+  transactionId: string;
+  processedAt: string;
+}
+
+export interface PackageResponse {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  durationDays: number;
+  features: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }

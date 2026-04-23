@@ -101,7 +101,25 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
   // Effects
   useEffect(() => {
     if (!isOpen) return;
+    let ignore = false;
+
+    const fetchUserProfile = async () => {
+      try {
+        setLoading(true);
+        const res = await getUserProfile();
+        if (!ignore) setProfile(res);
+      } catch (err) {
+        console.log("Failed to fetch user profile", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUserProfile();
+
+    return () => {
+      ignore = true;
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -241,9 +259,11 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                     onUpdateSuccess={fetchUserProfile}
                   />
                 )}
-                {activeTab === "password" && <PasswordTab />}
+                {activeTab === "password" && <PasswordTab profile={profile} />}
                 {activeTab === "link" && <AccountLinkTab profile={profile} />}
-                {activeTab === "upgrade" && isParent && <UpgradeTab />}
+                {activeTab === "upgrade" && isParent && (
+                  <UpgradeTab profile={profile} />
+                )}
               </>
             )}
           </div>

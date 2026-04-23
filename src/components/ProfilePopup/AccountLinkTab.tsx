@@ -182,6 +182,8 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
                   <div className="w-12 h-12 rounded-full bg-[#D6F8EB] flex items-center justify-center overflow-hidden flex-shrink-0">
                     {student.avatarUrl ? (
                       <Image
+                        width={48}
+                        height={48}
                         src={student.avatarUrl}
                         alt={student.name}
                         className="w-full h-full object-cover"

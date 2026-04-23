@@ -20,12 +20,16 @@ interface MatchingProps {
   answer: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (answer: any) => void;
+  customLeftItems?: string[];
+  customRightItems?: string[];
 }
 
 export default function Matching({
   exercise,
   answer,
   onChange,
+  customLeftItems,
+  customRightItems,
 }: MatchingProps) {
   const pairs = exercise.pairs || [];
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -35,15 +39,13 @@ export default function Matching({
   const [lines, setLines] = useState<LineData[]>([]);
 
   const leftItems = useMemo(
-    () => pairs.map((p) => p.left).sort(() => Math.random() - 0.5),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [exercise._id],
+    () => customLeftItems || pairs.map((p) => p.left),
+    [customLeftItems, pairs],
   );
 
   const rightItems = useMemo(
-    () => pairs.map((p) => p.right).sort(() => Math.random() - 0.5),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [exercise._id],
+    () => customRightItems || pairs.map((p) => p.right),
+    [customRightItems, pairs],
   );
 
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
@@ -92,8 +94,10 @@ export default function Matching({
     if (Array.isArray(answer)) {
       const parsedPairs: { [key: string]: string } = {};
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      answer.forEach((p: any) => {
-        if (p.left && p.right) {
+      answer.forEach((p: any, index: number) => {
+        if (p.answer && pairs[index]) {
+          parsedPairs[pairs[index].left] = p.answer;
+        } else if (p.left && p.right) {
           parsedPairs[p.left] = p.right;
         }
       });
@@ -101,13 +105,18 @@ export default function Matching({
     } else {
       setCurrentPairs({});
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise._id, answer]);
 
   const emitChange = (pairsDict: { [key: string]: string }) => {
-    const formatted = Object.keys(pairsDict).map(k => ({
-      left: k,
-      right: pairsDict[k]
-    }));
+    const formatted = pairs.map((pair) => {
+      const rightAnswer = pairsDict[pair.left] || "";
+      const isCorrect = rightAnswer === pair.right;
+      return {
+        answer: rightAnswer,
+        placedCorrectly: isCorrect,
+      };
+    });
     onChange(formatted);
   };
 

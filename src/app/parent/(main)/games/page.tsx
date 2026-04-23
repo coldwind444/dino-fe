@@ -3,7 +3,12 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { faCrown, faPlay, faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCrown,
+  faPlay,
+  faSearch,
+  faBoxOpen,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -12,6 +17,7 @@ import pvp from "../../../../../public/assets/games/pvp.png";
 import { getMinigames } from "@/apis/minigame";
 import { MiniGameResponse } from "@/types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { APIError } from "@/apis/config";
 
 export default function Games() {
   // Data state
@@ -23,18 +29,25 @@ export default function Games() {
 
   // Fetch data
   useEffect(() => {
+    let ignore = false;
     const fetchMinigames = async () => {
       try {
         setLoading(true);
         const minigames = await getMinigames({ isActive: true });
         setMinigames(minigames);
-      } catch (error: any) {
-        console.error(error?.message);
+      } catch (error) {
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchMinigames();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (loading) return <ScreenLoader />;
@@ -174,13 +187,25 @@ export default function Games() {
         </div>
         {/** Game list */}
         <div className="flex flex-1 max-h-[520px] flex-wrap flex-row gap-x-4 gap-y-6 overflow-y-auto pr-10">
-          {minigames
-            .filter((val) =>
+          {(() => {
+            const filteredGames = minigames.filter((val) =>
               mode === "single"
                 ? val.gameType === "singleplayer"
                 : val.gameType === "multiplayer",
-            )
-            .map((val, idx) => (
+            );
+
+            if (filteredGames.length === 0) {
+              return (
+                <div className="w-full mt-20 flex flex-col items-center justify-center gap-4 text-gray-400">
+                  <FontAwesomeIcon icon={faBoxOpen} className="text-6xl" />
+                  <label className="text-xl font-medium">
+                    Không có trò chơi nào
+                  </label>
+                </div>
+              );
+            }
+
+            return filteredGames.map((val, idx) => (
               // Game Card
               <div
                 key={idx}
@@ -228,7 +253,8 @@ export default function Games() {
                   />
                 </div>
               </div>
-            ))}
+            ));
+          })()}
         </div>
       </div>
     </div>

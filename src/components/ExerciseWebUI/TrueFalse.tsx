@@ -17,10 +17,10 @@ export default function TrueFalse({
   answer,
   onChange,
 }: TrueFalseProps) {
-  const selectedOption = answer || null;
+  const selectedAnswer = answer?.selectedAnswer ?? null;
 
-  const handleSelect = (option: string) => {
-    onChange(option);
+  const handleSelect = (option: boolean) => {
+    onChange({ selectedAnswer: option });
   };
 
   return (
@@ -28,22 +28,22 @@ export default function TrueFalse({
       <div
         className={clsx(
           "h-fit w-fit py-4 px-14 rounded-4xl border-2 text-balance font-bold cursor-pointer transition-all duration-200 text-xl",
-          selectedOption === "true"
+          selectedAnswer === true
             ? "bg-[#D8FFFA] border-[#23BEAA] text-[#23BEAA] scale-105"
             : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#23BEAA]",
         )}
-        onClick={() => handleSelect("true")}
+        onClick={() => handleSelect(true)}
       >
         Đúng
       </div>
       <div
         className={clsx(
           "h-fit w-fit py-4 px-14 rounded-4xl border-2 text-balance font-bold cursor-pointer transition-all duration-200 text-xl",
-          selectedOption === "false"
+          selectedAnswer === false
             ? "bg-[#D8FFFA] border-[#FF5964] text-[#FF5964] scale-105"
             : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#FF5964]",
         )}
-        onClick={() => handleSelect("false")}
+        onClick={() => handleSelect(false)}
       >
         Sai
       </div>

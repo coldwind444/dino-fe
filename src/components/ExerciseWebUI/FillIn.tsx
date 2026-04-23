@@ -20,8 +20,12 @@ export default function FillIn({ exercise, answer, onChange }: FillInProps) {
   const [responses, setResponses] = useState<string[]>([]);
 
   useEffect(() => {
-    if (answer?.responses) {
-      setResponses(answer.responses);
+    if (answer) {
+      const newResponses = [];
+      for (let i = 0; i < questions.length; i++) {
+        newResponses.push(answer[`answer${i + 1}`] || "");
+      }
+      setResponses(newResponses);
     } else {
       setResponses(new Array(questions.length).fill(""));
     }
@@ -32,7 +36,14 @@ export default function FillIn({ exercise, answer, onChange }: FillInProps) {
     const newResponses = [...responses];
     newResponses[idx] = value;
     setResponses(newResponses);
-    onChange(newResponses);
+    
+    // Convert to target object
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const outObj: any = {};
+    newResponses.forEach((res, i) => {
+      outObj[`answer${i + 1}`] = res;
+    });
+    onChange(outObj);
   };
 
   const renderQuestion = (question: string, idx: number) => {

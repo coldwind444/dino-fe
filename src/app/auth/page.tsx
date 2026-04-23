@@ -27,6 +27,7 @@ import Loader from "@/components/Loader/Loader";
 import { useRouter } from "next/navigation";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
+import { APIError } from "@/apis/config";
 
 const roboto = Roboto();
 const fredoka = Fredoka();
@@ -50,7 +51,8 @@ const AUTHSTEPS = {
 
 export default function Auth() {
   const router = useRouter();
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim() ?? "";
+  const hasGoogleClientId = clientId.length > 0;
 
   // UI states
   const [tabIndex, setTabIndex] = useState(TABS.LOG_IN);
@@ -116,9 +118,10 @@ export default function Auth() {
       } else if (res.user.role === "admin") {
         toast.error("Quản trị viên không có quyền truy cập vào trang này");
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       resetLogin();
       setLoginLoading(false);
@@ -143,9 +146,10 @@ export default function Auth() {
       });
       toast.success("Đăng ký thành công !");
       resetRegister();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       setRegLoading(false);
     }
@@ -182,9 +186,10 @@ export default function Auth() {
         familyId: "",
       });
       router.push("/parent/dashboard");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       resetLogin();
     }
@@ -399,21 +404,26 @@ export default function Auth() {
                           Hoặc
                         </span>
                       </div>
-                      <GoogleOAuthProvider clientId={clientId!}>
-                        <GoogleLogin
-                          size="large"
-                          shape="pill"
-                          theme="filled_blue"
-                          width={330}
-                          type="standard"
-                          onSuccess={handleSuccess}
-                          onError={handleError}
-                          useOneTap
-                        />
-                        <div className="text-gray-400 text-base">
-                          (Chỉ dành cho phụ huynh)
+                      {hasGoogleClientId ? (
+                        <GoogleOAuthProvider clientId={clientId}>
+                          <GoogleLogin
+                            size="large"
+                            shape="pill"
+                            theme="filled_blue"
+                            width={330}
+                            type="standard"
+                            onSuccess={handleSuccess}
+                            onError={handleError}
+                          />
+                          <div className="text-gray-400 text-base">
+                            (Chỉ dành cho phụ huynh)
+                          </div>
+                        </GoogleOAuthProvider>
+                      ) : (
+                        <div className="w-[330px] rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm text-amber-700">
+                          Đăng nhập Google hiện chưa được cấu hình.
                         </div>
-                      </GoogleOAuthProvider>
+                      )}
                     </React.Fragment>
                   </div>
                 </div>

@@ -38,6 +38,7 @@ import {
   cleanedAnswerArray,
 } from "@/helpers/utils";
 import { updateMissionProgress } from "@/apis/mission";
+import { APIError } from "@/apis/config";
 
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 
@@ -92,9 +93,8 @@ export default function ArenaExam({ params }: ArenaExamProps) {
             currParticipation = participations[0];
             setParticipation(currParticipation);
           }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
-          if (error?.status !== 404) {
+        } catch (error) {
+          if (error instanceof APIError && error.status !== 404) {
             throw error;
           }
         }
@@ -184,7 +184,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
   }, [arena]);
 
   const triggerAutoSubmit = async () => {
-    toast.loading("Đang tự động nộp bài...", { id: "autosubmit" });
+    toast.loading("Đang tự động nộp bài...", { id: "arena-submit" });
     await confirmSubmit(true);
   };
 
@@ -259,7 +259,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         amount: 1,
       });
 
-      toast.success("Nộp bài thành công!", { id: "autosubmit" });
+      toast.success("Nộp bài thành công!", { id: "arena-submit" });
       router.push("/student/arena");
     } catch (err) {
       console.error("Submit failed:", err);

@@ -3,7 +3,12 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { faCrown, faPlay, faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCrown,
+  faPlay,
+  faSearch,
+  faBoxOpen,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -12,29 +17,37 @@ import pvp from "../../../../../public/assets/games/pvp.png";
 import { getMinigames } from "@/apis/minigame";
 import { MiniGameResponse } from "@/types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { APIError } from "@/apis/config";
 
 export default function Games() {
   // Data state
   const [mode, setMode] = useState<"single" | "pvp">("single");
   const [minigames, setMinigames] = useState<MiniGameResponse[]>([]);
+  const [search, setSearch] = useState("");
 
   // Loading
   const [loading, setLoading] = useState(false);
 
   // Fetch data
   useEffect(() => {
+    let ignore = false;
     const fetchMinigames = async () => {
       try {
         setLoading(true);
         const minigames = await getMinigames({ isActive: true });
-        setMinigames(minigames);
-      } catch (error: any) {
-        console.error(error?.message);
+        if (!ignore) setMinigames(minigames);
+      } catch (error) {
+        if (error instanceof APIError) {
+          console.error(error.message);
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchMinigames();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (loading) return <ScreenLoader />;
@@ -86,6 +99,7 @@ export default function Games() {
           <input
             className="h-full flex-1 outline-none border-none text-white text-[18px]"
             type="text"
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Tìm kiếm"
           />
         </div>
@@ -174,13 +188,29 @@ export default function Games() {
         </div>
         {/** Game list */}
         <div className="flex flex-1 max-h-[520px] flex-wrap flex-row gap-x-4 gap-y-6 overflow-y-auto pr-10">
-          {minigames
-            .filter((val) =>
-              mode === "single"
-                ? val.gameType === "singleplayer"
-                : val.gameType === "multiplayer",
-            )
-            .map((val, idx) => (
+          {(() => {
+            const filteredGames = minigames
+              .filter((val) =>
+                mode === "single"
+                  ? val.gameType === "singleplayer"
+                  : val.gameType === "multiplayer",
+              )
+              .filter((val) =>
+                val.title.toLowerCase().startsWith(search.toLowerCase()),
+              );
+
+            if (filteredGames.length === 0) {
+              return (
+                <div className="w-full mt-20 flex flex-col items-center justify-center gap-4 text-gray-400">
+                  <FontAwesomeIcon icon={faBoxOpen} className="text-6xl" />
+                  <label className="text-xl font-medium">
+                    Không có trò chơi nào
+                  </label>
+                </div>
+              );
+            }
+
+            return filteredGames.map((val, idx) => (
               // Game Card
               <div
                 key={idx}
@@ -228,7 +258,8 @@ export default function Games() {
                   />
                 </div>
               </div>
-            ))}
+            ));
+          })()}
         </div>
       </div>
     </div>

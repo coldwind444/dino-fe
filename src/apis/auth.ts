@@ -1,5 +1,6 @@
 import { CompleteProfileRequest, GoogleLoginRequest, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "@/types";
-import { publicApi, api, setAccessToken, clearAccessToken, handleError } from "./config";
+import { publicApi, api, setAccessToken, clearAccessToken, handleError, APIError } from "./config";
+import { AxiosError } from "axios";
 
 export const register = async (req: RegisterRequest): Promise<RegisterResponse> => {
     try {
@@ -64,6 +65,7 @@ export const resetPassword = async (req: { identifier: string, otp: string, newP
 
 export const logout = async () => {
     const res = await api.post('/auth/logout');
+    localStorage.clear();
     clearAccessToken();
     return res.data;
 };

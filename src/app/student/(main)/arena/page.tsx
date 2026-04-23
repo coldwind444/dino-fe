@@ -31,6 +31,7 @@ import {
   RankResponse,
   UserProfileResponse,
   LeaderboardResponse,
+  MyPositionInRankResponse,
 } from "@/types";
 import {
   getUserProfile,
@@ -38,9 +39,11 @@ import {
   getParticipations,
   getRankById,
   getArena,
-  getLeaderboard,
+  getArenaLeaderboard,
+  getMyRank,
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { formatNumberAbbreviation } from "@/helpers/utils";
 
 const roboto = Roboto();
 const baloo = Baloo_2();
@@ -62,6 +65,7 @@ export default function Arena() {
   const [previousArena, setPreviousArena] = useState<ArenaResponse | null>(
     null,
   );
+  const [myRank, setMyRank] = useState<MyPositionInRankResponse | null>(null);
 
   // UI states
   const [isLoading, setIsLoading] = useState(false);
@@ -79,28 +83,28 @@ export default function Arena() {
     return `${d}d ${h}h ${m}m`;
   };
 
-  const findUserRank = () => {
-    if (!leaderboard?.leaderboard || !userProfile) return 0;
-    const res = leaderboard.leaderboard.findIndex(
-      (record) => record.user._id === userProfile._id,
-    );
-    return res + 1;
-  };
-
   useEffect(() => {
+    let ignore = false;
+
+    // Fetch initial data
     const fetchData = async () => {
       try {
         setIsLoading(true);
         const userProfile = await getUserProfile();
-        setUserProfile(userProfile);
+        const myRank = await getMyRank();
+        if (!ignore) {
+          setUserProfile(userProfile);
+          setMyRank(myRank);
+        }
 
+        // Fetch participation data
         const fetchParticipationData = async (currentArena: ArenaResponse) => {
           try {
             const userParticipation = await getParticipations({
               userId: userProfile._id,
               arenaId: currentArena._id,
             });
-            if (userParticipation.length === 1) {
+            if (!ignore && userParticipation.length === 1) {
               if (userParticipation[0].status === "submitted") {
                 setArenaDone(true);
               }
@@ -110,26 +114,29 @@ export default function Arena() {
           }
         };
 
+        // Fetch previous arena and leaderboard
         const fetchPreviousArenaAndLeaderboard = async (
           currentArena: ArenaResponse,
         ) => {
           try {
-            const arenas = await getArena({ gradeId: userProfile.gradeId });
-            const endArenas = arenas
-              .filter(
-                (arena) =>
-                  arena.isActive === false &&
-                  arena.endTime <= currentArena.startTime,
-              )
-              .sort((a, b) => b.startTime.localeCompare(a.startTime));
-            const previousArena = endArenas.sort((a, b) =>
-              b.startTime.localeCompare(a.startTime),
-            )[0];
+            // Get all arenas for the user's grade that is not ongoing
+            const arenas = await getArena({
+              gradeId: userProfile.gradeId,
+              isActive: false,
+            });
 
-            if (previousArena) {
+            // Filter the past arenas and sort by start time in descending order
+            const endArenas = arenas
+              .filter((arena) => arena.endTime <= currentArena.startTime)
+              .sort((a, b) => b.startTime.localeCompare(a.startTime));
+
+            // Get the most recent past arena
+            const previousArena = endArenas[0];
+
+            if (!ignore && previousArena) {
               setPreviousArena(previousArena);
               try {
-                const leaderboard = await getLeaderboard({
+                const leaderboard = await getArenaLeaderboard({
                   arenaId: previousArena._id,
                   limit: 20,
                 });
@@ -143,10 +150,11 @@ export default function Arena() {
           }
         };
 
+        // Fetch arena data
         const fetchArenaData = async () => {
           try {
             const currentArena = await getCurrentArena(userProfile.gradeId);
-            setCurrentArena(currentArena);
+            if (!ignore) setCurrentArena(currentArena);
 
             await Promise.allSettled([
               fetchParticipationData(currentArena),
@@ -157,10 +165,11 @@ export default function Arena() {
           }
         };
 
+        // Fetch rank data
         const fetchRankData = async () => {
           try {
             const rank = await getRankById(userProfile.rankId);
-            setUserRank(rank);
+            if (!ignore) setUserRank(rank);
           } catch (error) {
             console.error(error);
           }
@@ -173,7 +182,12 @@ export default function Arena() {
         setIsLoading(false);
       }
     };
+
     fetchData();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -849,9 +863,11 @@ export default function Arena() {
                 >
                   <label
                     className={clsx(roboto.className)}
-                  >{`${userProfile?.battlePoints}`}</label>
+                  >{`${formatNumberAbbreviation(userProfile?.battlePoints || 0)}`}</label>
                   <label className={clsx(roboto.className)}>
-                    {findUserRank()}
+                    {myRank?.arena.global.rank
+                      ? formatNumberAbbreviation(myRank.arena.global.rank)
+                      : "Chưa xếp hạng"}
                   </label>
                 </div>
               </div>
@@ -875,7 +891,7 @@ export default function Arena() {
             ) : (
               <>
                 <h1 className="font-bold text-lg text-[rgba(0,0,0,0.8)] flex-shrink-0">
-                  {`Bảng xếp hạng ${previousArena?.title}`}
+                  {`Bảng xếp hạng ${previousArena?.title} (tuần trước)`}
                 </h1>
                 <div className="flex flex-col gap-[10px] flex-shrink-0">
                   {leaderboard?.leaderboard

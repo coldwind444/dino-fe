@@ -23,8 +23,6 @@ import {
   getPublishedAssessmentByGradeId,
   getRecentTopics,
   getRecommendedTopicByGradeId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getTopicById,
   getUserProfile,
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
@@ -79,7 +77,9 @@ export default function StudentHome() {
 
   // Effects
   useEffect(() => {
+    let ignore = false;
     const fetchTopics = async () => {
+      if (!gradeLevel) return;
       try {
         setIsLoading(true);
         const [recentTopicsRes, compTopicsRes, gradeRes] = await Promise.all([
@@ -88,16 +88,18 @@ export default function StudentHome() {
           getGrades({ level: gradeLevel }),
         ]);
 
+        if (ignore) return;
+
         // Fetch recent studied topics
-        if (recentTopicsRes && recentTopicsRes.length > 0) {
+        if (recentTopicsRes && recentTopicsRes.length > 0 && gradeRes && gradeRes.length > 0) {
           const filteredTopics = recentTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
-          setRecentTopic(filteredTopics[0]);
+          setRecentTopic(filteredTopics[0] || null);
         }
 
         // Fetch completed topics
-        if (compTopicsRes && compTopicsRes.length > 0) {
+        if (compTopicsRes && compTopicsRes.length > 0 && gradeRes && gradeRes.length > 0) {
           const filteredTopics = compTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
@@ -110,9 +112,13 @@ export default function StudentHome() {
       }
     };
     fetchTopics();
+    return () => {
+      ignore = true;
+    };
   }, [gradeLevel]);
 
   useEffect(() => {
+    let ignore = false;
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -123,10 +129,15 @@ export default function StudentHome() {
 
         // Grade data
         if (userRes.gradeId) {
-          const grade = await getGradeById(userRes.gradeId);
-          if (grade && gradeLevel === "") setGradeLevel(grade.level.toString());
-          const recommend = await getRecommendedTopicByGradeId(userRes.gradeId);
-          setRecommendedTopic(recommend);
+          const [grade, recommend] = await Promise.all([
+            getGradeById(userRes.gradeId),
+            getRecommendedTopicByGradeId(userRes.gradeId),
+          ]);
+          if (!ignore) {
+            setRecommendedTopic(recommend);
+            if (grade && (gradeLevel.length === 0 || !gradeLevel))
+              setGradeLevel(grade.level.toString());
+          }
         }
 
         // Entrance test data
@@ -140,7 +151,7 @@ export default function StudentHome() {
           );
           if (
             result &&
-            (result.status === "completed" || result.status === "in_progress")
+            (result.status === "submitted" || result.status === "graded")
           ) {
             setShowAssessmentFloatButton(false);
           } else {
@@ -171,6 +182,10 @@ export default function StudentHome() {
 
     fetchData();
     updateLogin();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (isLoading || !username) {

@@ -14,10 +14,9 @@ import PopupModal, { MODAL_TYPE_KEY } from "@/components/PopupModal/PopupModal";
 import {
   getExercises,
   upsertAnswers,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   submitAssessment,
   getPublishedAssessmentByGradeId,
-  createAssessmentResult,
+  startAssessment,
 } from "@/apis";
 import { getUserProfile } from "@/apis/user";
 import {
@@ -25,19 +24,16 @@ import {
   AnswerResponse,
   AssessmentResponse,
   UserProfileResponse,
-  CreateAssessmentResultRequest,
 } from "@/types/dto.types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
-import MultipleChoice from "@/components/ExerciseWebUI/MultipleChoice";
-import TrueFalse from "@/components/ExerciseWebUI/TrueFalse";
-import FillIn from "@/components/ExerciseWebUI/FillIn";
-import Matching from "@/components/ExerciseWebUI/Matching";
-import Interactive from "@/components/ExerciseWebUI/Interactive";
+import ExerciseWebUI from "@/components/ExerciseWebUI";
 import toast from "react-hot-toast";
 import {
   checkAnswerForBasicExerciseType,
   cleanedAnswerArray,
 } from "@/helpers/utils";
+import { Toaster } from "react-hot-toast";
+import { APIError } from "@/apis/config";
 
 const righteous = Righteous({ weight: "400", subsets: ["latin"] });
 
@@ -49,6 +45,7 @@ export default function EntranceTest() {
   const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(
     null,
   );
+  const [arId, setArId] = useState<string>("");
   const [exercises, setExercises] = useState<ExerciseResponse[]>([]);
   const [answers, setAnswers] = useState<Map<string, AnswerResponse>>(
     new Map(),
@@ -64,11 +61,14 @@ export default function EntranceTest() {
 
   //Effects
   useEffect(() => {
+    let ignore = false;
+
     const initData = async () => {
       try {
         setLoading(true);
 
         const currentProfile = await getUserProfile();
+        if (ignore) return;
         setUserProfile(currentProfile);
 
         // 1. Fetch Assessment details
@@ -80,7 +80,6 @@ export default function EntranceTest() {
           router.back();
           return;
         }
-        setAssessment(assessmentData);
 
         // 2. Fetch Exercises
         const exercisesData = await getExercises({
@@ -89,6 +88,11 @@ export default function EntranceTest() {
           limit: 100,
         });
         setExercises(exercisesData.sort((a, b) => a.order - b.order));
+
+        // Start assessment
+        const assessmentResult = await startAssessment(assessmentData._id);
+        setArId(assessmentResult._id);
+        setAssessment(assessmentData);
 
         // 3. Initialize empty answers
         const answerMap = new Map<string, AnswerResponse>();
@@ -106,17 +110,20 @@ export default function EntranceTest() {
           });
         });
         setAnswers(answerMap);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error(error?.message);
-        toast.error(error?.message || "Lỗi khi tải bài kiểm tra");
+      } catch (error) {
+        if (error instanceof APIError) {
+          toast.error(error.message);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     initData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   // Clock Count up logic
@@ -160,32 +167,28 @@ export default function EntranceTest() {
   const confirmSubmit = async () => {
     if (!assessment || !userProfile) return;
     try {
-      toast.loading("Đang nộp bài...", { id: "autosubmit" });
-
-      // Create assessment result
-      const req: CreateAssessmentResultRequest = {
-        assessmentId: assessment._id,
-        userId: userProfile._id,
-        duration: timeTaken,
-        status: "completed",
-        totalScore: 0,
-      };
-      const assessmentResult = await createAssessmentResult(req);
+      toast.loading("Đang nộp bài...", { toasterId: "test-submit" });
 
       // Update answers and submit
       updateAnswerCorrectness();
       const currentAnswers = Array.from(answers.values()).map((ans) => ({
         ...ans,
-        assessmentResultId: assessmentResult._id,
+        assessmentResultId: arId,
       }));
-
       await upsertAnswers(cleanedAnswerArray(currentAnswers));
 
-      toast.success("Nộp bài thành công!", { id: "autosubmit" });
+      // Call submit assessment
+      await submitAssessment(arId, timeTaken);
+
+      toast.dismiss("test-submit");
+      toast.success("Nộp bài thành công!", { toasterId: "test-submit" });
       router.back();
     } catch (err) {
-      console.error("Submit failed:", err);
-      toast.error("Nộp bài thất bại!", { id: "autosubmit" });
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
+    } finally {
+      toast.dismissAll("test-submit");
     }
   };
 
@@ -241,6 +244,7 @@ export default function EntranceTest() {
 
   return (
     <div className="h-screen w-screen flex relative">
+      <Toaster toasterId="test-submit" />
       <div className="h-screen w-screen bg-[#F3F4F6] flex flex-row gap-[15px] pt-10 pb-5 pr-10">
         {/** Side area */}
         <div className="w-1/5 h-full flex flex-col gap-1 relative">
@@ -277,7 +281,7 @@ export default function EntranceTest() {
                 {assessment?.title || "Bài kiểm tra đầu vào"}
               </label>
               {/** Questions */}
-              <div className="w-full min-h-[300px] max-h-[300px] overflow-y-auto flex flex-row gap-x-2 gap-y-1 flex-wrap justify-center py-3">
+              <div className="w-full min-h-[280px] max-h-[280px] overflow-y-auto flex flex-row gap-x-2 gap-y-1 flex-wrap justify-center py-3">
                 {exercises
                   .filter(
                     (_, idx) =>
@@ -417,44 +421,8 @@ export default function EntranceTest() {
             </div>
             {/** Exercise UI */}
             <div className="h-fit py-10 px-10 overflow-y-auto flex flex-col items-center">
-              {currentExercise?.type === "choice" && (
-                <MultipleChoice
-                  exercise={currentExercise}
-                  answer={answers.get(currentExercise._id)?.answerData}
-                  onChange={(data) =>
-                    handleAnswerChange(currentExercise._id, data)
-                  }
-                />
-              )}
-              {currentExercise?.type === "true_false" && (
-                <TrueFalse
-                  exercise={currentExercise}
-                  answer={answers.get(currentExercise._id)?.answerData}
-                  onChange={(data) =>
-                    handleAnswerChange(currentExercise._id, data)
-                  }
-                />
-              )}
-              {currentExercise?.type === "fill_in" && (
-                <FillIn
-                  exercise={currentExercise}
-                  answer={answers.get(currentExercise._id)?.answerData}
-                  onChange={(data) =>
-                    handleAnswerChange(currentExercise._id, data)
-                  }
-                />
-              )}
-              {currentExercise?.type === "matching" && (
-                <Matching
-                  exercise={currentExercise}
-                  answer={answers.get(currentExercise._id)?.answerData}
-                  onChange={(data) =>
-                    handleAnswerChange(currentExercise._id, data)
-                  }
-                />
-              )}
-              {currentExercise?.type === "interactive" && (
-                <Interactive
+              {currentExercise && (
+                <ExerciseWebUI
                   exercise={currentExercise}
                   answer={answers.get(currentExercise._id)?.answerData}
                   onChange={(data) =>

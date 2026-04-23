@@ -4,14 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef, Dispatch } from "react";
 import { SetStateAction } from "react";
 import { useSpring, animated } from "@react-spring/web";
-import congrats from "@/assets/exercises/praise.png";
-import sadFace from "@/assets/exercises/sad.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDoubleRight,
   faClose,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
+import congrats from "../../../../../../../../public/assets/exercises/praise.png";
+import sadFace from "../../../../../../../../public/assets/exercises/sad.png";
 import { Roboto, Righteous } from "next/font/google";
 import CocosGameWrapper, {
   type CocosGameWrapperRef,
@@ -25,6 +25,7 @@ import ExplainModal, {
 } from "@/components/ExplainModal/ExplainModal";
 import { useLessonStore } from "@/stores/lessonStore";
 import { cleanedAnswerArray } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
@@ -158,9 +159,10 @@ export default function ExerciseView({
       }));
       await upsertAnswers(cleanedAnswerArray(modifiedAnswers));
       onFinish(exercises.length);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error(error?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.error(error.message);
+      }
       setIsSubmitting(false);
     }
   };

@@ -17,7 +17,7 @@ export const ERROR = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handleError = (error: any) => {
-  const err = error as AxiosError<{ error?: string }>;
+  const err = error as AxiosError<{ error?: string, message?: string }>;
   const status = err.response?.status;
 
   const errorType = Object.values(ERROR).find((e) => e.status === status);
@@ -27,7 +27,7 @@ export const handleError = (error: any) => {
   }
 
   throw {
-    message: err.response?.data?.error || err.message || ERROR.INTERNAL_SERVER_ERROR.message,
+    message: err.response?.data?.error || err.response?.data?.message || err.message || ERROR.INTERNAL_SERVER_ERROR.message,
     status: status || 500,
   };
 };

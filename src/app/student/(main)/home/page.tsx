@@ -23,8 +23,6 @@ import {
   getPublishedAssessmentByGradeId,
   getRecentTopics,
   getRecommendedTopicByGradeId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getTopicById,
   getUserProfile,
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
@@ -32,6 +30,7 @@ import TopicRecommendPopup from "@/components/TopicRecommendPopup/TopicRecommend
 import { TopicResponse } from "@/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { updateMissionProgress } from "@/apis/mission";
 
 const fredoka = Fredoka();
 const trophy = "/assets/home/trophy.png";
@@ -46,7 +45,8 @@ export default function StudentHome() {
   const [isTopicRecommendModalOpened, setIsTopicRecommendModalOpened] =
     useState(false);
   const [isEntranceTestModalOpened, setIsEntranceTestModalOpened] =
-    useState(true);
+    useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Data States
   const [username, setUsername] = useState("");
@@ -59,7 +59,10 @@ export default function StudentHome() {
   // Functions
   const closeEntranceTestModal = () => {
     setIsEntranceTestModalOpened(false);
-    setIsTopicRecommendModalOpened(true);
+    if (isInitialLoad) {
+      setIsTopicRecommendModalOpened(true);
+      setIsInitialLoad(false);
+    }
   };
 
   const closeTopicRecommendModal = () => {
@@ -67,12 +70,14 @@ export default function StudentHome() {
   };
 
   const startEntranceTest = () => {
-    closeEntranceTestModal();
+    setIsEntranceTestModalOpened(false);
+    setIsInitialLoad(false);
     router.push(`/student/entrance-test`);
   };
 
   // Effects
   useEffect(() => {
+    let ignore = false;
     const fetchTopics = async () => {
       try {
         setIsLoading(true);
@@ -87,7 +92,7 @@ export default function StudentHome() {
           const filteredTopics = recentTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
-          setRecentTopic(filteredTopics[0]);
+          if (!ignore) setRecentTopic(filteredTopics[0]);
         }
 
         // Fetch completed topics
@@ -95,7 +100,7 @@ export default function StudentHome() {
           const filteredTopics = compTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
-          setCompletedTopics(filteredTopics);
+          if (!ignore) setCompletedTopics(filteredTopics);
         }
       } catch (error) {
         console.error(error);
@@ -104,9 +109,13 @@ export default function StudentHome() {
       }
     };
     fetchTopics();
+    return () => {
+      ignore = true;
+    };
   }, [gradeLevel]);
 
   useEffect(() => {
+    let ignore = false;
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -120,7 +129,7 @@ export default function StudentHome() {
           const grade = await getGradeById(userRes.gradeId);
           if (grade && gradeLevel === "") setGradeLevel(grade.level.toString());
           const recommend = await getRecommendedTopicByGradeId(userRes.gradeId);
-          setRecommendedTopic(recommend);
+          if (!ignore) setRecommendedTopic(recommend);
         }
 
         // Entrance test data
@@ -132,13 +141,18 @@ export default function StudentHome() {
             entranceTest._id,
             userRes._id,
           );
-          if (result.status !== "in_progress") {
+          if (
+            result &&
+            (result.status === "submitted" || result.status === "graded")
+          ) {
             setShowAssessmentFloatButton(false);
           } else {
             setShowAssessmentFloatButton(true);
+            setIsEntranceTestModalOpened(true);
           }
         } else {
-          setShowAssessmentFloatButton(true);
+          setShowAssessmentFloatButton(false);
+          setIsTopicRecommendModalOpened(true);
         }
       } catch (err) {
         console.log("Failed to fetch data.", err);
@@ -147,8 +161,23 @@ export default function StudentHome() {
       }
     };
 
+    const updateLogin = async () => {
+      try {
+        await updateMissionProgress({
+          unitType: "daily_login",
+          amount: 1,
+        });
+      } catch (error) {
+        console.log("Failed to update login.", error);
+      }
+    };
+
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    updateLogin();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (isLoading || !username) {

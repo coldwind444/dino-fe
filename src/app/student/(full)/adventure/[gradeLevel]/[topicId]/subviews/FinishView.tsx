@@ -17,6 +17,7 @@ import { useEffect, useState, useRef } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { createProgress, updateUserQuartz } from "@/apis";
 import Loader from "@/components/Loader/Loader";
+import { updateMissionProgress } from "@/apis/mission";
 
 const trophy = "/assets/exercises/trophy.png";
 const flags = "/assets/exercises/flags.png";
@@ -68,7 +69,7 @@ export default function FinishView({
       setAnimatedScore(score);
       setAnimatedReward(reward);
     }, 300);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -78,14 +79,23 @@ export default function FinishView({
       hasUpdatedRef.current = true;
       setLoading(true);
       try {
-        await updateUserQuartz(reward);
-        // await createProgress({
-        //   topicId: topic._id,
-        //   lectureId: currentLecture._id,
-        //   completion: 100,
-        //   averageScore: score,
-        //   status: "completed",
-        // });
+        await Promise.all([
+          updateUserQuartz(reward),
+          createProgress({
+            topicId: topic._id,
+            lectureId: currentLecture._id,
+            completion: 100,
+            status: "completed",
+          }),
+          updateMissionProgress({
+            unitType: "lecture",
+            amount: 1,
+          }),
+          updateMissionProgress({
+            unitType: "exercise",
+            amount: maxScore,
+          }),
+        ]);
       } catch (error) {
         console.log("Failed to update quartz.", error);
         hasUpdatedRef.current = false;

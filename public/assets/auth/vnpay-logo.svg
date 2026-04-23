@@ -1,0 +1,9 @@
+<svg width="230" height="70" viewBox="0 0 230 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="230" height="70" rx="12" fill="white"/>
+  <path d="M22 20C26 15 32 15 36 20L47 31L39 39L28 28C26 26 23 26 21 28L14 35L8 29L22 20Z" fill="#0A67B2"/>
+  <path d="M47 31L56 22C60 18 66 18 70 22L79 31L71 39L62 30C60 28 57 28 55 30L47 39L39 31L47 31Z" fill="#EF4444"/>
+  <path d="M28 42L36 34L47 45C49 47 52 47 54 45L61 38L69 46L56 57C52 61 46 61 42 57L28 42Z" fill="#EF4444"/>
+  <text x="88" y="34" fill="#E1262C" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">VN</text>
+  <text x="126" y="34" fill="#1155A3" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">PAY</text>
+  <text x="89" y="51" fill="#1155A3" font-family="Arial, Helvetica, sans-serif" font-size="8" font-weight="600">Doi tac thanh toan dien tu</text>
+</svg>

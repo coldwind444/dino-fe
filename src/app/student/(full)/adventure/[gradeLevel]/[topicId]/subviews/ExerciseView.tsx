@@ -4,18 +4,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef, Dispatch } from "react";
 import { SetStateAction } from "react";
 import { useSpring, animated } from "@react-spring/web";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDoubleRight,
   faClose,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
+import congrats from "../../../../../../../../public/assets/exercises/praise.png";
+import sadFace from "../../../../../../../../public/assets/exercises/sad.png";
 import { Roboto, Righteous } from "next/font/google";
-
-const congrats = "/assets/exercises/praise.png";
-const sadFace = "/assets/exercises/sad.png";
-
 import CocosGameWrapper, {
   type CocosGameWrapperRef,
 } from "@/components/GameComponent/CocosGameWrapper";

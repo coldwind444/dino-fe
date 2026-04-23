@@ -12,7 +12,7 @@ export type Theme = "prairie" | "forest" | "beach" | "desert" | "ruby";
 
 interface ExplainModalProps {
   theme: Theme;
-  explanation: string;
+  explanation: string | undefined;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -25,8 +25,7 @@ export const themeBackgrounds: Record<Theme, string> = {
   ruby: "/assets/exercises/ruby.png",
 };
 
-const dummyText =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+const dummyText = "Không có giải thích cho bài tập này.";
 
 export default function ExplainModal({
   theme,
@@ -124,7 +123,7 @@ export default function ExplainModal({
                   theme === "ruby" ? "text-white" : "text-amber-800",
                 )}
               >
-                {explanation.length === 0 ? dummyText + dummyText : explanation}
+                {explanation || dummyText}
               </p>
             </div>
           </motion.div>

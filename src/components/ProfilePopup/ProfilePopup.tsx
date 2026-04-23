@@ -6,11 +6,13 @@ import {
   faUser,
   faKey,
   faLink,
+  faStar,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import ProfileTab from "./ProfileTab";
 import PasswordTab from "./PasswordTab";
 import AccountLinkTab from "./AccountLinkTab";
+import UpgradeTab from "./UpgradeTab";
 import { UserProfileResponse } from "@/types";
 import { getUserProfile } from "@/apis";
 import Image from "next/image";
@@ -76,9 +78,9 @@ function ContentSkeleton() {
 }
 
 export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
-  const [activeTab, setActiveTab] = useState<"profile" | "password" | "link">(
-    "profile",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "profile" | "password" | "link" | "upgrade"
+  >("profile");
 
   // Data states
   const [profile, setProfile] = useState<UserProfileResponse>();
@@ -99,17 +101,37 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
   // Effects
   useEffect(() => {
     if (!isOpen) return;
+    let ignore = false;
+
+    const fetchUserProfile = async () => {
+      try {
+        setLoading(true);
+        const res = await getUserProfile();
+        if (!ignore) setProfile(res);
+      } catch (err) {
+        console.log("Failed to fetch user profile", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUserProfile();
+
+    return () => {
+      ignore = true;
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
+  const isParent = profile?.role === "parent";
+
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[30]">
-      <div className="bg-white rounded-3xl max-w-6xl w-full mx-4 relative overflow-hidden shadow-2xl">
-        <div className="flex">
+      <div className="bg-white rounded-3xl max-w-6xl w-full h-[680px] max-h-[90vh] mx-4 relative overflow-hidden shadow-2xl">
+        <div className="flex h-full">
           {/* Left Sidebar */}
-          <div className="w-96 p-6 space-y-4">
+          <div className="w-96 h-full p-6 space-y-4 flex flex-col">
             {loading ? (
               <ProfileSkeleton />
             ) : (
@@ -195,10 +217,24 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                     <FontAwesomeIcon icon={faLink} className="w-5 h-5" />
                     Liên kết phụ huynh và học sinh
                   </button>
+
+                  {isParent && (
+                    <button
+                      onClick={() => setActiveTab("upgrade")}
+                      className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${
+                        activeTab === "upgrade"
+                          ? "bg-[#1ABC9C] text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                      } transition-colors`}
+                    >
+                      <FontAwesomeIcon icon={faStar} className="w-5 h-5" />
+                      Nâng cấp
+                    </button>
+                  )}
                 </div>
 
                 {/* Close Button */}
-                <div className="mt-auto pt-40">
+                <div className="mt-auto pt-8">
                   <button
                     onClick={onClose}
                     className="text-red-600 p-4 flex items-center gap-3 text-left hover:bg-red-50 transition-colors rounded-xl cursor-pointer w-full"
@@ -212,7 +248,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1 p-8 border-l border-gray-200">
+          <div className="flex-1 h-full overflow-y-auto p-8 border-l border-gray-200">
             {loading || !profile ? (
               <ContentSkeleton />
             ) : (
@@ -223,8 +259,11 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                     onUpdateSuccess={fetchUserProfile}
                   />
                 )}
-                {activeTab === "password" && <PasswordTab />}
-                {activeTab === "link" && <AccountLinkTab />}
+                {activeTab === "password" && <PasswordTab profile={profile} />}
+                {activeTab === "link" && <AccountLinkTab profile={profile} />}
+                {activeTab === "upgrade" && isParent && (
+                  <UpgradeTab profile={profile} />
+                )}
               </>
             )}
           </div>

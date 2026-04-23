@@ -2,38 +2,22 @@
 
 import Image from "next/image";
 import { Roboto } from "next/font/google";
+import top1 from "../../../../../public/assets/leaderboard/top1.png";
+import top2 from "../../../../../public/assets/leaderboard/top2.svg";
+import top3 from "../../../../../public/assets/leaderboard/top3.svg";
+import dino from "../../../../../public/assets/leaderboard/dino_trophy.png";
+import { QuartzLeaderboardItemResponse, UserProfileResponse } from "@/types";
+import { useEffect, useState } from "react";
+import { getQuartzLeaderboard, getUserProfile } from "@/apis/user";
+import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { formatNumberAbbreviation, isValidUrl } from "@/helpers/utils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserAlt } from "@fortawesome/free-solid-svg-icons";
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
   subsets: ["latin"],
 });
-
-const avatar = "https://res.cloudinary.com/dirr7ovdh/image/upload/v1761540871/avt_04_aqs4zn.svg";
-const poly4 = "/assets/leaderboard/Polygon 4.svg";
-const poly5 = "/assets/leaderboard/Polygon 5.svg";
-const crown = "/assets/leaderboard/image 68.png";
-const dino = "/assets/leaderboard/dino_trophy.png";
-const usersData = [
-  { name: "Lê Phúc Nguyên", points: 12000 },
-  { name: "Hoàng Minh Nhật", points: 11000 },
-  { name: "Nguyễn Thị Thu Trang", points: 10000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-  { name: "Nguyễn Thị Thu Trang", points: 9000 },
-];
-
-const sortedUsers = usersData
-  .sort((a, b) => b.points - a.points)
-  .map((user, index) => ({
-    ...user,
-    rank: index + 1,
-    pointsFormatted: `${user.points.toLocaleString()} PTS`,
-  }));
-
-const topThree = sortedUsers.slice(0, 3);
-const leaderboardList = sortedUsers;
 
 const gradientColors = [
   "from-yellow-400 to-orange-400",
@@ -51,6 +35,42 @@ const getRandomColor = (index: number) => {
 };
 
 export default function LeaderboardContent() {
+  // Data
+  const [leaderboardData, setLeaderboardData] = useState<
+    QuartzLeaderboardItemResponse[]
+  >([]);
+  const [myProfile, setMyProfile] = useState<UserProfileResponse | null>(null);
+
+  // Loading
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let ignore = false;
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const leaderboardData = await getQuartzLeaderboard(11);
+        const myProfile = await getUserProfile();
+        if (!ignore) {
+          setMyProfile(myProfile);
+          setLeaderboardData(leaderboardData);
+        }
+      } catch (error) {
+        console.error("Error fetching leaderboard data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  if (isLoading || !myProfile || !leaderboardData) return <ScreenLoader />;
+
   return (
     <div
       className={`${roboto.className} flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100`}
@@ -91,7 +111,7 @@ export default function LeaderboardContent() {
                 tích lũy được
               </p>
               <p className="text-center text-5xl font-bold text-orange-500 mb-2">
-                1280
+                {myProfile?.quartz}
               </p>
               <p className="text-center text-xs text-orange-400 uppercase tracking-wide font-medium">
                 Tinh thể thạch anh
@@ -102,8 +122,8 @@ export default function LeaderboardContent() {
           {/* Rank Card */}
           <div className="flex justify-center">
             <div className="rounded-t-3xl p-8 text-white text-center">
-              <p className="text-sm font-medium mb-4">Xếp hạng hiện tại</p>
-              <p className="text-6xl font-bold">10901</p>
+              <p className="text-sm font-medium mb-4">Vị trí của bạn</p>
+              <p className="text-6xl font-bold">--</p>
             </div>
           </div>
         </div>
@@ -127,15 +147,25 @@ export default function LeaderboardContent() {
             {/* 2nd Place */}
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-3 border-4 border-blue-400 relative">
+                {isValidUrl(leaderboardData[1]?.avatarUrl) &&
+                !leaderboardData[1]?.avatarUrl.endsWith(".svg") ? (
+                  <Image
+                    src={leaderboardData[1].avatarUrl}
+                    alt="avatar"
+                    width={96}
+                    height={96}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
+                    <FontAwesomeIcon
+                      icon={faUserAlt}
+                      className="w-10 h-10 text-gray-400"
+                    />
+                  </div>
+                )}
                 <Image
-                  src={avatar}
-                  alt="avatar"
-                  width={96}
-                  height={96}
-                  className="w-full h-full rounded-full object-cover"
-                />
-                <Image
-                  src={poly4}
+                  src={top2}
                   alt="polygon 4"
                   width={48}
                   height={48}
@@ -143,7 +173,7 @@ export default function LeaderboardContent() {
                 />
               </div>
               <p className="text-white font-semibold mb-2">
-                {topThree[1]?.name}
+                {leaderboardData[1]?.name}
               </p>
               <div className="bg-blue-500 rounded-full px-4 py-1 text-white text-sm font-bold">
                 2
@@ -153,22 +183,34 @@ export default function LeaderboardContent() {
             {/* 1st Place */}
             <div className="flex flex-col items-center -mt-8">
               <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-xl mb-3 border-4 border-yellow-400 relative">
+                {isValidUrl(leaderboardData[0]?.avatarUrl) &&
+                !leaderboardData[0]?.avatarUrl.endsWith(".svg") ? (
+                  <Image
+                    src={leaderboardData[0].avatarUrl}
+                    alt="avatar"
+                    width={112}
+                    height={112}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
+                    <FontAwesomeIcon
+                      icon={faUserAlt}
+                      className="w-10 h-10 text-gray-400"
+                    />
+                  </div>
+                )}
                 <Image
-                  src={avatar}
-                  alt="avatar"
-                  width={112}
-                  height={112}
-                  className="w-full h-full rounded-full object-cover"
-                />
-                <Image
-                  src={crown}
+                  src={top1}
                   alt="crown"
                   width={64}
                   height={64}
                   className="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 />
               </div>
-              <p className="text-white font-bold mb-2">{topThree[0]?.name}</p>
+              <p className="text-white font-bold mb-2">
+                {leaderboardData[0]?.name}
+              </p>
               <div className="bg-yellow-500 rounded-full px-5 py-1 text-white text-base font-bold">
                 1
               </div>
@@ -177,15 +219,25 @@ export default function LeaderboardContent() {
             {/* 3rd Place */}
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-3 border-4 border-pink-400 relative">
+                {isValidUrl(leaderboardData[2]?.avatarUrl) &&
+                !leaderboardData[2]?.avatarUrl.endsWith(".svg") ? (
+                  <Image
+                    src={leaderboardData[2].avatarUrl}
+                    alt="avatar"
+                    width={96}
+                    height={96}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
+                    <FontAwesomeIcon
+                      icon={faUserAlt}
+                      className="w-10 h-10 text-gray-400"
+                    />
+                  </div>
+                )}
                 <Image
-                  src={avatar}
-                  alt="avatar"
-                  width={96}
-                  height={96}
-                  className="w-full h-full rounded-full object-cover"
-                />
-                <Image
-                  src={poly5}
+                  src={top3}
                   alt="polygon 5"
                   width={48}
                   height={48}
@@ -193,7 +245,7 @@ export default function LeaderboardContent() {
                 />
               </div>
               <p className="text-white font-semibold mb-2">
-                {topThree[2]?.name}
+                {leaderboardData[2]?.name}
               </p>
               <div className="bg-pink-500 rounded-full px-4 py-1 text-white text-sm font-bold">
                 3
@@ -204,33 +256,47 @@ export default function LeaderboardContent() {
 
         {/* Leaderboard List */}
         <div className="grid grid-cols-2 gap-4">
-          {leaderboardList.map((user, index) => (
-            <div
-              key={user.rank}
-              className={`bg-gradient-to-r ${getRandomColor(
-                index
-              )} rounded-2xl px-6 py-4 flex items-center justify-between shadow-md`}
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-gray-700">
-                  {user.rank}
+          {leaderboardData
+            .filter((_, index) => index >= 3)
+            .map((user, index) => (
+              <div
+                key={user._id}
+                className={`bg-gradient-to-r ${getRandomColor(
+                  index,
+                )} rounded-2xl px-6 py-4 flex items-center justify-between shadow-md`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-gray-700">
+                    {index + 4}
+                  </div>
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                    {isValidUrl(user?.avatarUrl) &&
+                    !user?.avatarUrl.endsWith(".svg") ? (
+                      <Image
+                        src={user.avatarUrl}
+                        alt="avatar"
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
+                        <FontAwesomeIcon
+                          icon={faUserAlt}
+                          className="w-10 h-10 text-gray-400"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-white font-semibold">
+                    {user.name.length === 0 ? "Không có tên" : user.name}
+                  </p>
                 </div>
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden">
-                  <Image
-                    src={avatar}
-                    alt="avatar"
-                    width={48}
-                    height={48}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <p className="text-white font-semibold">{user.name}</p>
+                <p className="text-white font-bold text-lg">
+                  {formatNumberAbbreviation(user.quartz)}
+                </p>
               </div>
-              <p className="text-white font-bold text-lg">
-                {user.pointsFormatted}
-              </p>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>

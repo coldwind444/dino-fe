@@ -16,13 +16,13 @@ export default function MultipleChoice({
   answer,
   onChange,
 }: MultipleChoiceProps) {
-  const selectedOption = answer || null;
+  const selectedIndex = answer?.selectedIndex ?? null;
 
-  const handleSelect = (option: string) => {
-    if (selectedOption === option) {
+  const handleSelect = (idx: number) => {
+    if (selectedIndex === idx) {
       onChange(null);
     } else {
-      onChange(option);
+      onChange({ selectedIndex: idx });
     }
   };
 
@@ -33,11 +33,11 @@ export default function MultipleChoice({
           key={idx}
           className={clsx(
             "h-fit w-fit py-4 px-10 rounded-4xl border-2 text-balance font-medium cursor-pointer transition-all duration-200",
-            selectedOption === option
+            selectedIndex === idx
               ? "bg-[#D8FFFA] border-[#23BEAA] text-[#23BEAA] scale-105"
               : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#23BEAA]",
           )}
-          onClick={() => handleSelect(option)}
+          onClick={() => handleSelect(idx)}
         >
           <p className="max-w-[300px] text-justify text-wrap">{option}</p>
         </div>

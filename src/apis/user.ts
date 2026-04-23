@@ -1,12 +1,20 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { AxiosError } from "axios";
 import { api, handleError } from "./config";
-import { AvatarUploadResponse, UpdateUserProfileRequest, UserProfileResponse } from "@/types";
+import { AvatarUploadResponse, QuartzLeaderboardItemResponse, StudentStatsResponse, UpdateUserProfileRequest, UserProfileResponse } from "@/types";
 
 export const getUserProfile = async (): Promise<UserProfileResponse> => {
     try {
         const res = await api.get('/users/me');
         return res.data as UserProfileResponse;
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}
+
+export const getUsers = async (req?: Record<string, any>): Promise<UserProfileResponse[]> => {
+    try {
+        const res = await api.get('/users', { params: req });
+        return res.data.users as UserProfileResponse[];
     } catch (error) {
         handleError(error);
         throw error; // Never reached
@@ -44,5 +52,45 @@ export const trackAccessDuration = async (seconds: number) => {
         await api.post('/statistics/heartbeat', { seconds: seconds })
     } catch (error) {
         handleError(error);
+    }
+}
+
+export const getQuartzLeaderboard = async (limit: number = 8): Promise<QuartzLeaderboardItemResponse[]> => {
+    try {
+        const res = await api.get('/users/leaderboard/quartz', { params: { limit: limit } });
+        return res.data.leaderboard as QuartzLeaderboardItemResponse[];
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}
+
+export const getStudentStats = async (userId: string, startDate: string, endDate: string) => {
+    try {
+        const res = await api.get(`/statistics/student?userId=${userId}&startDate=${startDate}&endDate=${endDate}`);
+        return res.data as StudentStatsResponse;
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}
+
+export const getFamilyCode = async (familyId: string): Promise<string> => {
+    try {
+        const res = await api.get(`/families/${familyId}/invite-code`);
+        return res.data.inviteCode as string;
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
+    }
+}
+
+export const getMyFamilyMembers = async () => {
+    try {
+        const res = await api.get('/users/me/family');
+        return res.data.members as UserProfileResponse[];
+    } catch (error) {
+        handleError(error);
+        throw error; // Never reached
     }
 }

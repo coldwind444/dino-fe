@@ -303,16 +303,30 @@ export default function LessonsPage() {
                   <div className="w-40 h-40 flex items-center justify-center">
                     {isLoading ? (
                       <div className="w-32 h-32 bg-gray-200 rounded-3xl animate-pulse" />
+                    ) : featuredTopic ? (
+                      <Image
+                        src={featuredTopic.description}
+                        alt="featured topic"
+                        width={120}
+                        height={120}
+                        className="object-contain"
+                      />
                     ) : (
-                      featuredTopic && (
-                        <Image
-                          src={featuredTopic.description}
-                          alt="featured topic"
-                          width={120}
-                          height={120}
-                          className="object-contain"
-                        />
-                      )
+                      <div className="w-32 h-32 bg-[#E6FCF9] rounded-3xl flex items-center justify-center text-[#1ABC9C] opacity-60">
+                        <svg
+                          className="w-16 h-16"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                          />
+                        </svg>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -321,7 +335,9 @@ export default function LessonsPage() {
                     {`Chủ đề ${isLoading ? "---" : featuredTopic?.level || "---"}`}
                   </div>
                   <h2 className="text-xl font-bold text-[#1ABC9C] mb-6 px-4">
-                    {isLoading ? "---" : featuredTopic?.title || "---"}
+                    {isLoading
+                      ? "---"
+                      : featuredTopic?.title || "Chưa có dữ liệu"}
                   </h2>
                   <button
                     className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -342,76 +358,105 @@ export default function LessonsPage() {
 
           {/* Topic Grid */}
           <div className="grid grid-cols-4 gap-6 mb-6">
-            {isLoading || topicsLoading
-              ? // Skeleton loaders
-                Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="relative h-[320px]">
-                    <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-gray-200" />
-                    <div className="relative h-full bg-white rounded-3xl border-[3px] border-gray-200 flex flex-col items-center justify-center p-6 animate-pulse">
-                      <div className="w-32 h-32 bg-gray-200 rounded-2xl mb-6" />
-                      <div className="w-24 h-8 bg-gray-200 rounded-full mb-4" />
-                      <div className="w-32 h-4 bg-gray-200 rounded-full" />
-                    </div>
+            {isLoading || topicsLoading ? (
+              // Skeleton loaders
+              Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="relative h-[320px]">
+                  <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-gray-200" />
+                  <div className="relative h-full bg-white rounded-3xl border-[3px] border-gray-200 flex flex-col items-center justify-center p-6 animate-pulse">
+                    <div className="w-32 h-32 bg-gray-200 rounded-2xl mb-6" />
+                    <div className="w-24 h-8 bg-gray-200 rounded-full mb-4" />
+                    <div className="w-32 h-4 bg-gray-200 rounded-full" />
                   </div>
-                ))
-              : topicsWithPremiumRequiredFlag?.map((topic, index) => {
-                  if (topic.premiumRequired) {
-                    return (
-                      <div
-                        key={index}
-                        className="relative h-[320px] transition-all hover:scale-105 cursor-pointer"
-                      >
-                        <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#FF9600]" />
-                        <div
-                          className="relative h-full bg-white rounded-3xl border-[3px] border-[#FF9600] 
-                                    flex flex-col gap-6 items-center justify-center p-6"
-                        >
-                          <div className="mb-6">
-                            <FontAwesomeIcon
-                              icon={faCrown}
-                              className="text-[#FF9600] text-6xl"
-                            />
-                          </div>
-                          <p className="text-base font-bold text-[#FF9600] text-center mb-6 px-2 cursor-pointer">
-                            {`Bạn cần nâng cấp tài khoản để mở khóa chủ đề ${topic.level}.`}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  }
-
+                </div>
+              ))
+            ) : topicsWithPremiumRequiredFlag?.length === 0 ? (
+              <div className="col-span-4 relative h-[320px]">
+                <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-gray-200" />
+                <div className="relative h-full bg-gray-50 rounded-3xl border-[3px] border-gray-200 flex flex-col items-center justify-center p-6">
+                  <div className="text-gray-400 mb-6 opacity-60">
+                    <svg
+                      className="w-20 h-20"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-400 mb-2">
+                    Chưa có chủ đề nào
+                  </h3>
+                  <p className="text-gray-400/80 text-center font-medium">
+                    Nội dung đang được cập nhật
+                  </p>
+                </div>
+              </div>
+            ) : (
+              topicsWithPremiumRequiredFlag?.map((topic, index) => {
+                if (topic.premiumRequired) {
                   return (
                     <div
                       key={index}
-                      className="relative h-[320px] transition-all hover:scale-105"
-                      onClick={() =>
-                        !isRedirecting && navigateToLecture(topic._id)
-                      }
+                      className="relative h-[320px] transition-all hover:scale-105 cursor-pointer"
                     >
-                      <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#23BEAA]" />
+                      <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#FF9600]" />
                       <div
-                        className="relative h-full bg-[#F3FFFD] rounded-3xl border-[3px] border-[#23BEAA] 
-                                  flex flex-col items-center justify-center cursor-pointer p-6"
+                        className="relative h-full bg-white rounded-3xl border-[3px] border-[#FF9600] 
+                                    flex flex-col gap-6 items-center justify-center p-6"
                       >
-                        <div className="w-32 h-32 mb-6 flex items-center justify-center">
-                          <Image
-                            src={topic.description}
-                            alt="topic image"
-                            width={120}
-                            height={120}
-                            className="object-contain"
+                        <div className="mb-6">
+                          <FontAwesomeIcon
+                            icon={faCrown}
+                            className="text-[#FF9600] text-6xl"
                           />
                         </div>
-                        <div className="inline-block bg-[#1ABC9C] text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
-                          Chủ đề {topic.level}
-                        </div>
-                        <h3 className="text-base font-bold text-[#1ABC9C] text-center leading-snug px-2">
-                          {topic.title}
-                        </h3>
+                        <p className="text-base font-bold text-[#FF9600] text-center mb-6 px-2 cursor-pointer">
+                          {`Bạn cần nâng cấp tài khoản để mở khóa chủ đề ${topic.level}.`}
+                        </p>
                       </div>
                     </div>
                   );
-                })}
+                }
+
+                return (
+                  <div
+                    key={index}
+                    className="relative h-[320px] transition-all hover:scale-105"
+                    onClick={() =>
+                      !isRedirecting && navigateToLecture(topic._id)
+                    }
+                  >
+                    <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#23BEAA]" />
+                    <div
+                      className="relative h-full bg-[#F3FFFD] rounded-3xl border-[3px] border-[#23BEAA] 
+                                  flex flex-col items-center justify-center cursor-pointer p-6"
+                    >
+                      <div className="w-32 h-32 mb-6 flex items-center justify-center">
+                        <Image
+                          src={topic.description}
+                          alt="topic image"
+                          width={120}
+                          height={120}
+                          className="object-contain"
+                        />
+                      </div>
+                      <div className="inline-block bg-[#1ABC9C] text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+                        Chủ đề {topic.level}
+                      </div>
+                      <h3 className="text-base font-bold text-[#1ABC9C] text-center leading-snug px-2">
+                        {topic.title}
+                      </h3>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
 
           {/* Navigation */}

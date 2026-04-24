@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Dino Math",
   description: "Powered by Nextjs",
   other: {
-    preconnect: "https://cdn.lottielab.com",
+    preconnect: ["https://cdn.lottielab.com", "https://res.cloudinary.com"],
   },
 };
 

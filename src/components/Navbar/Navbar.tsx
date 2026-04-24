@@ -72,8 +72,6 @@ export default function Navbar({
   const [urls, setUrls] = useState<
     { name: string; icon: IconDefinition; pathname: string }[]
   >([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
   const [username, setUsername] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
@@ -110,7 +108,7 @@ export default function Navbar({
       }
     };
     fetchUserProfile();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

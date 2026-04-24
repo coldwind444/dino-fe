@@ -313,6 +313,7 @@ export default function Auth() {
                     {/** Mascot animation */}
                     <div className="relative aspect-square h-[180px] border-2 border-[#1DA492] rounded-full overflow-hidden">
                       <iframe
+                        title="dino-animation"
                         src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html"
                         height={380}
                         className="-translate-x-[12px] translate-y-[20px] z-0"

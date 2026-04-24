@@ -5,6 +5,9 @@ import { AuthProvider } from "@/providers/AuthProvider";
 export const metadata: Metadata = {
   title: "Dino Math",
   description: "Powered by Nextjs",
+  other: {
+    preconnect: "https://cdn.lottielab.com",
+  },
 };
 
 export default function RootLayout({

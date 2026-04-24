@@ -29,7 +29,7 @@ const TOPICS_PER_PAGE = 4;
 
 export default function LessonsPage() {
   const router = useRouter();
-  const { gradeLevel } = useLessonStore();
+  const { gradeLevel, setGradeLevel } = useLessonStore();
 
   // Data state
   const [grade, setGrade] = useState<GradeResponse | null>(null);
@@ -42,6 +42,9 @@ export default function LessonsPage() {
   const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
   const [noCompletedTopics, setNoCompletedTopics] = useState(0);
   const [firstTopic, setFirstTopic] = useState<TopicResponse | null>(null);
+
+  // UI state
+  const [isSelectGradeOpen, setIsSelectGradeOpen] = useState(false);
 
   // Loading state
   const [profileLoading, setProfileLoading] = useState(false);
@@ -165,7 +168,15 @@ export default function LessonsPage() {
     <div className="w-full min-h-screen">
       <div className="flex gap-6 p-6">
         <aside className="w-64 flex-shrink-0">
-          <div className="bg-gradient-to-br from-[#1ABC9C] to-[#16A085] rounded-2xl p-6 text-white mb-6 relative overflow-hidden flex items-center justify-center">
+          <button
+            onClick={() => setIsSelectGradeOpen(true)}
+            className="h-16 w-full bg-amber-500 text-white font-medium text-base cursor-pointer 
+          rounded-3xl mb-4 relative hover:scale-105 hover:shadow-xl transition-all duration-150 hover:brightness-110"
+          >
+            <div className="absolute top-2 right-2 w-6 h-6 bg-white/30 rounded-full"></div>
+            CHỌN LỚP
+          </button>
+          <div className="bg-gradient-to-br from-[#1ABC9C] to-[#16A085] rounded-2xl p-6 text-white mb-4 relative overflow-hidden flex items-center justify-center">
             <div className="absolute -top-8 -left-8 w-24 h-24 bg-[#5ED9C6] bg-opacity-10 rounded-full"></div>
             <div className="absolute -top-4 -left-4 w-16 h-16 bg-[#A8EDEA] bg-opacity-15 rounded-full"></div>
             <div className="absolute -top-2 -left-2 w-10 h-10 bg-[#E6FCF9] bg-opacity-20 rounded-full"></div>
@@ -196,7 +207,9 @@ export default function LessonsPage() {
                   Tiến trình hiện tại
                 </div>
                 <div className="text-4xl font-bold text-[#23BEAA] mb-3">
-                  {isLoading ? "---%" : `${Math.floor(gradeProgress?.percent || 0)}%`}
+                  {isLoading
+                    ? "---%"
+                    : `${Math.floor(gradeProgress?.percent || 0)}%`}
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -226,7 +239,9 @@ export default function LessonsPage() {
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <div className="text-4xl font-bold text-[#FF9600] leading-none mb-1">
-                    {isLoading ? "---" : formatNumberAbbreviation(myProfile?.quartz || 0)}
+                    {isLoading
+                      ? "---"
+                      : formatNumberAbbreviation(myProfile?.quartz || 0)}
                   </div>
                   <div className="text-xs text-[#FF9600] font-bold uppercase tracking-wide">
                     Tinh thể thạch anh
@@ -236,10 +251,11 @@ export default function LessonsPage() {
             </div>
 
             {/* Stats Card */}
-            <div className=" rounded-3xl p-5 h-[150px]">
-              <div className="space-y-2 text-sm text-white font-bold">
-                <div>
-                  Số chủ đề đã học: <strong>{isLoading ? "---" : noCompletedTopics}</strong>
+            <div className=" rounded-3xl h-[50px] flex justify-center">
+              <div className="text-base text-white font-bold">
+                <div className="h-full w-full flex items-center justify-center gap-2 -mt-2">
+                  Số chủ đề đã học:{" "}
+                  <strong>{isLoading ? "---" : noCompletedTopics}</strong>
                 </div>
               </div>
             </div>
@@ -412,6 +428,66 @@ export default function LessonsPage() {
             </button>
           </div>
         </main>
+      </div>
+
+      {/* Modal */}
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center ${
+          isSelectGradeOpen ? "block" : "hidden"
+        }`}
+      >
+        <div
+          className="fixed inset-0 bg-black/70"
+          onClick={() => setIsSelectGradeOpen(false)}
+        ></div>
+        <div className="z-50 flex flex-col gap-6 p-6">
+          <div className="flex justify-center gap-6">
+            {[1, 2, 3].map((g) => (
+              <button
+                key={g}
+                onClick={() => {
+                  setGradeLevel(g.toString());
+                  setIsSelectGradeOpen(false);
+                }}
+                className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 active:scale-90 shadow-xl overflow-hidden cursor-pointer
+                  ${
+                    gradeLevel === g.toString()
+                      ? "bg-orange-400 text-white shadow-orange-200/30"
+                      : "bg-[#b3f9ef] text-[#1ABC9C] hover:bg-[#92f3e8]"
+                  }
+                `}
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent pointer-events-none"></div>
+                <div className="absolute top-4 left-6 w-8 h-8 bg-white/70 rounded-full blur-[2px] pointer-events-none"></div>
+                <div className="absolute top-5 left-16 w-3 h-3 bg-white/70 rounded-full blur-[1px] pointer-events-none"></div>
+                Lớp {g}
+              </button>
+            ))}
+          </div>
+          <div className="flex justify-center gap-6">
+            {[4, 5].map((g) => (
+              <button
+                key={g}
+                onClick={() => {
+                  setGradeLevel(g.toString());
+                  setIsSelectGradeOpen(false);
+                }}
+                className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 active:scale-90 shadow-xl overflow-hidden cursor-pointer
+                  ${
+                    gradeLevel === g.toString()
+                      ? "bg-orange-400 text-white shadow-orange-200/30"
+                      : "bg-[#b3f9ef] text-[#1ABC9C] hover:bg-[#92f3e8]"
+                  }
+                `}
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent pointer-events-none"></div>
+                <div className="absolute top-4 left-6 w-8 h-8 bg-white/70 rounded-full blur-[2px] pointer-events-none"></div>
+                <div className="absolute top-5 left-16 w-3 h-3 bg-white/70 rounded-full blur-[1px] pointer-events-none"></div>
+                Lớp {g}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

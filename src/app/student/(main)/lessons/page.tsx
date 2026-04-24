@@ -45,10 +45,12 @@ export default function LessonsPage() {
 
   // UI state
   const [isSelectGradeOpen, setIsSelectGradeOpen] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Loading state
   const [profileLoading, setProfileLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
+  const [topicsLoading, setTopicsLoading] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,6 +69,7 @@ export default function LessonsPage() {
   };
 
   const navigateToLecture = (topicId: string) => {
+    setIsRedirecting(true);
     router.push(`/student/adventure/${gradeLevel}/${topicId}`);
   };
 
@@ -153,7 +156,37 @@ export default function LessonsPage() {
     return () => {
       ignore = true;
     };
-  }, [grade, currentPage, ongoingTerm]);
+  }, [grade, ongoingTerm]);
+
+  useEffect(() => {
+    let ignore = false;
+    const fetchTopicsOnly = async () => {
+      try {
+        setTopicsLoading(true);
+        if (grade?._id) {
+          const topics = await getTopics({
+            gradeId: grade._id,
+            termId: ongoingTerm?._id,
+            limit: TOPICS_PER_PAGE,
+            page: currentPage,
+          });
+          if (ignore) return;
+          if (topics.pagination.page === 1) {
+            setFirstTopic(topics.items[0]);
+          }
+          setTopicsPgRes(topics);
+        }
+      } catch (error) {
+        console.error("Error fetching topics:", error);
+      } finally {
+        setTopicsLoading(false);
+      }
+    };
+    fetchTopicsOnly();
+    return () => {
+      ignore = true;
+    };
+  }, [currentPage]);
 
   const isLoading = profileLoading || dataLoading;
   const isPremiumUser = myProfile?.premium?.isPremium || false;
@@ -295,7 +328,7 @@ export default function LessonsPage() {
                   </h2>
                   <button
                     className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isLoading || !featuredTopic}
+                    disabled={isLoading || !featuredTopic || isRedirecting}
                     onClick={() =>
                       featuredTopic && navigateToLecture(featuredTopic._id)
                     }
@@ -312,7 +345,7 @@ export default function LessonsPage() {
 
           {/* Topic Grid */}
           <div className="grid grid-cols-4 gap-6 mb-6">
-            {isLoading
+            {isLoading || topicsLoading
               ? // Skeleton loaders
                 Array.from({ length: 4 }).map((_, index) => (
                   <div key={index} className="relative h-[320px]">
@@ -355,7 +388,9 @@ export default function LessonsPage() {
                     <div
                       key={index}
                       className="relative h-[320px] transition-all hover:scale-105"
-                      onClick={() => navigateToLecture(topic._id)}
+                      onClick={() =>
+                        !isRedirecting && navigateToLecture(topic._id)
+                      }
                     >
                       <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#23BEAA]" />
                       <div

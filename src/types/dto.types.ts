@@ -500,6 +500,14 @@ export interface MyPositionInRankResponse {
       value: number;
       rank: number | null;
     };
-    recentMatches: any[];
+    recentMatches: {
+      arenaId: string;
+      title: string;
+      score: number;
+      timeTaken: number;
+      rank: number;
+      totalParticipants: number;
+      finishedAt: string;
+    }[];
   };
 }

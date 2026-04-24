@@ -156,7 +156,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     };
 
     initData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [params]);
 
   // Clock Countdown logic

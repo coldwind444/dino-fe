@@ -3,10 +3,8 @@
 import { faPaperPlane, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { Baloo_2 } from "next/font/google";
+import { baloo } from "@/app/fonts";
 import { motion, AnimatePresence } from "framer-motion";
-
-const baloo = Baloo_2();
 
 export const MODAL_TYPES = {
   SEND: {

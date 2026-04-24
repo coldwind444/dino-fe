@@ -16,8 +16,7 @@ import {
   faChartColumn,
   faHistory,
 } from "@fortawesome/free-solid-svg-icons";
-import { Roboto } from "next/font/google";
-import { Righteous } from "next/font/google";
+import { roboto, righteous } from "@/app/fonts";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
@@ -33,8 +32,7 @@ import { getUserProfile } from "@/apis/user";
 import { logout } from "@/apis/auth";
 import { useLessonStore } from "@/stores/lessonStore";
 
-const roboto = Roboto({ subsets: ["latin"] });
-const righteous = Righteous({ weight: "400" });
+
 
 const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   [

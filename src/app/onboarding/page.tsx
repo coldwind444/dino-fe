@@ -4,7 +4,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Roboto } from "next/font/google";
+import { roboto } from "@/app/fonts";
 
 import { completeProfile, getGrades, uploadAvatar, logout } from "@/apis";
 import { Toaster, toast } from "react-hot-toast";
@@ -15,7 +15,6 @@ import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 
-const roboto = Roboto();
 
 const MESSAGES = {
   ASK_NAME:

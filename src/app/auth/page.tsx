@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { Roboto, Fredoka } from "next/font/google";
+import { roboto, fredoka } from "@/app/fonts";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Toaster, toast } from "react-hot-toast";
@@ -29,8 +29,6 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
 import { APIError } from "@/apis/config";
 
-const roboto = Roboto();
-const fredoka = Fredoka();
 
 const ROLES = {
   STUDENT: "student",
@@ -317,6 +315,8 @@ export default function Auth() {
                         src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html"
                         height={380}
                         className="-translate-x-[12px] translate-y-[20px] z-0"
+                        loading="lazy"
+                        style={{ border: "none" }}
                       />
                       <Image
                         src={leftHand}

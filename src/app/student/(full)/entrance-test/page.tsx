@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { Righteous } from "next/font/google";
+import { righteous } from "@/app/fonts";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PopupModal, { MODAL_TYPE_KEY } from "@/components/PopupModal/PopupModal";
@@ -35,7 +35,7 @@ import {
 import { Toaster } from "react-hot-toast";
 import { APIError } from "@/apis/config";
 
-const righteous = Righteous({ weight: "400", subsets: ["latin"] });
+
 
 export default function EntranceTest() {
   const router = useRouter();

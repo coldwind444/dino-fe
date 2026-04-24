@@ -4,7 +4,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Roboto } from "next/font/google";
+import { roboto } from "@/app/fonts";
 import { useRouter } from "next/navigation";
 import Confetti from "react-confetti";
 
@@ -22,7 +22,7 @@ import {
   WorldResponse,
 } from "@/types";
 
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
+
 
 const MODE = {
   LECTURE: 0,

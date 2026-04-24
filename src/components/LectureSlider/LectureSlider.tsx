@@ -150,6 +150,8 @@ export default function LectureSlider({
                 className="absolute -translate-y-[90px] -translate-x-[20px]"
                 src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html"
                 height={200}
+                loading="lazy"
+                style={{ border: "none" }}
               />
               <div
                 className="h-[50px] sm:h-[55px] md:h-[60px] w-[160px] sm:w-[180px] md:w-[200px] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] bg-[#1DA492] cursor-pointer hover:brightness-110 transition-all duration-200"

@@ -10,12 +10,7 @@ import r3 from "../../../../../public/assets/arena/rule_3.png";
 import r4 from "../../../../../public/assets/arena/rule_4.png";
 import r5 from "../../../../../public/assets/arena/rule_5.png";
 
-import {
-  Baloo_2,
-  Patrick_Hand,
-  Patrick_Hand_SC,
-  Roboto,
-} from "next/font/google";
+import { roboto, baloo, patrick, patrick_sc } from "@/app/fonts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeftLong,
@@ -45,10 +40,7 @@ import {
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { formatNumberAbbreviation } from "@/helpers/utils";
 
-const roboto = Roboto();
-const baloo = Baloo_2();
-const patrick = Patrick_Hand({ weight: "400" });
-const patrick_sc = Patrick_Hand_SC({ weight: "400" });
+
 
 export default function Arena() {
   const router = useRouter();

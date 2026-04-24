@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import clsx from "clsx";
-import { Fredoka } from "next/font/google";
+import { fredoka } from "@/app/fonts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBriefcaseClock,
@@ -32,7 +32,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { updateMissionProgress } from "@/apis/mission";
 
-const fredoka = Fredoka();
 const trophy = "/assets/home/trophy.png";
 
 export default function StudentHome() {

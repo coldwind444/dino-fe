@@ -26,14 +26,10 @@ import mongo from "../../public/assets/landing/mongo.svg";
 import node from "../../public/assets/landing/nodejs.svg";
 import cocos from "../../public/assets/landing/cocos.svg";
 
-import { Baloo_2, Bricolage_Grotesque, Roboto } from "next/font/google";
+import { BG, baloo, roboto } from "@/app/fonts";
 import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faStar, faQuoteLeft } from "@fortawesome/free-solid-svg-icons";
-
-const BG = Bricolage_Grotesque();
-const baloo = Baloo_2();
-const roboto = Roboto();
 
 export default function Home() {
   const reviews = [
@@ -78,6 +74,8 @@ export default function Home() {
               src="https://cdn.lottielab.com/l/ALwZUaUV549Cdr.html"
               width="900"
               height="508"
+              loading="lazy"
+              style={{ border: "none" }}
             ></iframe>
             <div className="bg-white h-[100px] w-[300px] -translate-y-[150px] right-0 absolute"></div>
           </div>
@@ -165,6 +163,8 @@ export default function Home() {
             height={400}
             width={400}
             className="rounded-tr-[250px] object-cover"
+            sizes="400px"
+            quality={80}
           />
           <div className="h-[400px] w-full flex flex-col">
             <div className="flex flex-row pt-10 gap-40 flex-wrap">

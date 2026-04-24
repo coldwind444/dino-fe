@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import congrats from "../../../../../../../../public/assets/exercises/praise.png";
 import sadFace from "../../../../../../../../public/assets/exercises/sad.png";
-import { Roboto, Righteous } from "next/font/google";
+import { roboto, righteous } from "@/app/fonts";
 import CocosGameWrapper, {
   type CocosGameWrapperRef,
 } from "@/components/GameComponent/CocosGameWrapper";
@@ -27,8 +27,7 @@ import { useLessonStore } from "@/stores/lessonStore";
 import { cleanedAnswerArray } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
 
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
-const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
+
 
 interface ExerciseViewProps {
   currentLecture: LectureResponse;

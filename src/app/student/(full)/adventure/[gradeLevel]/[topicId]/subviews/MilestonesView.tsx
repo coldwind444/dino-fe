@@ -9,7 +9,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { Roboto, Sriracha } from "next/font/google";
+import { roboto, sriracha } from "@/app/fonts";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
 import {
   WorldResponse,
@@ -23,8 +23,7 @@ import map from "../../../../../../../../public/assets/exercises/map.png";
 import paper from "../../../../../../../../public/assets/exercises/paper.png";
 import DOMPurify from "isomorphic-dompurify";
 
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
-const sriracha = Sriracha({ subsets: ["latin"], weight: ["400"] });
+
 
 interface MilestonesViewProps {
   world: WorldResponse;

@@ -79,6 +79,7 @@ export default function StudentHome() {
   useEffect(() => {
     let ignore = false;
     const fetchTopics = async () => {
+      if (!gradeLevel) return;
       try {
         setIsLoading(true);
         const [recentTopicsRes, compTopicsRes, gradeRes] = await Promise.all([
@@ -87,20 +88,22 @@ export default function StudentHome() {
           getGrades({ level: gradeLevel }),
         ]);
 
+        if (ignore) return;
+
         // Fetch recent studied topics
-        if (recentTopicsRes && recentTopicsRes.length > 0) {
+        if (recentTopicsRes && recentTopicsRes.length > 0 && gradeRes && gradeRes.length > 0) {
           const filteredTopics = recentTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
-          if (!ignore) setRecentTopic(filteredTopics[0]);
+          setRecentTopic(filteredTopics[0] || null);
         }
 
         // Fetch completed topics
-        if (compTopicsRes && compTopicsRes.length > 0) {
+        if (compTopicsRes && compTopicsRes.length > 0 && gradeRes && gradeRes.length > 0) {
           const filteredTopics = compTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
-          if (!ignore) setCompletedTopics(filteredTopics);
+          setCompletedTopics(filteredTopics);
         }
       } catch (error) {
         console.error(error);
@@ -126,10 +129,15 @@ export default function StudentHome() {
 
         // Grade data
         if (userRes.gradeId) {
-          const grade = await getGradeById(userRes.gradeId);
-          if (grade && gradeLevel === "") setGradeLevel(grade.level.toString());
-          const recommend = await getRecommendedTopicByGradeId(userRes.gradeId);
-          if (!ignore) setRecommendedTopic(recommend);
+          const [grade, recommend] = await Promise.all([
+            getGradeById(userRes.gradeId),
+            getRecommendedTopicByGradeId(userRes.gradeId),
+          ]);
+          if (!ignore) {
+            setRecommendedTopic(recommend);
+            if (grade && (gradeLevel.length === 0 || !gradeLevel))
+              setGradeLevel(grade.level.toString());
+          }
         }
 
         // Entrance test data

@@ -65,6 +65,7 @@ export const resetPassword = async (req: { identifier: string, otp: string, newP
 
 export const logout = async () => {
     const res = await api.post('/auth/logout');
+    localStorage.clear();
     clearAccessToken();
     return res.data;
 };

@@ -146,6 +146,7 @@ export default function LectureSlider({
           {unlockedDifficulty.includes(lectures[idx].difficulty) ? (
             <div className="overflow-hidden h-[50px] sm:h-[55px] md:h-[60px]">
               <iframe
+                title="idle-dino"
                 className="absolute -translate-y-[90px] -translate-x-[20px]"
                 src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html"
                 height={200}

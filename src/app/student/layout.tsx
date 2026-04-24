@@ -36,7 +36,11 @@ export default function StudentLayout({
         },
         body: JSON.stringify({ seconds }),
         keepalive: true,
-      }).catch(console.error);
+      }).catch((error) => {
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
+      });
     };
 
     const getCurrentSegmentMs = () => {

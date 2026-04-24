@@ -3,7 +3,8 @@ import { persist } from "zustand/middleware";
 
 export interface LectureStoreState {
     gradeLevel: string;
-    setGradeLevel: (id: string) => void
+    setGradeLevel: (id: string) => void;
+    clear: () => void;
 }
 
 export const useLessonStore = create<LectureStoreState>()(
@@ -12,6 +13,7 @@ export const useLessonStore = create<LectureStoreState>()(
         (set, get) => ({
             gradeLevel: '',
             setGradeLevel: (level: string) => set({ gradeLevel: level }),
+            clear: () => set({ gradeLevel: '' }),
         }),
         {
             name: "lesson-params",

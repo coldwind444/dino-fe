@@ -22,6 +22,7 @@ import {
   PaginationTopicResponse,
   getOngoingTerm,
   getNoCompletedTopics,
+  getMyFamilyMembers,
 } from "@/apis";
 import { formatNumberAbbreviation } from "@/helpers/utils";
 
@@ -42,6 +43,7 @@ export default function LessonsPage() {
   const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
   const [noCompletedTopics, setNoCompletedTopics] = useState(0);
   const [firstTopic, setFirstTopic] = useState<TopicResponse | null>(null);
+  const [isPremium, setIsPremium] = useState(false);
 
   // UI state
   const [isSelectGradeOpen, setIsSelectGradeOpen] = useState(false);
@@ -80,15 +82,23 @@ export default function LessonsPage() {
     const fetchInitialData = async () => {
       setProfileLoading(true);
       try {
-        const [ongoingTerm, grades, profile] = await Promise.all([
-          getOngoingTerm(),
-          getGrades({ level: gradeLevel }),
-          getUserProfile(),
-        ]);
+        const [ongoingTerm, grades, profile, familyMembers] = await Promise.all(
+          [
+            getOngoingTerm(),
+            getGrades({ level: gradeLevel }),
+            getUserProfile(),
+            getMyFamilyMembers(),
+          ],
+        );
         if (!ignore) {
           setOngoingTerm(ongoingTerm);
           setGrade(grades[0]);
           setMyProfile(profile);
+          // Check if any parent has premium membership
+          const hasPremiumParent = familyMembers.some(
+            (member) => member.role === "parent" && member.premium?.isPremium,
+          );
+          setIsPremium(hasPremiumParent);
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -113,25 +123,13 @@ export default function LessonsPage() {
     const fetchLessonData = async () => {
       setDataLoading(true);
       try {
-        const [topics, progress, recent, noCompletedTopics] = await Promise.all(
-          [
-            getTopics({
-              gradeId: grade._id,
-              termId: ongoingTerm._id,
-              limit: TOPICS_PER_PAGE,
-              page: currentPage,
-            }),
-            getGradeProgress(grade._id),
-            getRecentTopics(1),
-            getNoCompletedTopics(),
-          ],
-        );
+        const [progress, recent, noCompletedTopics] = await Promise.all([
+          getGradeProgress(grade._id),
+          getRecentTopics(1),
+          getNoCompletedTopics(),
+        ]);
 
         if (!ignore) {
-          if (topics.pagination.page === 1) {
-            setFirstTopic(topics.items[0]);
-          }
-          setTopicsPgRes(topics);
           setGradeProgress(progress);
           setNoCompletedTopics(noCompletedTopics);
 
@@ -163,10 +161,10 @@ export default function LessonsPage() {
     const fetchTopicsOnly = async () => {
       try {
         setTopicsLoading(true);
-        if (grade?._id) {
+        if (grade?._id && ongoingTerm?._id) {
           const topics = await getTopics({
             gradeId: grade._id,
-            termId: ongoingTerm?._id,
+            termId: ongoingTerm._id,
             limit: TOPICS_PER_PAGE,
             page: currentPage,
           });
@@ -186,13 +184,12 @@ export default function LessonsPage() {
     return () => {
       ignore = true;
     };
-  }, [currentPage]);
+  }, [currentPage, grade, ongoingTerm]);
 
   const isLoading = profileLoading || dataLoading;
-  const isPremiumUser = myProfile?.premium?.isPremium || false;
 
   const topicsWithPremiumRequiredFlag = topicsPgRes?.items.map((topic) => {
-    return { ...topic, premiumRequired: topic.isPremium && !isPremiumUser };
+    return { ...topic, premiumRequired: topic.isPremium && !isPremium };
   });
 
   const featuredTopic = recentTopic || firstTopic;
@@ -363,7 +360,6 @@ export default function LessonsPage() {
                       <div
                         key={index}
                         className="relative h-[320px] transition-all hover:scale-105 cursor-pointer"
-                        onClick={() => router.push("/student/upgrade")}
                       >
                         <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#FF9600]" />
                         <div
@@ -482,6 +478,7 @@ export default function LessonsPage() {
                 key={g}
                 onClick={() => {
                   setGradeLevel(g.toString());
+                  setCurrentPage(1);
                   setIsSelectGradeOpen(false);
                 }}
                 className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 active:scale-90 shadow-xl overflow-hidden cursor-pointer
@@ -505,6 +502,7 @@ export default function LessonsPage() {
                 key={g}
                 onClick={() => {
                   setGradeLevel(g.toString());
+                  setCurrentPage(1);
                   setIsSelectGradeOpen(false);
                 }}
                 className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 active:scale-90 shadow-xl overflow-hidden cursor-pointer

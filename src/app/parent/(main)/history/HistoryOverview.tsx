@@ -250,7 +250,9 @@ export default function HistoryOverview({
           allItems = mapParticipations(res.items ?? []);
         } else if (category === "assessment") {
           const res = await getAssessmentResultsList(baseParams);
-          allItems = mapAssessmentResults(res.items ?? []);
+          allItems = mapAssessmentResults(
+            res.items.filter((item) => item.status === "graded") ?? [],
+          );
         } else if (category === "exercise") {
           const res = await getLectureResults(baseParams);
           allItems = mapLectureResults(res.items ?? []);
@@ -263,7 +265,9 @@ export default function HistoryOverview({
           ]);
           allItems = [
             ...mapParticipations(res1.items ?? []),
-            ...mapAssessmentResults(res2.items ?? []),
+            ...mapAssessmentResults(
+              res2.items?.filter((item) => item.status === "graded") ?? [],
+            ),
             ...mapLectureResults(res3.items ?? []),
           ];
         }

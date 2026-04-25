@@ -2,14 +2,12 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
-import { Roboto, Chewy } from "next/font/google";
+import { roboto, chewy } from "@/app/fonts";
 
 const morning = "/assets/home/sunrise.png";
 const afternoon = "/assets/home/sunset.png";
 const night = "/assets/home/moonlight.png";
 
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
-const chewy = Chewy({ subsets: ["latin"], weight: "400" });
 
 const timeConfig = [
   {

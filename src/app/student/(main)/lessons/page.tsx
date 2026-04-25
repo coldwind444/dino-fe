@@ -22,6 +22,7 @@ import {
   PaginationTopicResponse,
   getOngoingTerm,
   getNoCompletedTopics,
+  getMyFamilyMembers,
 } from "@/apis";
 import { formatNumberAbbreviation } from "@/helpers/utils";
 
@@ -29,7 +30,7 @@ const TOPICS_PER_PAGE = 4;
 
 export default function LessonsPage() {
   const router = useRouter();
-  const { gradeLevel } = useLessonStore();
+  const { gradeLevel, setGradeLevel } = useLessonStore();
 
   // Data state
   const [grade, setGrade] = useState<GradeResponse | null>(null);
@@ -42,10 +43,16 @@ export default function LessonsPage() {
   const [recentTopic, setRecentTopic] = useState<TopicResponse | null>(null);
   const [noCompletedTopics, setNoCompletedTopics] = useState(0);
   const [firstTopic, setFirstTopic] = useState<TopicResponse | null>(null);
+  const [isPremium, setIsPremium] = useState(false);
+
+  // UI state
+  const [isSelectGradeOpen, setIsSelectGradeOpen] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Loading state
   const [profileLoading, setProfileLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
+  const [topicsLoading, setTopicsLoading] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,6 +71,7 @@ export default function LessonsPage() {
   };
 
   const navigateToLecture = (topicId: string) => {
+    setIsRedirecting(true);
     router.push(`/student/adventure/${gradeLevel}/${topicId}`);
   };
 
@@ -74,15 +82,23 @@ export default function LessonsPage() {
     const fetchInitialData = async () => {
       setProfileLoading(true);
       try {
-        const [ongoingTerm, grades, profile] = await Promise.all([
-          getOngoingTerm(),
-          getGrades({ level: gradeLevel }),
-          getUserProfile(),
-        ]);
+        const [ongoingTerm, grades, profile, familyMembers] = await Promise.all(
+          [
+            getOngoingTerm(),
+            getGrades({ level: gradeLevel }),
+            getUserProfile(),
+            getMyFamilyMembers(),
+          ],
+        );
         if (!ignore) {
           setOngoingTerm(ongoingTerm);
           setGrade(grades[0]);
           setMyProfile(profile);
+          // Check if any parent has premium membership
+          const hasPremiumParent = familyMembers.some(
+            (member) => member.role === "parent" && member.premium?.isPremium,
+          );
+          setIsPremium(hasPremiumParent);
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -107,25 +123,13 @@ export default function LessonsPage() {
     const fetchLessonData = async () => {
       setDataLoading(true);
       try {
-        const [topics, progress, recent, noCompletedTopics] = await Promise.all(
-          [
-            getTopics({
-              gradeId: grade._id,
-              termId: ongoingTerm._id,
-              limit: TOPICS_PER_PAGE,
-              page: currentPage,
-            }),
-            getGradeProgress(grade._id),
-            getRecentTopics(1),
-            getNoCompletedTopics(),
-          ],
-        );
+        const [progress, recent, noCompletedTopics] = await Promise.all([
+          getGradeProgress(grade._id),
+          getRecentTopics(1),
+          getNoCompletedTopics(),
+        ]);
 
         if (!ignore) {
-          if (topics.pagination.page === 1) {
-            setFirstTopic(topics.items[0]);
-          }
-          setTopicsPgRes(topics);
           setGradeProgress(progress);
           setNoCompletedTopics(noCompletedTopics);
 
@@ -150,13 +154,42 @@ export default function LessonsPage() {
     return () => {
       ignore = true;
     };
-  }, [grade, currentPage, ongoingTerm]);
+  }, [grade, ongoingTerm]);
+
+  useEffect(() => {
+    let ignore = false;
+    const fetchTopicsOnly = async () => {
+      try {
+        setTopicsLoading(true);
+        if (grade?._id && ongoingTerm?._id) {
+          const topics = await getTopics({
+            gradeId: grade._id,
+            termId: ongoingTerm._id,
+            limit: TOPICS_PER_PAGE,
+            page: currentPage,
+          });
+          if (ignore) return;
+          if (topics.pagination.page === 1) {
+            setFirstTopic(topics.items[0]);
+          }
+          setTopicsPgRes(topics);
+        }
+      } catch (error) {
+        console.error("Error fetching topics:", error);
+      } finally {
+        setTopicsLoading(false);
+      }
+    };
+    fetchTopicsOnly();
+    return () => {
+      ignore = true;
+    };
+  }, [currentPage, grade, ongoingTerm]);
 
   const isLoading = profileLoading || dataLoading;
-  const isPremiumUser = myProfile?.premium?.isPremium || false;
 
   const topicsWithPremiumRequiredFlag = topicsPgRes?.items.map((topic) => {
-    return { ...topic, premiumRequired: topic.isPremium && !isPremiumUser };
+    return { ...topic, premiumRequired: topic.isPremium && !isPremium };
   });
 
   const featuredTopic = recentTopic || firstTopic;
@@ -165,7 +198,15 @@ export default function LessonsPage() {
     <div className="w-full min-h-screen">
       <div className="flex gap-6 p-6">
         <aside className="w-64 flex-shrink-0">
-          <div className="bg-gradient-to-br from-[#1ABC9C] to-[#16A085] rounded-2xl p-6 text-white mb-6 relative overflow-hidden flex items-center justify-center">
+          <button
+            onClick={() => setIsSelectGradeOpen(true)}
+            className="h-16 w-full bg-amber-500 text-white font-medium text-base cursor-pointer 
+          rounded-3xl mb-4 relative hover:scale-105 hover:shadow-xl transition-all duration-150 hover:brightness-110"
+          >
+            <div className="absolute top-2 right-2 w-6 h-6 bg-white/30 rounded-full"></div>
+            CHỌN LỚP
+          </button>
+          <div className="bg-gradient-to-br from-[#1ABC9C] to-[#16A085] rounded-2xl p-6 text-white mb-4 relative overflow-hidden flex items-center justify-center">
             <div className="absolute -top-8 -left-8 w-24 h-24 bg-[#5ED9C6] bg-opacity-10 rounded-full"></div>
             <div className="absolute -top-4 -left-4 w-16 h-16 bg-[#A8EDEA] bg-opacity-15 rounded-full"></div>
             <div className="absolute -top-2 -left-2 w-10 h-10 bg-[#E6FCF9] bg-opacity-20 rounded-full"></div>
@@ -196,7 +237,9 @@ export default function LessonsPage() {
                   Tiến trình hiện tại
                 </div>
                 <div className="text-4xl font-bold text-[#23BEAA] mb-3">
-                  {isLoading ? "---%" : `${Math.floor(gradeProgress?.percent || 0)}%`}
+                  {isLoading
+                    ? "---%"
+                    : `${Math.floor(gradeProgress?.percent || 0)}%`}
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -226,7 +269,9 @@ export default function LessonsPage() {
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <div className="text-4xl font-bold text-[#FF9600] leading-none mb-1">
-                    {isLoading ? "---" : formatNumberAbbreviation(myProfile?.quartz || 0)}
+                    {isLoading
+                      ? "---"
+                      : formatNumberAbbreviation(myProfile?.quartz || 0)}
                   </div>
                   <div className="text-xs text-[#FF9600] font-bold uppercase tracking-wide">
                     Tinh thể thạch anh
@@ -236,10 +281,11 @@ export default function LessonsPage() {
             </div>
 
             {/* Stats Card */}
-            <div className=" rounded-3xl p-5 h-[150px]">
-              <div className="space-y-2 text-sm text-white font-bold">
-                <div>
-                  Số chủ đề đã học: <strong>{isLoading ? "---" : noCompletedTopics}</strong>
+            <div className=" rounded-3xl h-[50px] flex justify-center">
+              <div className="text-base text-white font-bold">
+                <div className="h-full w-full flex items-center justify-center gap-2 -mt-2">
+                  Số chủ đề đã học:{" "}
+                  <strong>{isLoading ? "---" : noCompletedTopics}</strong>
                 </div>
               </div>
             </div>
@@ -257,16 +303,30 @@ export default function LessonsPage() {
                   <div className="w-40 h-40 flex items-center justify-center">
                     {isLoading ? (
                       <div className="w-32 h-32 bg-gray-200 rounded-3xl animate-pulse" />
+                    ) : featuredTopic ? (
+                      <Image
+                        src={featuredTopic.description}
+                        alt="featured topic"
+                        width={120}
+                        height={120}
+                        className="object-contain"
+                      />
                     ) : (
-                      featuredTopic && (
-                        <Image
-                          src={featuredTopic.description}
-                          alt="featured topic"
-                          width={120}
-                          height={120}
-                          className="object-contain"
-                        />
-                      )
+                      <div className="w-32 h-32 bg-[#E6FCF9] rounded-3xl flex items-center justify-center text-[#1ABC9C] opacity-60">
+                        <svg
+                          className="w-16 h-16"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                          />
+                        </svg>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -275,11 +335,13 @@ export default function LessonsPage() {
                     {`Chủ đề ${isLoading ? "---" : featuredTopic?.level || "---"}`}
                   </div>
                   <h2 className="text-xl font-bold text-[#1ABC9C] mb-6 px-4">
-                    {isLoading ? "---" : featuredTopic?.title || "---"}
+                    {isLoading
+                      ? "---"
+                      : featuredTopic?.title || "Chưa có dữ liệu"}
                   </h2>
                   <button
                     className="bg-[#1ABC9C] hover:bg-[#16A085] text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors relative cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isLoading || !featuredTopic}
+                    disabled={isLoading || !featuredTopic || isRedirecting}
                     onClick={() =>
                       featuredTopic && navigateToLecture(featuredTopic._id)
                     }
@@ -296,75 +358,105 @@ export default function LessonsPage() {
 
           {/* Topic Grid */}
           <div className="grid grid-cols-4 gap-6 mb-6">
-            {isLoading
-              ? // Skeleton loaders
-                Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="relative h-[320px]">
-                    <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-gray-200" />
-                    <div className="relative h-full bg-white rounded-3xl border-[3px] border-gray-200 flex flex-col items-center justify-center p-6 animate-pulse">
-                      <div className="w-32 h-32 bg-gray-200 rounded-2xl mb-6" />
-                      <div className="w-24 h-8 bg-gray-200 rounded-full mb-4" />
-                      <div className="w-32 h-4 bg-gray-200 rounded-full" />
-                    </div>
+            {isLoading || topicsLoading ? (
+              // Skeleton loaders
+              Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="relative h-[320px]">
+                  <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-gray-200" />
+                  <div className="relative h-full bg-white rounded-3xl border-[3px] border-gray-200 flex flex-col items-center justify-center p-6 animate-pulse">
+                    <div className="w-32 h-32 bg-gray-200 rounded-2xl mb-6" />
+                    <div className="w-24 h-8 bg-gray-200 rounded-full mb-4" />
+                    <div className="w-32 h-4 bg-gray-200 rounded-full" />
                   </div>
-                ))
-              : topicsWithPremiumRequiredFlag?.map((topic, index) => {
-                  if (topic.premiumRequired) {
-                    return (
-                      <div
-                        key={index}
-                        className="relative h-[320px] transition-all hover:scale-105 cursor-pointer"
-                        onClick={() => router.push("/student/upgrade")}
-                      >
-                        <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#FF9600]" />
-                        <div
-                          className="relative h-full bg-white rounded-3xl border-[3px] border-[#FF9600] 
-                                    flex flex-col gap-6 items-center justify-center p-6"
-                        >
-                          <div className="mb-6">
-                            <FontAwesomeIcon
-                              icon={faCrown}
-                              className="text-[#FF9600] text-6xl"
-                            />
-                          </div>
-                          <p className="text-base font-bold text-[#FF9600] text-center mb-6 px-2 cursor-pointer">
-                            {`Bạn cần nâng cấp tài khoản để mở khóa chủ đề ${topic.level}.`}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  }
-
+                </div>
+              ))
+            ) : topicsWithPremiumRequiredFlag?.length === 0 ? (
+              <div className="col-span-4 relative h-[320px]">
+                <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-gray-200" />
+                <div className="relative h-full bg-gray-50 rounded-3xl border-[3px] border-gray-200 flex flex-col items-center justify-center p-6">
+                  <div className="text-gray-400 mb-6 opacity-60">
+                    <svg
+                      className="w-20 h-20"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-400 mb-2">
+                    Chưa có chủ đề nào
+                  </h3>
+                  <p className="text-gray-400/80 text-center font-medium">
+                    Nội dung đang được cập nhật
+                  </p>
+                </div>
+              </div>
+            ) : (
+              topicsWithPremiumRequiredFlag?.map((topic, index) => {
+                if (topic.premiumRequired) {
                   return (
                     <div
                       key={index}
-                      className="relative h-[320px] transition-all hover:scale-105"
-                      onClick={() => navigateToLecture(topic._id)}
+                      className="relative h-[320px] transition-all hover:scale-105 cursor-pointer"
                     >
-                      <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#23BEAA]" />
+                      <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#FF9600]" />
                       <div
-                        className="relative h-full bg-[#F3FFFD] rounded-3xl border-[3px] border-[#23BEAA] 
-                                  flex flex-col items-center justify-center cursor-pointer p-6"
+                        className="relative h-full bg-white rounded-3xl border-[3px] border-[#FF9600] 
+                                    flex flex-col gap-6 items-center justify-center p-6"
                       >
-                        <div className="w-32 h-32 mb-6 flex items-center justify-center">
-                          <Image
-                            src={topic.description}
-                            alt="topic image"
-                            width={120}
-                            height={120}
-                            className="object-contain"
+                        <div className="mb-6">
+                          <FontAwesomeIcon
+                            icon={faCrown}
+                            className="text-[#FF9600] text-6xl"
                           />
                         </div>
-                        <div className="inline-block bg-[#1ABC9C] text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
-                          Chủ đề {topic.level}
-                        </div>
-                        <h3 className="text-base font-bold text-[#1ABC9C] text-center leading-snug px-2">
-                          {topic.title}
-                        </h3>
+                        <p className="text-base font-bold text-[#FF9600] text-center mb-6 px-2 cursor-pointer">
+                          {`Bạn cần nâng cấp tài khoản để mở khóa chủ đề ${topic.level}.`}
+                        </p>
                       </div>
                     </div>
                   );
-                })}
+                }
+
+                return (
+                  <div
+                    key={index}
+                    className="relative h-[320px] transition-all hover:scale-105"
+                    onClick={() =>
+                      !isRedirecting && navigateToLecture(topic._id)
+                    }
+                  >
+                    <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#23BEAA]" />
+                    <div
+                      className="relative h-full bg-[#F3FFFD] rounded-3xl border-[3px] border-[#23BEAA] 
+                                  flex flex-col items-center justify-center cursor-pointer p-6"
+                    >
+                      <div className="w-32 h-32 mb-6 flex items-center justify-center">
+                        <Image
+                          src={topic.description}
+                          alt="topic image"
+                          width={120}
+                          height={120}
+                          className="object-contain"
+                        />
+                      </div>
+                      <div className="inline-block bg-[#1ABC9C] text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+                        Chủ đề {topic.level}
+                      </div>
+                      <h3 className="text-base font-bold text-[#1ABC9C] text-center leading-snug px-2">
+                        {topic.title}
+                      </h3>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
 
           {/* Navigation */}
@@ -412,6 +504,68 @@ export default function LessonsPage() {
             </button>
           </div>
         </main>
+      </div>
+
+      {/* Modal */}
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center ${
+          isSelectGradeOpen ? "block" : "hidden"
+        }`}
+      >
+        <div
+          className="fixed inset-0 bg-black/70"
+          onClick={() => setIsSelectGradeOpen(false)}
+        ></div>
+        <div className="z-50 flex flex-col gap-6 p-6">
+          <div className="flex justify-center gap-6">
+            {[1, 2, 3].map((g) => (
+              <button
+                key={g}
+                onClick={() => {
+                  setGradeLevel(g.toString());
+                  setCurrentPage(1);
+                  setIsSelectGradeOpen(false);
+                }}
+                className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 active:scale-90 shadow-xl overflow-hidden cursor-pointer
+                  ${
+                    gradeLevel === g.toString()
+                      ? "bg-orange-400 text-white shadow-orange-200/30"
+                      : "bg-[#b3f9ef] text-[#1ABC9C] hover:bg-[#92f3e8]"
+                  }
+                `}
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent pointer-events-none"></div>
+                <div className="absolute top-4 left-6 w-8 h-8 bg-white/70 rounded-full blur-[2px] pointer-events-none"></div>
+                <div className="absolute top-5 left-16 w-3 h-3 bg-white/70 rounded-full blur-[1px] pointer-events-none"></div>
+                Lớp {g}
+              </button>
+            ))}
+          </div>
+          <div className="flex justify-center gap-6">
+            {[4, 5].map((g) => (
+              <button
+                key={g}
+                onClick={() => {
+                  setGradeLevel(g.toString());
+                  setCurrentPage(1);
+                  setIsSelectGradeOpen(false);
+                }}
+                className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 active:scale-90 shadow-xl overflow-hidden cursor-pointer
+                  ${
+                    gradeLevel === g.toString()
+                      ? "bg-orange-400 text-white shadow-orange-200/30"
+                      : "bg-[#b3f9ef] text-[#1ABC9C] hover:bg-[#92f3e8]"
+                  }
+                `}
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent pointer-events-none"></div>
+                <div className="absolute top-4 left-6 w-8 h-8 bg-white/70 rounded-full blur-[2px] pointer-events-none"></div>
+                <div className="absolute top-5 left-16 w-3 h-3 bg-white/70 rounded-full blur-[1px] pointer-events-none"></div>
+                Lớp {g}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

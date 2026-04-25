@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Roboto, Coiny } from "next/font/google";
+import { roboto, coiny } from "@/app/fonts";
 import { useSpring, animated } from "@react-spring/web";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -22,8 +22,7 @@ import { updateMissionProgress } from "@/apis/mission";
 const trophy = "/assets/exercises/trophy.png";
 const flags = "/assets/exercises/flags.png";
 
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
-const coiny = Coiny({ subsets: ["latin"], weight: ["400"] });
+
 
 interface FinishViewProps {
   grade: string;

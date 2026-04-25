@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { Roboto, Fredoka } from "next/font/google";
+import { roboto, fredoka } from "@/app/fonts";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Toaster, toast } from "react-hot-toast";
@@ -29,8 +29,6 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
 import { APIError } from "@/apis/config";
 
-const roboto = Roboto();
-const fredoka = Fredoka();
 
 const ROLES = {
   STUDENT: "student",
@@ -313,9 +311,12 @@ export default function Auth() {
                     {/** Mascot animation */}
                     <div className="relative aspect-square h-[180px] border-2 border-[#1DA492] rounded-full overflow-hidden">
                       <iframe
+                        title="dino-animation"
                         src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html"
                         height={380}
                         className="-translate-x-[12px] translate-y-[20px] z-0"
+                        loading="lazy"
+                        style={{ border: "none" }}
                       />
                       <Image
                         src={leftHand}
@@ -380,7 +381,7 @@ export default function Auth() {
                     </Link>
                     {/** Login button */}
                     <button
-                      disabled={!canLogin()}
+                      disabled={!canLogin() || loginLoading}
                       className={clsx(
                         "h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium",
                         "disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center",
@@ -616,7 +617,7 @@ export default function Auth() {
                       />
                     </div>
                     <button
-                      disabled={!canRegister()}
+                      disabled={!canRegister() || regLoading}
                       className={clsx(
                         "h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium",
                         "disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center",

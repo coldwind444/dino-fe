@@ -4,9 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
-import { Lobster } from "next/font/google";
-
-const lobster = Lobster({ subsets: ["latin"], weight: ["400"] });
+import { lobster } from "@/app/fonts";
 
 export type Theme = "prairie" | "forest" | "beach" | "desert" | "ruby";
 

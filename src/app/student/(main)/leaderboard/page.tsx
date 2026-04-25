@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Roboto } from "next/font/google";
+import { roboto } from "@/app/fonts";
 import top1 from "../../../../../public/assets/leaderboard/top1.png";
 import top2 from "../../../../../public/assets/leaderboard/top2.svg";
 import top3 from "../../../../../public/assets/leaderboard/top3.svg";
@@ -18,10 +18,6 @@ import { formatNumberAbbreviation, isValidUrl } from "@/helpers/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserAlt } from "@fortawesome/free-solid-svg-icons";
 
-const roboto = Roboto({
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
-});
 
 const gradientColors = [
   "from-yellow-400 to-orange-400",

@@ -1,14 +1,13 @@
 "use client";
 
 import clsx from "clsx";
-import { Baloo_2 } from "next/font/google";
+import { baloo } from "@/app/fonts";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import feather from "../../../public/assets/home/feather.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 
-const baloo = Baloo_2();
 
 type EntranceTestPopupProps = {
   close: () => void;

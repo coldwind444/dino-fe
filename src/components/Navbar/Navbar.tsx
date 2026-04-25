@@ -16,8 +16,7 @@ import {
   faChartColumn,
   faHistory,
 } from "@fortawesome/free-solid-svg-icons";
-import { Roboto } from "next/font/google";
-import { Righteous } from "next/font/google";
+import { roboto, righteous } from "@/app/fonts";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
@@ -33,8 +32,7 @@ import { getUserProfile } from "@/apis/user";
 import { logout } from "@/apis/auth";
 import { useLessonStore } from "@/stores/lessonStore";
 
-const roboto = Roboto({ subsets: ["latin"] });
-const righteous = Righteous({ weight: "400" });
+
 
 const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   [
@@ -72,8 +70,6 @@ export default function Navbar({
   const [urls, setUrls] = useState<
     { name: string; icon: IconDefinition; pathname: string }[]
   >([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
   const [username, setUsername] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
@@ -110,7 +106,7 @@ export default function Navbar({
       }
     };
     fetchUserProfile();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

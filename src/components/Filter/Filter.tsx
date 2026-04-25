@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { Roboto } from "next/font/google";
+import { roboto } from "@/app/fonts";
 import { useRef, useState } from "react";
 
 type FilterParams = {
@@ -25,7 +25,7 @@ type FilterParams = {
   ) => Promise<void>;
 };
 
-const roboto = Roboto();
+
 
 function parseDateInput(value: string): Date | undefined {
   const trimmed = value.trim();

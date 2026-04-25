@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { Baloo_2 } from "next/font/google";
+import { baloo } from "@/app/fonts";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import boy from "../../../public/assets/home/boy_riding_pencil.png";
@@ -13,7 +13,6 @@ import { getTermById } from "@/apis";
 import { useLessonStore } from "@/stores/lessonStore";
 import { useRouter } from "next/navigation";
 
-const baloo = Baloo_2();
 
 export default function TopicRecommendPopup({
   close,

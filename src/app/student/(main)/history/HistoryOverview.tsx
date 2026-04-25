@@ -241,7 +241,10 @@ export default function HistoryOverview({
           });
           allItems = mapParticipations(res.items ?? []);
         } else if (category === "assessment") {
-          const res = await getAssessmentResultsList(baseParams);
+          const res = await getAssessmentResultsList({
+            ...baseParams,
+            status: "graded",
+          });
           allItems = mapAssessmentResults(res.items ?? []);
         } else if (category === "exercise") {
           const res = await getLectureResults(baseParams);

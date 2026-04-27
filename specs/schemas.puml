@@ -1,0 +1,396 @@
+@startuml
+' Recommended: install 'DejaVu Sans' on render host for consistent output
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam titleFontName "DejaVu Sans"
+skinparam titleFontSize 14
+skinparam classFontName "DejaVu Sans"
+skinparam noteFontName "DejaVu Sans"
+skinparam shadowing false
+
+title <b>MongoDB ERD - Dino Math</b>
+
+'======================================================
+' ================ ENTITY DEFINITIONS =================
+'======================================================
+
+'------------------- User & Family -------------------
+entity "User" as U {
+  * _id : ObjectId
+  --
+  name : String
+  username : String
+  email : String
+  password : String
+  googleId : String
+  authType : enum("local","google")
+  avatarUrl : String
+  avatarPublicId : String
+  role : enum("student","parent","admin")
+  status : enum("active","inactive","pending_profile")
+  settings.language : String
+  settings.notifications : Boolean
+  familyId : ObjectId (ref: Family)
+  gradeId : ObjectId (ref: Grade)
+  quartz : Number
+  battlePoints : Number
+  rankId : ObjectId (ref: Rank)
+  premium.isPremium : Boolean
+  premium.packageId : ObjectId (ref: PremiumPackage)
+  premium.startDate : Date
+  premium.expiryDate : Date
+  totalActiveSeconds : Number
+  resetPasswordToken : String
+  resetPasswordExpires : Date
+}
+
+entity "Family" as F {
+  * _id : ObjectId
+  --
+  name : String
+  inviteCode : String
+  inviteSingleUse : Boolean
+}
+
+entity "UserActivity" as UA {
+  * _id : ObjectId
+  --
+  userId : ObjectId (ref: User)
+  date : String
+  activeSeconds : Number
+}
+
+'------------------- Premium & Payments -------------------
+entity "PremiumPackage" as PP {
+  * _id : ObjectId
+  --
+  name : String
+  description : String
+  price : Number
+  durationDays : Number
+  features : [String]
+  isActive : Boolean
+}
+
+entity "Transaction" as TR {
+  * _id : ObjectId
+  --
+  userId : ObjectId (ref: User)
+  packageId : ObjectId (ref: PremiumPackage)
+  amount : Number
+  paymentMethod : enum("momo","zalopay","vnpay","bank_transfer","internal")
+  status : enum("pending","completed","failed")
+  transactionId : String
+  processedAt : Date
+}
+
+'------------------- Asset -------------------
+entity "World" as WORLD {
+  * _id : ObjectId
+  --
+  name : String
+  milestoneUrl : String
+}
+
+entity "Land" as LAND {
+  * _id : ObjectId
+  --
+  worldId : String (ref: World)
+  name : String
+  difficulty : enum("easy","medium","hard")
+  imageUrl : String
+}
+
+
+
+'------------------- Academic & Structure -------------------
+entity "Grade" as G {
+  * _id : ObjectId
+  --
+  name : String
+  level : Number
+  description : String
+  worldId : ObjectId (ref: World)
+}
+
+entity "AcademicTerm" as AT {
+  * _id : ObjectId
+  --
+  name : String
+  year : Number
+  term : enum("semester1","semester2","summer","custom")
+  startDate : Date
+  endDate   : Date
+  isActive : Boolean
+  notes : String
+}
+
+entity "Topic" as T {
+  * _id : ObjectId
+  --
+  title : String
+  description : String
+  level : Number
+  gradeId : String (ref: Grade)
+  termId : String (ref: AcademicTerm)
+  weekNumbers : [Number]
+  isPremium : Boolean
+}
+
+entity "Lecture" as LC {
+  * _id : ObjectId
+  --
+  title : String
+  contentType : enum("knowledge","understanding","application")
+  description : String
+  topicId : String (ref: Topic)
+  difficulty : enum("easy","medium","hard")
+  status : enum("active","inactive")
+  theory.content : String
+  theory.videoUrl : String
+  theory.imageUrls : [String]
+}
+
+entity "Exercise" as E {
+  * _id : ObjectId
+  --
+  question : String
+  category : enum("assessment", "arena", "lecture")
+  type : enum("matching","choice","interactive","tutorial","fill_in","true_false","fill_even_odd","releasebird","scale","tree","cage","transport","set_time","coin","gumball","burger","fraction","manualScale","draw","area")
+  options : [String]
+  pairs : [Object]
+  correctAnswer : String
+  content : String
+  metadata : Mixed
+  difficulty : enum("easy","medium","hard")
+  lectureId : Mixed (ref: Lecture)
+  arenaId : Mixed (ref: Arena)
+  assessmentId : Mixed (ref: Assessment)
+  order : Number
+  explanation : String
+}
+
+'------------------- Student Activities & Progress -------------------
+entity "Progress" as P {
+  * _id : ObjectId
+  --
+  userId : ObjectId (ref: User)
+  topicId : Mixed (ref: Topic)
+  lectureId : Mixed (ref: Lecture)
+  completion : Number
+  status : enum("not_started","in_progress","completed")
+  lastAccessTime : Number 
+  metadata.termName : String
+  metadata.grade : Number
+  metadata.topicTitle : String
+  metadata.lectureTitle : String
+}
+
+entity "LectureResult" as LR {
+  * _id : ObjectId
+  --
+  userId : ObjectId (ref: User)
+  lectureId : ObjectId (ref: Lecture)
+  topicId : ObjectId (ref: Topic)
+  correctCount : Number
+  totalQuestions : Number
+  score : Number
+  timeTaken : Number
+  status : enum("pass","fail","completed")
+  finishedAt : Date
+  metadata.termName : String
+  metadata.grade : Number
+  metadata.topicTitle : String
+  metadata.lectureTitle : String
+}
+
+entity "Answer" as ANS {
+  * _id : ObjectId
+  --
+  userId : ObjectId (ref: User)
+  exerciseId : Mixed
+  exercise : Mixed
+  answerData : Mixed
+  isCorrect : Boolean
+  score : Number
+  assessmentResultId : Mixed (ref: AssessmentResult)
+  arenaParticipationId : Mixed (ref: Participation)
+  lectureResultId : Mixed (ref: LectureResult)
+}
+
+entity "Mission" as M {
+  * _id : ObjectId
+  --
+  title : String
+  description : String
+  unitType : enum("lecture","exercise","battle","daily_login","arena","minigame")
+  goal : Number
+  rewardType : enum("quartz","bp")
+  reward : Number
+  isActive : Boolean
+}
+
+' Achievement is the per-user relationship to Missions (tracks progress)
+entity "Achievement" as A {
+  * _id : ObjectId
+  --
+  userId : ObjectId (ref: User)
+  missionId : ObjectId (ref: Mission)
+  progress : Number
+  finished : Boolean
+  claimed : Boolean
+}
+
+'------------------- Assessment (Entrance test) -------------------
+entity "Assessment" as AS {
+  * _id : ObjectId
+  --
+  title : String
+  description : String
+  gradeId : Mixed (ref: Grade)
+  published : Boolean
+}
+
+entity "AssessmentResult" as ATM {
+  * _id : ObjectId
+  --
+  assessmentId : ObjectId (ref: Assessment)
+  userId : ObjectId (ref: User)
+  duration : Number
+  status : enum("in_progress","submitted","graded")
+  totalScore : Number
+}
+
+
+'------------------- Games -------------------
+entity "MiniGame" as MG {
+  * _id : ObjectId
+  --
+  title : String
+  description : String
+  thumbnail : String
+  gameType : enum("challenge","quiz","collaboration","puzzle","speed","singleplayer","multiplayer")
+  gameUrl : String
+  isActive : Boolean
+  config : Object
+}
+
+entity "FamilyGameParticipation" as FGP {
+  * _id : ObjectId
+  --
+  miniGameId : ObjectId (ref: MiniGame)
+  userId : ObjectId (ref: User)
+  familyId : ObjectId (ref: Family)
+  score : Number
+}
+
+'------------------- Rank / Leaderboard -------------------
+entity "Rank" as RANK {
+  * _id : ObjectId
+  --
+  title : String
+  level : Number
+  badge : String
+  color : String
+  bp : Number
+}
+
+'------------------- Arena Feature -------------------
+entity "Arena" as ARENA {
+  * _id : ObjectId
+  --
+  title : String
+  description : String
+  period : enum("weekly")
+  startTime : Date
+  endTime : Date
+  gradeId : Mixed (ref: Grade)
+  isActive : Boolean
+}
+  
+entity "Participation" as PART {
+  * _id : ObjectId
+  --
+  userId : ObjectId (ref: User)
+  arenaId : Mixed (ref: Arena)
+  correctCount : Number
+  timeTaken : Number
+  score : Number
+  status : enum("in_progress","finished")
+  finishedAt : Date
+  metadata.title : String
+  metadata.startTime : Date
+  metadata.endTime : Date
+}
+
+'======================================================
+' ================ RELATIONSHIPS ======================
+'======================================================
+
+' Family & Users
+F ||--o{ U : "has members"
+
+' User Activity
+U ||--o{ UA : "logs daily activity"
+
+' Premium & Payments
+PP ||--o{ U : "user has premium package"
+PP ||--o{ TR : "transactions for package"
+U ||--o{ TR : "user makes transaction"
+
+' Grade & Topic
+G ||--o{ U : "assigned to grade"
+G ||--o{ T : "contains topics"
+
+G ||--|| WORLD : "has world"
+
+WORLD ||--o{ LAND : "has lands"
+
+' Academic term & topics
+AT ||--o{ T : "defines term topics"
+
+' Topic Structure
+T ||--o{ LC : "contains lectures"
+LC ||--o{ E : "contains exercises"
+
+' User Progress & Results
+U ||--o{ P : "tracks progress"
+T ||--o{ P : "topic progress"
+LC ||--|{ P : "lecture progress"
+
+' Lecture Results
+U ||--o{ LR : "has lecture results"
+LC ||--o{ LR : "has results"
+T ||--o{ LR : "topic of result"
+
+' Answers
+U ||--o{ ANS : "submits answers"
+ATM ||--o{ ANS : "answers for assessment"
+PART ||--o{ ANS : "answers for participation"
+LR ||--o{ ANS : "answers for lecture result"
+
+' Missions & Achievements (user progress)
+U ||--o{ A : "user achievement progress"
+M ||--o{ A : "mission has achievement records"
+
+' Assessment feature relationships
+AS ||--o{ ATM : "has results"
+U  ||--o{ ATM : "takes assessments"
+G  ||--o{ AS  : "assigned assessments"
+AS ||--o{ E   : "contains exercises"
+
+' MiniGame relationships
+F ||--o{ FGP : "family participation"
+MG ||--o{ FGP : "has participations"
+U ||--o{ FGP : "participates in games"
+
+' Rank relationships
+RANK ||--o{ U : "has users"
+
+' Arena relationships
+ARENA ||--|| PART : "has participations"
+PART ||--|| U : "participation by user"
+ARENA ||--o{ E : "questions"
+G ||--o{ ARENA : "assigned arenas"
+
+@enduml

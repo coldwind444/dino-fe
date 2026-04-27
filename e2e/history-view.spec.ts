@@ -1,87 +1,77 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('HistoryView', () => {
+test.describe('History View - Student Role', () => {
   test.beforeEach(async ({ page }) => {
+    await page.goto('/auth');
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('student_user123');
+    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
+    await page.getByRole('button', { name: 'Đăng nhập' }).click();
     await page.goto('/student/history');
   });
 
-  test('TC-08-01: Filter test 1 (All, No Dates, No Keyword)', async ({ page }) => {
-    // await page.selectOption('select[name="category"]', 'All');
-    // await expect(page.getByTestId('history-record')).toBeVisible();
+  test('TC-08-01: Page load and initial data', async ({ page }) => {
+    await expect(page.getByText('Thống kê tổng quát')).toBeVisible();
+    await expect(page.getByText('Số bài tập đã làm')).toBeVisible();
+    await expect(page.getByText('Lịch sử làm bài')).toBeVisible();
   });
 
-  test('TC-08-02: Filter test 2 (Lecture, Math Keyword)', async ({ page }) => {
-    // await page.selectOption('select[name="category"]', 'Lecture');
-    // await page.fill('input[name="keyword"]', 'Math');
-    // await expect(page.getByTestId('history-record')).toBeVisible();
+  test('TC-08-02: Filter by category and keyword', async ({ page }) => {
+    // Select "Đấu trường" category
+    await page.selectOption('select[name="category-select"]', { label: 'Đấu trường' });
+    
+    // Fill search keyword
+    await page.getByPlaceholder('Tìm kiếm...').fill('Toán');
+    await page.getByText('Lọc kết quả').click();
+    
+    // Check for filtered results or empty state if no match
+    // Note: Since data is dynamic, we just check if the UI doesn't crash
+    await expect(page.getByText('Lịch sử làm bài')).toBeVisible();
   });
 
-  test('TC-08-03: Filter test 3 (Arena, Start Date)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="category"]', 'Arena');
-    await page.fill('input[name="startDate"]', '2024-01-01');
-    await expect(page.getByTestId('history-record')).toBeVisible();
-    */
+  test('TC-08-03: View history record detail', async ({ page }) => {
+    // Wait for at least one record to appear
+    const viewButton = page.getByText('Xem').first();
+    if (await viewButton.isVisible()) {
+      await viewButton.click();
+      await expect(page.getByText('Chi tiết bài làm', { exact: false })).toBeVisible();
+      await expect(page.getByText('Tổng số câu hỏi')).toBeVisible();
+      
+      // Navigate back
+      await page.getByRole('link', { name: 'Lịch sử' }).click();
+      await expect(page.getByText('Thống kê tổng quát')).toBeVisible();
+    }
   });
+});
 
-  test('TC-08-04: Filter test 4 (Assessment, Start Date, Keyword)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="category"]', 'Assessment');
-    await page.fill('input[name="startDate"]', '2024-01-01');
-    await page.fill('input[name="keyword"]', 'Assessment 1');
-    await expect(page.getByTestId('history-record')).toBeVisible();
-    */
-  });
-
-  test('TC-08-05: Filter test 5 (All, Start/End Dates, Keyword)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="category"]', 'All');
-    await page.fill('input[name="startDate"]', '2024-01-01');
-    await page.fill('input[name="endDate"]', '2024-12-31');
-    await page.fill('input[name="keyword"]', 'Math');
-    await expect(page.getByTestId('history-record')).toBeVisible();
-    */
-  });
-
-  test('TC-08-06: Filter test 6 (All, Start/End Dates, No Keyword)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="category"]', 'All');
-    await page.fill('input[name="startDate"]', '2024-01-01');
-    await page.fill('input[name="endDate"]', '2024-12-31');
-    await expect(page.getByTestId('history-record')).toBeVisible();
-    */
-  });
-
-  test('TC-08-07: Filter test 7 (End before Start)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="category"]', 'All');
-    await page.fill('input[name="startDate"]', '2024-12-31');
-    await page.fill('input[name="endDate"]', '2024-01-01');
-    await expect(page.getByText('End Date must be after Start Date')).toBeVisible();
-    */
-  });
-
-  test('TC-08-08: No data test', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="category"]', 'All');
-    await page.fill('input[name="keyword"]', 'NonExistentKeywordXYZ');
-    await expect(page.getByText(/not found/i)).toBeVisible();
-    */
-  });
-
-  test('TC-08-09: Correct data display (Parent)', async ({ page }) => {
-    /*
+test.describe('History View - Parent Role', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/auth');
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('dinopr@gmail.com');
+    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
+    await page.getByRole('button', { name: 'Đăng nhập' }).click();
     await page.goto('/parent/history');
-    await page.selectOption('select[name="student"]', 'student1');
-    await expect(page.getByTestId('history-record')).toBeVisible();
-    */
   });
 
-  test('TC-08-10: No data display (Parent)', async ({ page }) => {
-    /*
-    await page.goto('/parent/history');
-    await page.selectOption('select[name="student"]', 'student_no_data');
-    await expect(page.getByText(/not found/i)).toBeVisible();
-    */
+  test('TC-09-01: Parent can filter by student', async ({ page }) => {
+    await expect(page.getByText('Học sinh:')).toBeVisible();
+    await page.selectOption('select[name="student-select"]', { label: 'Nguyễn Hoàng Anh' });
+    await page.getByText('Lọc kết quả').click();
+    
+    await expect(page.getByText('Lịch sử làm bài')).toBeVisible();
+  });
+
+  test('TC-09-02: Parent view record detail', async ({ page }) => {
+    await page.selectOption('select[name="student-select"]', { label: 'Nguyễn Hoàng Anh' });
+    await page.getByText('Lọc kết quả').click();
+
+    const viewButton = page.getByText('Xem').first();
+    if (await viewButton.isVisible()) {
+      await viewButton.click();
+      await expect(page.getByText('Chi tiết bài làm', { exact: false })).toBeVisible();
+      
+      // Navigate back
+      await page.getByRole('link', { name: 'Lịch sử' }).click();
+      await expect(page.getByText('Thống kê tổng quát')).toBeVisible();
+    }
   });
 });

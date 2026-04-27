@@ -8,14 +8,27 @@ test.describe('Reset Password', () => {
   test('TC-11-01: No account found', async ({ page }) => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('nonexistent_user');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
-    await expect(page.getByText(/Tài khoản không tồn tại/i)).toBeVisible(); // Assuming API error text
+    await expect(page.getByText(/Tài khoản không tồn tại/)).toBeVisible();
   });
 
   test('TC-11-02: Empty OTP', async ({ page }) => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
-    
-    // Proceeding to step 2 manually as mock
+
+    await page.getByPlaceholder('Mật khẩu mới').fill('NewPassword@1');
+    await page.getByPlaceholder('Xác nhận mật khẩu').fill('NewPassword@1');
+    const resetBtn = page.getByRole('button', { name: 'Đổi mật khẩu' });
+    await expect(resetBtn).toBeDisabled();
+  });
+
+  test('TC-11-03: Invalid OTP', async ({ page }) => {
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user');
+    await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
+
+    const firstDigit = page.getByLabel('Digit 1 of 6');
+    await firstDigit.click();
+    await page.keyboard.type('123456');
+
     await page.getByPlaceholder('Mật khẩu mới').fill('NewPassword@1');
     await page.getByPlaceholder('Xác nhận mật khẩu').fill('NewPassword@1');
     const resetBtn = page.getByRole('button', { name: 'Đổi mật khẩu' });
@@ -25,6 +38,9 @@ test.describe('Reset Password', () => {
   test('TC-11-04: Invalid password', async ({ page }) => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
+
+    // Pause for OTP
+    await page.pause();
 
     await page.getByPlaceholder('Mật khẩu mới').fill('pass');
     await page.getByPlaceholder('Xác nhận mật khẩu').fill('pass');
@@ -36,9 +52,30 @@ test.describe('Reset Password', () => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
 
+    // Pause for OTP
+    await page.pause();
+
     await page.getByPlaceholder('Mật khẩu mới').fill('NewPassword@1');
     await page.getByPlaceholder('Xác nhận mật khẩu').fill('DiffPassword@2');
     const resetBtn = page.getByRole('button', { name: 'Đổi mật khẩu' });
     await expect(resetBtn).toBeDisabled();
+  });
+
+  test('TC-11-06: Happy Path', async ({ page }) => {
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user');
+    await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
+
+    // Pause for OTP
+    await page.pause();
+
+    await page.getByPlaceholder('Mật khẩu mới').fill('NewPassword@1');
+    await page.getByPlaceholder('Xác nhận mật khẩu').fill('NewPassword@1');
+
+    const resetBtn = page.getByRole('button', { name: 'Đổi mật khẩu' });
+    await expect(resetBtn).toBeEnabled();
+    await resetBtn.click();
+
+    await expect(page.getByText('Tuyệt vời ! Mật khẩu mới, khởi đầu mới đúng không nè !')).toBeVisible();
+    await expect(page).toHaveURL(/\/auth/, { timeout: 5000 });
   });
 });

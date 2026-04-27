@@ -2,30 +2,30 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Mission', () => {
   test.beforeEach(async ({ page }) => {
+    await page.goto('/auth');
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('student_user123');
+    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
+    await page.getByRole('button', { name: 'Đăng nhập' }).click();
     await page.goto('/student/missions');
   });
 
   test('TC-07-01: Missions found', async ({ page }) => {
-    // await expect(page.getByTestId('mission-card')).toBeVisible();
+    await expect(page.getByText('Đăng nhập hằng ngày')).toBeVisible();
   });
 
   test('TC-07-02: Missions not found', async ({ page }) => {
-    // await expect(page.getByText(/no missions/i)).toBeVisible();
+    await expect(page.getByText('Không có nhiệm vụ nào')).toBeVisible();
   });
 
-  test('TC-07-03: Login progress update and claim', async ({ page }) => {
-    /*
-    const claimBtn = page.getByRole('button', { name: /Nhận thưởng/i }).first();
+  test('TC-07-03: Claim rewards', async ({ page }) => {
+    const mission = page.getByText('Đăng nhập hằng ngày');
+    await expect(mission).toBeVisible();
+
+    const claimBtn = mission.getByRole('button', { name: /Nhận/i });
+    await expect(claimBtn).toBeVisible();
+
     await claimBtn.click();
-    await expect(page.getByText(/reward/i)).toBeVisible();
-    */
+    await expect(page.getByText(/Chúc mừng bạn đã nhận được/i)).toBeVisible();
   });
 
-  test('TC-07-04: Lecture complete progress update', async ({ page }) => {
-    /*
-    const claimBtn = page.getByRole('button', { name: /Nhận thưởng/i }).nth(1);
-    await claimBtn.click();
-    await expect(page.getByText(/reward/i)).toBeVisible();
-    */
-  });
 });

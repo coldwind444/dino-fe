@@ -2,48 +2,67 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Parent Dashboard', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/parent'); // Dashboard page
+    await page.goto('/auth');
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('dinopr@gmail.com');
+    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
+    await page.getByRole('button', { name: 'Đăng nhập' }).click();
+    await page.goto('/parent/dashboard');
   });
 
-  test('TC-09-01: Correct data display 1 (No Dates)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="student"]', 'student1');
-    await expect(page.getByTestId('statistics-data')).toBeVisible();
-    */
+  test('TC-09-01: Page load and initial empty state', async ({ page }) => {
+    await expect(page.getByText('Thống kê học tập')).toBeVisible();
+    await expect(page.getByText('Thống kê đấu trường')).toBeVisible();
+    await expect(page.getByText('Chưa có dữ liệu thống kê')).toBeVisible();
   });
 
-  test('TC-09-02: Correct data display 2 (Start Date)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="student"]', 'student1');
-    await page.fill('input[name="startDate"]', '2024-01-01');
-    await expect(page.getByTestId('statistics-data')).toBeVisible();
-    */
+  test('TC-09-02: Correct data display (With student and dates)', async ({ page }) => {
+    // Wait for student list to load
+    await page.waitForSelector('select[name="student-select"]');
+    await page.selectOption('select[name="student-select"]', { label: 'Nguyễn Hoàng Anh' });
+
+    // Fill "Từ ngày" and "Đến ngày"
+    const dateInputs = page.getByPlaceholder('dd/mm/yy');
+    await dateInputs.first().fill('01/01/24');
+    await dateInputs.last().fill('31/12/24');
+
+    await page.getByText('Lọc kết quả').click();
+
+    // Check for statistics cards labels
+    await expect(page.getByText('Số chủ đề đã học')).toBeVisible();
+    await expect(page.getByText('Tỉ lệ làm đúng')).toBeVisible();
+    await expect(page.getByText('Bậc xếp hạng hiện tại')).toBeVisible();
   });
 
-  test('TC-09-03: No data display (Start and End Dates - Has Data)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="student"]', 'student1');
-    await page.fill('input[name="startDate"]', '2024-01-01');
-    await page.fill('input[name="endDate"]', '2024-12-31');
-    await expect(page.getByTestId('statistics-data')).toBeVisible();
-    */
+  test('TC-09-03: Invalid date format validation', async ({ page }) => {
+    await page.waitForSelector('select[name="student-select"]');
+    await page.selectOption('select[name="student-select"]', { label: 'Nguyễn Hoàng Anh' });
+
+    const dateInputs = page.getByPlaceholder('dd/mm/yy');
+    await dateInputs.first().fill('invalid-date');
+    await page.getByText('Lọc kết quả').click();
+
+    await expect(page.getByText('Ngày bắt đầu không hợp lệ. Dùng định dạng dd/mm/yy.')).toBeVisible();
   });
 
-  test('TC-09-04: No data display (End before Start)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="student"]', 'student1');
-    await page.fill('input[name="startDate"]', '2024-12-31');
-    await page.fill('input[name="endDate"]', '2024-01-01');
-    await expect(page.getByText('End Date must be after Start Date')).toBeVisible();
-    */
+  test('TC-09-04: End Date before Start Date validation', async ({ page }) => {
+    await page.waitForSelector('select[name="student-select"]');
+    await page.selectOption('select[name="student-select"]', { label: 'Nguyễn Hoàng Anh' });
+
+    const dateInputs = page.getByPlaceholder('dd/mm/yy');
+    await dateInputs.first().fill('31/12/24');
+    await dateInputs.last().fill('01/01/24');
+
+    await page.getByText('Lọc kết quả').click();
+
+    await expect(page.getByText('Ngày bắt đầu không được lớn hơn ngày kết thúc.')).toBeVisible();
   });
 
-  test('TC-09-05: No data display (No Data for Student)', async ({ page }) => {
-    /*
-    await page.selectOption('select[name="student"]', 'student_no_data');
-    await page.fill('input[name="startDate"]', '2024-01-01');
-    await page.fill('input[name="endDate"]', '2024-12-31');
-    await expect(page.getByText(/not found/i)).toBeVisible();
-    */
+  test('TC-09-05: Reset date functionality', async ({ page }) => {
+    const dateInputs = page.getByPlaceholder('dd/mm/yy');
+    await dateInputs.first().fill('01/01/24');
+    await expect(dateInputs.first()).toHaveValue('01/01/24');
+
+    await page.getByText('Đặt lại ngày').click();
+    await expect(dateInputs.first()).toHaveValue('');
   });
 });

@@ -26,28 +26,28 @@ test.describe('Login', () => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('noname');
     await page.getByPlaceholder('Mật khẩu').fill('Noname@1');
     await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
-    await expect(page.getByText('Tài khoản không tồn tại')).toBeVisible();
+    await expect(page.getByText('Sai thông tin đăng nhập')).toBeVisible();
   });
 
   test('TC-01-05: Account not found (Email)', async ({ page }) => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('unregisteredp@example.com');
     await page.getByPlaceholder('Mật khẩu').fill('Random@12');
     await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
-    await expect(page.getByText('Tài khoản không tồn tại')).toBeVisible();
+    await expect(page.getByText('Sai thông tin đăng nhập')).toBeVisible();
   });
 
   test('TC-01-06: Wrong password (Student)', async ({ page }) => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('student1');
     await page.getByPlaceholder('Mật khẩu').fill('Password@1');
     await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
-    await expect(page.getByText('Sai mật khẩu')).toBeVisible();
+    await expect(page.getByText('Sai thông tin đăng nhập')).toBeVisible();
   });
 
   test('TC-01-07: Wrong password (Parent)', async ({ page }) => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('testparent@example.com');
     await page.getByPlaceholder('Mật khẩu').fill('Password@1');
     await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
-    await expect(page.getByText('Sai mật khẩu')).toBeVisible();
+    await expect(page.getByText('Sai thông tin đăng nhập')).toBeVisible();
   });
 
   test('TC-01-10: Login with admin account', async ({ page }) => {

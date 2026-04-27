@@ -29,7 +29,6 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
 import { APIError } from "@/apis/config";
 
-
 const ROLES = {
   STUDENT: "student",
   PARENT: "parent",

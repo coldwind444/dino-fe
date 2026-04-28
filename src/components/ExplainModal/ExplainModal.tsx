@@ -16,11 +16,11 @@ interface ExplainModalProps {
 }
 
 export const themeBackgrounds: Record<Theme, string> = {
-  prairie: "/assets/exercises/prairie.png",
-  forest: "/assets/exercises/forest.png",
-  beach: "/assets/exercises/beach.png",
-  desert: "/assets/exercises/desert.png",
-  ruby: "/assets/exercises/ruby.png",
+  prairie: "/assets/exercises/prairie.webp",
+  forest: "/assets/exercises/forest.webp",
+  beach: "/assets/exercises/beach.webp",
+  desert: "/assets/exercises/desert.webp",
+  ruby: "/assets/exercises/ruby.webp",
 };
 
 const dummyText = "Không có giải thích cho bài tập này.";

@@ -26,6 +26,7 @@ import {
 import { getUserProfile, getUsers, getStudentStats } from "@/apis";
 import { getLectureResults, getAssessmentResultsList } from "@/apis/study";
 import { getParticipationsPaginated } from "@/apis/arena";
+import { APIError } from "@/apis/config";
 
 interface HistoryOverviewProps {
   onViewDetail: (record: HistoryRecord) => void;
@@ -216,8 +217,10 @@ export default function HistoryOverview({
           setStats(statsData);
           await fetchRecords(firstStudentId, sd, ed, cat, "", 1);
         }
-      } catch (error: unknown) {
-        console.error((error as { message?: string })?.message);
+      } catch (error) {
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsPageLoading(false);
       }
@@ -322,7 +325,9 @@ export default function HistoryOverview({
         setTotalPages(totalPagesVal);
         setTotalRecords(totalRecordsVal);
       } catch (err) {
-        console.error(err);
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
       }
     },
     [],
@@ -376,8 +381,10 @@ export default function HistoryOverview({
       ]);
       setStats(statsData);
       await fetchRecords(studentId, sd, ed, cat, kw, 1);
-    } catch (error: unknown) {
-      console.error((error as { message?: string })?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     } finally {
       setIsFilterLoading(false);
     }
@@ -396,8 +403,10 @@ export default function HistoryOverview({
         lastFilter.keyword,
         newPage,
       );
-    } catch (error: unknown) {
-      console.error((error as { message?: string })?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     } finally {
       setIsFilterLoading(false);
     }

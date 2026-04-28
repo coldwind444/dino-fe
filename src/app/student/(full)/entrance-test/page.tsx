@@ -285,6 +285,7 @@ export default function EntranceTest() {
               "rounded-[20px] overflow-hidden cursor-pointer absolute top-0",
               "hover:brightness-110 transition-all duration-200",
             )}
+            data-testid="exit-exam-btn"
             onClick={handleExit}
           >
             <div
@@ -433,7 +434,7 @@ export default function EntranceTest() {
         {/** Main area */}
         <div className="h-full flex flex-1 flex-col gap-3 justify-around">
           {/** Exercise card */}
-          <div className="bg-white max-h-full w-full rounded-[20px] border border-[#E5E7EB] pt-10 flex flex-col gap-10 relative">
+          <div data-testid="exercise-card" className="bg-white max-h-full w-full rounded-[20px] border border-[#E5E7EB] pt-10 flex flex-col gap-10 relative">
             {/** Question number */}
             <div
               className="h-[40px] w-fit px-[30px] bg-[#23BEAA] text-white font-semibold
@@ -470,6 +471,7 @@ export default function EntranceTest() {
                 "bg-[#1DA492] h-[50px] w-[250px] rounded-[20px] overflow-hidden",
                 "cursor-pointer hover:brightness-110 transition-all duration-200",
               )}
+              data-testid="submit-exam-btn"
               onClick={handleSubmit}
             >
               <div
@@ -487,6 +489,7 @@ export default function EntranceTest() {
               className="h-12 w-fit bg-[#FF1493] rounded-2xl ml-auto mr-[10px] flex flex-row gap-[15px] relative
                                         text-white text-[18px] font-medium items-center justify-center cursor-pointer
                                         hover:brightness-110 transition-all duration-200 py-2 px-7"
+              data-testid="prev-question-btn"
               onClick={() => {
                 if (currExIdx > 0) {
                   const target = currExIdx - 1;
@@ -505,6 +508,7 @@ export default function EntranceTest() {
               className="h-12 w-fit bg-[#FF1493] rounded-2xl mr-0 flex flex-row gap-[15px] relative
                                     text-white text-[18px] font-medium items-center justify-center cursor-pointer
                                     hover:brightness-110 transition-all duration-200 py-2 px-7"
+              data-testid="next-question-btn"
               onClick={() => {
                 if (currExIdx < exercises.length - 1) {
                   const target = currExIdx + 1;

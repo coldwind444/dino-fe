@@ -10,11 +10,10 @@ import { completeProfile, getGrades, uploadAvatar, logout } from "@/apis";
 import { Toaster, toast } from "react-hot-toast";
 
 import Loader from "@/components/Loader/Loader";
-import dinoWizard from "../../../public/assets/onboarding/wizard.svg";
+import dinoWizard from "../../../public/assets/onboarding/wizard.webp";
 import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
-
 
 const MESSAGES = {
   ASK_NAME:
@@ -70,7 +69,7 @@ export default function Onboarding() {
       .then((data: string[]) => {
         setSystemAvatars(data);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.log(error));
   }, []);
 
   // Open image select dialog

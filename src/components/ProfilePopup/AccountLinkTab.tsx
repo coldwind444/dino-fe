@@ -6,6 +6,7 @@ import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { UserProfileResponse } from "@/types";
 import { getFamilyCode, getUsers, getMyFamilyMembers } from "@/apis";
 import Image from "next/image";
+import { APIError } from "@/apis/config";
 
 type AccountLinkTabProps = {
   profile: UserProfileResponse;
@@ -31,7 +32,9 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
           setFamilyCode(res);
         }
       } catch (err) {
-        console.error("Failed to fetch family code", err);
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
       }
     };
 
@@ -44,7 +47,9 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
           setParent(familyParent);
         }
       } catch (err) {
-        console.error("Failed to fetch parent data", err);
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
       }
     };
 
@@ -59,7 +64,9 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
           setLinkedStudents(users);
         }
       } catch (err) {
-        console.error("Failed to fetch linked students", err);
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
       }
     };
 

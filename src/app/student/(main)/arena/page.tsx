@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import clsx from "clsx";
-import arena from "../../../../../public/assets/arena/arena.png";
+import arena from "../../../../../public/assets/arena/arena.webp";
 import helmet from "../../../../../public/assets/arena/helmet.png";
-import r1 from "../../../../../public/assets/arena/rule_1.png";
-import r2 from "../../../../../public/assets/arena/rule_2.png";
-import r3 from "../../../../../public/assets/arena/rule_3.png";
-import r4 from "../../../../../public/assets/arena/rule_4.png";
-import r5 from "../../../../../public/assets/arena/rule_5.png";
+import r1 from "../../../../../public/assets/arena/rule_1.webp";
+import r2 from "../../../../../public/assets/arena/rule_2.webp";
+import r3 from "../../../../../public/assets/arena/rule_3.webp";
+import r4 from "../../../../../public/assets/arena/rule_4.webp";
+import r5 from "../../../../../public/assets/arena/rule_5.webp";
 
 import { roboto, baloo, patrick, patrick_sc } from "@/app/fonts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -39,8 +39,7 @@ import {
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { formatNumberAbbreviation } from "@/helpers/utils";
-
-
+import { APIError } from "@/apis/config";
 
 export default function Arena() {
   const router = useRouter();
@@ -102,7 +101,9 @@ export default function Arena() {
               }
             }
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
@@ -134,11 +135,15 @@ export default function Arena() {
                 });
                 setLeaderboard(leaderboard);
               } catch (error) {
-                console.error(error);
+                if (error instanceof APIError) {
+                  console.log(error.message);
+                }
               }
             }
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
@@ -153,7 +158,9 @@ export default function Arena() {
               fetchPreviousArenaAndLeaderboard(currentArena),
             ]);
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
@@ -163,13 +170,17 @@ export default function Arena() {
             const rank = await getRankById(userProfile.rankId);
             if (!ignore) setUserRank(rank);
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
         await Promise.allSettled([fetchArenaData(), fetchRankData()]);
       } catch (error) {
-        console.error(error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsLoading(false);
       }

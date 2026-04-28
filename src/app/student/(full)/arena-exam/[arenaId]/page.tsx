@@ -32,15 +32,12 @@ import TrueFalse from "@/components/ExerciseWebUI/TrueFalse";
 import FillIn from "@/components/ExerciseWebUI/FillIn";
 import Matching from "@/components/ExerciseWebUI/Matching";
 import Interactive from "@/components/ExerciseWebUI/Interactive";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import {
   checkAnswerForBasicExerciseType,
   cleanedAnswerArray,
 } from "@/helpers/utils";
-import { updateMissionProgress } from "@/apis/mission";
 import { APIError } from "@/apis/config";
-
-
 
 type ArenaExamProps = {
   params: {
@@ -148,15 +145,15 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         });
         setAnswers(answerMap);
       } catch (error) {
-        console.error("Initialization error:", error);
-        toast.error("Failed to load exam data");
+        if (error instanceof APIError) {
+          toast.error(error.message);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     initData();
-     
   }, [params]);
 
   // Clock Countdown logic
@@ -222,10 +219,11 @@ export default function ArenaExam({ params }: ArenaExamProps) {
       updateAnswerCorrectness();
       const currentAnswers = Array.from(answers.values());
       await upsertAnswers(cleanedAnswerArray(currentAnswers));
-      toast.success("Đã lưu tiến độ!");
-    } catch (err) {
-      console.error("Save failed:", err);
-      toast.error("Lưu tiến độ thất bại");
+      toast.success("Đã lưu tiến độ!", { toasterId: "arena-submit" });
+    } catch (error) {
+      if (error instanceof APIError) {
+        toast.error(error.message, { toasterId: "arena-submit" });
+      }
     }
   };
 
@@ -252,15 +250,12 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         correctCount: 0,
       });
 
-      await updateMissionProgress({
-        unitType: "arena",
-        amount: 1,
-      });
-
-      toast.success("Nộp bài thành công!", { id: "arena-submit" });
+      toast.success("Nộp bài thành công!", { toasterId: "arena-submit" });
       router.push("/student/arena");
-    } catch (err) {
-      console.error("Submit failed:", err);
+    } catch (error) {
+      if (error instanceof APIError) {
+        toast.error(error.message, { toasterId: "arena-submit" });
+      }
     }
   };
 
@@ -351,6 +346,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
 
   return (
     <div className="h-screen w-screen flex relative">
+      <Toaster toasterId="arena-submit" />
       <div className="h-screen w-screen bg-[#F3F4F6] flex flex-row gap-[15px] pt-10 pb-5 pr-10">
         {/** Side area */}
         <div className="w-1/5 h-full flex flex-col gap-1 relative">
@@ -361,6 +357,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
               "rounded-[20px] overflow-hidden cursor-pointer absolute top-0",
               "hover:brightness-110 transition-all duration-200",
             )}
+            data-testid="exit-exam-btn"
             onClick={handleExit}
           >
             <div
@@ -509,7 +506,10 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         {/** Main area */}
         <div className="h-full flex flex-1 flex-col gap-3 justify-around">
           {/** Exercise card */}
-          <div className="bg-white max-h-full w-full rounded-[20px] border border-[#E5E7EB] pt-10 flex flex-col gap-10 relative">
+          <div
+            data-testid="exercise-card"
+            className="bg-white max-h-full w-full rounded-[20px] border border-[#E5E7EB] pt-10 flex flex-col gap-10 relative"
+          >
             {/** Question number */}
             <div
               className="h-[40px] w-fit px-[30px] bg-[#23BEAA] text-white font-semibold
@@ -582,6 +582,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
                 "bg-[#1DA492] h-[50px] w-[250px] rounded-[20px] overflow-hidden",
                 "cursor-pointer hover:brightness-110 transition-all duration-200",
               )}
+              data-testid="submit-exam-btn"
               onClick={handleSubmit}
             >
               <div
@@ -599,6 +600,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
               className="h-12 w-fit bg-[#FF1493] rounded-2xl ml-auto mr-[10px] flex flex-row gap-[15px] relative
                                         text-white text-[18px] font-medium items-center justify-center cursor-pointer
                                         hover:brightness-110 transition-all duration-200 py-2 px-7"
+              data-testid="prev-question-btn"
               onClick={() => {
                 if (currExIdx > 0) {
                   const target = currExIdx - 1;
@@ -617,6 +619,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
               className="h-12 w-fit bg-[#FF1493] rounded-2xl mr-0 flex flex-row gap-[15px] relative
                                     text-white text-[18px] font-medium items-center justify-center cursor-pointer
                                     hover:brightness-110 transition-all duration-200 py-2 px-7"
+              data-testid="next-question-btn"
               onClick={() => {
                 if (currExIdx < exercises.length - 1) {
                   const target = currExIdx + 1;

@@ -25,6 +25,7 @@ import {
   getMyFamilyMembers,
 } from "@/apis";
 import { formatNumberAbbreviation } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 const TOPICS_PER_PAGE = 4;
 
@@ -101,7 +102,9 @@ export default function LessonsPage() {
           setIsPremium(hasPremiumParent);
         }
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setProfileLoading(false);
       }
@@ -143,7 +146,9 @@ export default function LessonsPage() {
           }
         }
       } catch (error) {
-        console.error("Error fetching lesson data:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setDataLoading(false);
       }
@@ -175,7 +180,9 @@ export default function LessonsPage() {
           setTopicsPgRes(topics);
         }
       } catch (error) {
-        console.error("Error fetching topics:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setTopicsLoading(false);
       }

@@ -59,6 +59,7 @@ export default function FillIn({ exercise, answer, onChange }: FillInProps) {
             {pIdx < parts.length - 1 && (
               <input
                 type="text"
+                data-testid="fill-in-input"
                 className="w-24 h-10 border-b-2 border-[#23BEAA] focus:border-[#F9740B] outline-none text-center text-[#F9740B] font-bold"
                 value={responses[idx] || ""}
                 onChange={(e) => handleInputChange(idx, e.target.value)}

@@ -206,7 +206,7 @@ export default function ProfileTab({
           setAvatarType("user");
         }
       } catch (error) {
-        console.error("Failed to fetch avatars:", error);
+        console.log("Failed to fetch avatars:", error);
       }
     };
 

@@ -4,11 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { roboto, sriracha } from "@/app/fonts";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
 import {
@@ -18,12 +14,10 @@ import {
   LectureResponse,
 } from "@/types";
 import { useState } from "react";
-import bagOpen from "../../../../../../../../public/assets/exercises/bag_open.png";
-import map from "../../../../../../../../public/assets/exercises/map.png";
-import paper from "../../../../../../../../public/assets/exercises/paper.png";
+import bagOpen from "../../../../../../../../public/assets/exercises/bag_open.webp";
+import map from "../../../../../../../../public/assets/exercises/map.webp";
+import paper from "../../../../../../../../public/assets/exercises/paper.webp";
 import DOMPurify from "isomorphic-dompurify";
-
-
 
 interface MilestonesViewProps {
   world: WorldResponse;

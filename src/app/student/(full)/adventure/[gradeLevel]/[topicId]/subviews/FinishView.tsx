@@ -14,15 +14,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { LectureResponse, TopicResponse } from "@/types";
 import { useEffect, useState, useRef } from "react";
- 
+
 import { createProgress, updateUserQuartz } from "@/apis";
 import Loader from "@/components/Loader/Loader";
-import { updateMissionProgress } from "@/apis/mission";
 
 const trophy = "/assets/exercises/trophy.png";
 const flags = "/assets/exercises/flags.png";
-
-
 
 interface FinishViewProps {
   grade: string;
@@ -85,14 +82,6 @@ export default function FinishView({
             lectureId: currentLecture._id,
             completion: 100,
             status: "completed",
-          }),
-          updateMissionProgress({
-            unitType: "lecture",
-            amount: 1,
-          }),
-          updateMissionProgress({
-            unitType: "exercise",
-            amount: maxScore,
           }),
         ]);
       } catch (error) {

@@ -12,8 +12,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 
-import single from "../../../../../public/assets/games/single.png";
-import pvp from "../../../../../public/assets/games/pvp.png";
+import single from "../../../../../public/assets/games/single.webp";
+import pvp from "../../../../../public/assets/games/pvp.webp";
 import { getMinigames } from "@/apis/minigame";
 import { MiniGameResponse } from "@/types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
@@ -38,7 +38,7 @@ export default function Games() {
         if (!ignore) setMinigames(minigames);
       } catch (error) {
         if (error instanceof APIError) {
-          console.error(error.message);
+          console.log(error.message);
         }
       } finally {
         setLoading(false);

@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Assessment and Arena', () => {
+  test.use({ storageState: 'playwright/.auth/student.json' });
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/auth');
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('student_user123');
-    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
-    await page.getByRole('button', { name: 'Đăng nhập' }).click();
     await page.goto('/student/home');
   });
 
@@ -124,55 +122,50 @@ test.describe('Assessment and Arena', () => {
       await joinBtn.click();
     }
 
-    // Now in the exam page
-    // 1. Multiple Choice interaction
-    const choiceOption = page.locator('.rounded-4xl.border-2').first();
-    if (await choiceOption.isVisible()) {
-      await choiceOption.click();
-      await expect(choiceOption).toHaveClass(/bg-\[#D8FFFA\]/); // Selected state color
-    }
+    // Scope exercise interactions using planned data-testid attributes
+    const exerciseCard = page.getByTestId('exercise-card');
 
-    // 2. True/False interaction
-    const trueBtn = page.getByText('Đúng', { exact: true });
-    if (await trueBtn.isVisible()) {
-      await trueBtn.click();
-      await expect(trueBtn).toHaveClass(/bg-\[#D8FFFA\]/);
-    }
+    // 1. Multiple Choice interaction (Question 1)
+    await expect(page.getByText('Câu 1')).toBeVisible();
+    const choiceOption = exerciseCard.getByTestId('choice-option').first();
+    await choiceOption.click();
+    await expect(choiceOption).toHaveClass(/bg-\[#D8FFFA\]/);
+    await page.getByTestId('next-question-btn').click();
 
-    // 3. Fill-in interaction
-    const fillInInput = page.locator('input[type="text"]').first();
-    if (await fillInInput.isVisible()) {
-      await fillInInput.fill('123');
-      await expect(fillInInput).toHaveValue('123');
-    }
-
-    // 4. Matching interaction
-    const matchingLeft = page.locator('.flex.flex-col.gap-4.w-1\\/3').first().locator('.rounded-xl.border-2').first();
-    const matchingRight = page.locator('.flex.flex-col.gap-4.w-1\\/3').last().locator('.rounded-xl.border-2').first();
-    if (await matchingLeft.isVisible() && await matchingRight.isVisible()) {
-      await matchingLeft.click();
-      await matchingRight.click();
-      // Verify pairing (both should have the paired state class/color)
-      await expect(matchingLeft).toHaveClass(/bg-\[#D8FFFA\]/);
-      await expect(matchingRight).toHaveClass(/bg-\[#D8FFFA\]/);
-    }
-
-    // 5. Interactive (Drag & Drop / Blank filling) interaction
-    const interactiveOption = page.locator('.py-3.px-8.rounded-xl.border-2').first();
-    const blank = page.getByText('Kéo vào đây').first();
-    if (await interactiveOption.isVisible() && await blank.isVisible()) {
-      const optionText = await interactiveOption.innerText();
-      await interactiveOption.click();
-      // The blank should now contain the option text
-      await expect(page.getByText(optionText).locator('..').filter({ hasText: optionText })).toBeVisible();
-    }
-
-    // 6. Navigation and Progress
-    await page.getByText('Câu sau').click();
+    // 2. True/False interaction (Question 2)
     await expect(page.getByText('Câu 2')).toBeVisible();
+    const trueBtn = exerciseCard.getByTestId('true-option');
+    await trueBtn.click();
+    await expect(trueBtn).toHaveClass(/bg-\[#D8FFFA\]/);
+    await page.getByTestId('next-question-btn').click();
 
-    // Check if progress indicator updates
-    await expect(page.getByText(/Đã làm: [1-9]\//)).toBeVisible();
+    // 3. Fill-in interaction (Question 3)
+    await expect(page.getByText('Câu 3')).toBeVisible();
+    const fillInInput = exerciseCard.getByTestId('fill-in-input').first();
+    await fillInInput.fill('123');
+    await expect(fillInInput).toHaveValue('123');
+    await page.getByTestId('next-question-btn').click();
+
+    // 4. Matching interaction (Question 4)
+    await expect(page.getByText('Câu 4')).toBeVisible();
+    const matchingLeft = exerciseCard.getByTestId('matching-left-col').getByTestId('matching-item').first();
+    const matchingRight = exerciseCard.getByTestId('matching-right-col').getByTestId('matching-item').first();
+    await matchingLeft.click();
+    await matchingRight.click();
+    await expect(matchingLeft).toHaveClass(/bg-\[#D8FFFA\]/);
+    await expect(matchingRight).toHaveClass(/bg-\[#D8FFFA\]/);
+    await page.getByTestId('next-question-btn').click();
+
+    // 5. Interactive (Drag & Drop) interaction (Question 5)
+    await expect(page.getByText('Câu 5')).toBeVisible();
+    const interactiveOption = exerciseCard.getByTestId('interactive-option').first();
+    const blank = exerciseCard.getByTestId('interactive-blank').first();
+    const optionText = await interactiveOption.innerText();
+    await interactiveOption.click();
+    await expect(exerciseCard.getByText(optionText).locator('..').filter({ hasText: optionText }).first()).toBeVisible();
+
+    // Final Progress Check
+    await expect(page.getByText(/Đã làm: 5\//)).toBeVisible();
   });
 });
 

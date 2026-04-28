@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('History View - Student Role', () => {
+  test.use({ storageState: 'playwright/.auth/student.json' });
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/auth');
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('student_user123');
-    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
-    await page.getByRole('button', { name: 'Đăng nhập' }).click();
     await page.goto('/student/history');
   });
 
@@ -44,11 +42,9 @@ test.describe('History View - Student Role', () => {
 });
 
 test.describe('History View - Parent Role', () => {
+  test.use({ storageState: 'playwright/.auth/parent.json' });
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/auth');
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('dinopr@gmail.com');
-    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
-    await page.getByRole('button', { name: 'Đăng nhập' }).click();
     await page.goto('/parent/history');
   });
 

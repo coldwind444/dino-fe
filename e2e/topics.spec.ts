@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Topics', () => {
+  test.use({ storageState: 'playwright/.auth/student.json' });
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/auth');
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('student_user123');
-    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
-    await page.getByRole('button', { name: 'Đăng nhập' }).click();
     await page.goto('/student/lessons');
   });
 

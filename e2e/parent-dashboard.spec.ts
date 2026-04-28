@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Parent Dashboard', () => {
+  test.use({ storageState: 'playwright/.auth/parent.json' });
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/auth');
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('dinopr@gmail.com');
-    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
-    await page.getByRole('button', { name: 'Đăng nhập' }).click();
     await page.goto('/parent/dashboard');
   });
 

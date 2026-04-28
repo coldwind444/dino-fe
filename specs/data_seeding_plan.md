@@ -1,80 +1,294 @@
-# Data Seeding Plan
+# Data Seeding Plan & JSON
 
-This plan details the minimal data required to seed the database to satisfy all scenarios in `complete_testcases.md`. Based on `Dino_Math_Erd.puml`, certain collections are excluded by request (`grades`, `worlds`, `lands`, `ranks`, `topics`, `academicterms`), assuming these are either pre-seeded or statically configured.
+This plan details the minimal data required to seed the database to satisfy all scenarios in the `e2e` tests. Based on `schemas.puml`, we have reduced the data to the absolute minimum needed. 
+You can use the JSON blocks below to directly insert into MongoDB.
 
 ## Optimization Strategy
-- **Minimal Users**: Create 1 Family with 1 Parent and 2 Students (one with data, one without).
-- **Shared Entities**: Use a single active Arena, Assessment, and MiniGame to test multiple scenarios.
-- **Progress Tracking**: Seed exact states for `not_started` and `completed` lectures to test different logic branches.
+- **Minimal Users**: Only users explicitly tested (1 Student with data, 1 Parent, 1 Admin, 1 Reset User, 1 New Student for onboarding).
+- **Shared Entities**: Use a single active Arena, Assessment, Topic, and Lecture.
+- **Specific Exercises**: For the `e2e/assessment-arena.spec.ts` test, we ensure exactly 5 exercises with specific types for the Arena, and 1 for the Assessment.
 
 ---
 
-## Collections to Seed
+### 1. Families (`families`)
+```json
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b90"},
+    "name": "Test Family",
+    "inviteCode": "INVITE123",
+    "inviteSingleUse": false
+  }
+]
+```
 
-### 1. Families (`Family`)
-- **Quantity**: 1
-- **Data**: 
-  - `_id`: `family1`
-  - `name`: "Test Family"
-  - `inviteCode`: "INVITE123"
+### 2. Grades (`grades`)
+```json
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b9f"},
+    "name": "Grade 1",
+    "level": 1,
+    "description": "First Grade"
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b92"},
+    "name": "Grade 2",
+    "level": 2,
+    "description": "Second Grade"
+  }
+]
+```
 
-### 2. Users (`User`)
-- **Quantity**: 4
-- **Data**:
-  1. **Student 1 (Has Data)**: `_id: student1`, `role: student`, `familyId: family1`, `username: student1`, `password: Student1@rcv`, `gradeId: grade1` (assumed).
-  2. **Student 2 (No Data)**: `_id: student2`, `role: student`, `familyId: family1`, `username: student2_nodata`, `password: Student2@rcv`.
-  3. **Parent**: `_id: parent1`, `role: parent`, `familyId: family1`, `email: testparent@example.com`, `password: Parent1@`.
-  4. **Admin (Login Blocked)**: `_id: admin1`, `role: admin`, `email: admin@dino.com`, `password: admin@123`.
-  5. *(Implicit Google Parent)*: Needs Google auth setup for `testpr@gmail.com`.
-  6. **Reset User**: `_id: reset_user1`, `role: student`, `username: reset_user`, `password: OldPassword@1`, `resetPasswordToken: "123456"`, `resetPasswordExpires: "2026-12-31T23:59:59Z"`.
-  7. **New Student 1 (Onboarding)**: `_id: new_student1`, `role: student`, `username: new_student1`, `password: NewStudent1@`, `familyId: null`, `gradeId: null`.
-  8. **New Student 2 (Onboarding)**: `_id: new_student2`, `role: student`, `username: new_student2`, `password: NewStudent2@`, `familyId: null`, `gradeId: null`.
+### 3. Users (`users`)
+```json
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b91"},
+    "username": "student_user123",
+    "password": "$2b$10$YourHashedPasswordFor_P@ssw0rd2026!",
+    "role": "student",
+    "status": "active",
+    "familyId": {"$oid": "60d5ec9af682fbd39a1b8b90"},
+    "gradeId": {"$oid": "60d5ec9af682fbd39a1b8b92"}
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b93"},
+    "email": "testparent@example.com",
+    "password": "$2b$10$YourHashedPasswordFor_Parent1@",
+    "role": "parent",
+    "status": "active",
+    "familyId": {"$oid": "60d5ec9af682fbd39a1b8b90"}
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b94"},
+    "email": "admin@dino.com",
+    "password": "$2b$10$YourHashedPasswordFor_admin@123",
+    "role": "admin",
+    "status": "active"
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b95"},
+    "username": "reset_user",
+    "password": "$2b$10$YourHashedPasswordFor_OldPassword@1",
+    "role": "student",
+    "status": "active",
+    "resetPasswordToken": "123456",
+    "resetPasswordExpires": {"$date": "2026-12-31T23:59:59Z"}
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b96"},
+    "username": "new_student1",
+    "password": "$2b$10$YourHashedPasswordFor_NewStudent1@",
+    "role": "student",
+    "status": "active"
+  }
+]
+```
 
-### 3. Lectures (`Lecture`)
-- **Quantity**: 2 (to simulate missing/available data and progress)
-- **Data**:
-  1. `_id: lecture1`, `topicId: topic1` (assumed), `status: active`.
-  2. `_id: lecture2`, `topicId: topic1`, `status: inactive`.
+### 4. Topics (`topics`)
+```json
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b97"},
+    "title": "Các phép tính với số có 2 chữ số",
+    "description": "Topic for milestones testing",
+    "level": 1,
+    "gradeId": {"$oid": "60d5ec9af682fbd39a1b8b92"},
+    "isPremium": false
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b99"},
+    "title": "Hình học cơ bản",
+    "description": "Basic geometry",
+    "level": 1,
+    "gradeId": {"$oid": "60d5ec9af682fbd39a1b8b92"},
+    "isPremium": false
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b9a"},
+    "title": "Dạng toán tìm x",
+    "description": "Finding x",
+    "level": 1,
+    "gradeId": {"$oid": "60d5ec9af682fbd39a1b8b92"},
+    "isPremium": false
+  }
+]
+```
 
-### 4. Exercises (`Exercise`)
-- **Quantity**: 3
-- **Data**:
-  1. **Assessment Exercise**: `_id: ex1`, `category: assessment`, `assessmentId: assessment1`, `correctAnswer: "A"`.
-  2. **Arena Exercise**: `_id: ex2`, `category: arena`, `arenaId: arena1`, `correctAnswer: "2"`.
-  3. **Lecture Exercise**: `_id: ex3`, `category: lecture`, `lectureId: lecture1`, `correctAnswer: "1"`.
+### 5. Lectures (`lectures`)
+```json
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b98"},
+    "title": "Cộng trừ số có 2 chữ số (không nhớ)",
+    "contentType": "knowledge",
+    "topicId": {"$oid": "60d5ec9af682fbd39a1b8b97"},
+    "status": "active"
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b9b"},
+    "title": "Cộng trừ số có 2 chữ số (có nhớ)",
+    "contentType": "knowledge",
+    "topicId": {"$oid": "60d5ec9af682fbd39a1b8b97"},
+    "status": "active"
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8b9c"},
+    "title": "Nhân chia số có 2 chữ số",
+    "contentType": "knowledge",
+    "topicId": {"$oid": "60d5ec9af682fbd39a1b8b97"},
+    "status": "active"
+  }
+]
+```
 
-### 5. Progress (`Progress`)
-- **Quantity**: 2
-- **Data**:
-  1. `userId: student1`, `lectureId: lecture1`, `status: not_started`.
-  2. `userId: student1`, `lectureId: lecture2`, `status: completed`.
+### 6. Assessments (`assessments`) & Arenas (`arenas`)
+```json
+// assessments
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8ba1"},
+    "title": "Entrance Test",
+    "gradeId": {"$oid": "60d5ec9af682fbd39a1b8b92"},
+    "published": true
+  }
+]
 
-### 6. Lecture Results (`LectureResult`)
-- **Quantity**: 1 (For History/Dashboard testing)
-- **Data**: 
-  - `userId: student1`, `lectureId: lecture2`, `status: pass`, `finishedAt: "2024-06-01T10:00:00Z"`, `metadata.topicTitle: "Math"`.
+// arenas
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8ba2"},
+    "title": "Weekly Arena",
+    "period": "weekly",
+    "isActive": true,
+    "gradeId": {"$oid": "60d5ec9af682fbd39a1b8b92"}
+  }
+]
+```
 
-### 7. Missions & Achievements (`Mission`, `Achievement`)
-- **Quantity**: 2 Missions, 2 Achievements
-- **Data**:
-  1. **Mission 1**: `_id: mission_login`, `unitType: daily_login`.
-     **Achievement 1**: `userId: student1`, `missionId: mission_login`, `finished: true`, `claimed: false`.
-  2. **Mission 2**: `_id: mission_lecture`, `unitType: lecture`.
-     **Achievement 2**: `userId: student1`, `missionId: mission_lecture`, `finished: true`, `claimed: false`.
+### 7. Exercises (`exercises`)
+**Note on Structure**: For mixed types and Objects (like `options`, `pairs`, `metadata`, `content`), their exact schema isn't fully defined. Based on the tests in `e2e/assessment-arena.spec.ts`:
+- We need **1 exercise** for the **Assessment** (Entrance test) so the student can click 'NỘP BÀI' (Submit) and confirm. We use `type: "choice"`.
+- We need **5 exercises** for the **Arena** to cover the interactive flows. The types must be in this specific order:
+  1. `choice` (Multiple Choice)
+  2. `true_false` (True / False)
+  3. `fill_in` (Fill in the blank)
+  4. `matching` (Matching pairs)
+  5. `interactive` (Drag & Drop or similar interactive blank)
+  
+You only need to supply enough valid `options` or `pairs` JSON structure to render the options the tests expect (e.g., at least one option to click).
 
-### 8. Assessments (`Assessment`, `AssessmentResult`)
-- **Quantity**: 1 Assessment, 1 Result
-- **Data**:
-  1. **Assessment**: `_id: assessment1`, `gradeId: grade1` (assumed), `published: true`, `title: "Assessment 1"`.
-  2. **Result**: `userId: student1`, `assessmentId: assessment1`, `status: in_progress`, `createdAt: "2024-05-01T10:00:00Z"`.
+```json
+[
+  // 1 Assessment Exercise
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bb1"},
+    "category": "assessment",
+    "type": "choice",
+    "assessmentId": {"$oid": "60d5ec9af682fbd39a1b8ba1"},
+    "question": "Assessment Question 1",
+    "order": 1
+  },
+  
+  // 5 Arena Exercises
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bb2"},
+    "category": "arena",
+    "type": "choice",
+    "arenaId": {"$oid": "60d5ec9af682fbd39a1b8ba2"},
+    "question": "Arena Question 1 (Multiple Choice)",
+    "order": 1
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bb3"},
+    "category": "arena",
+    "type": "true_false",
+    "arenaId": {"$oid": "60d5ec9af682fbd39a1b8ba2"},
+    "question": "Arena Question 2 (True/False)",
+    "order": 2
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bb4"},
+    "category": "arena",
+    "type": "fill_in",
+    "arenaId": {"$oid": "60d5ec9af682fbd39a1b8ba2"},
+    "question": "Arena Question 3 (Fill In)",
+    "order": 3
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bb5"},
+    "category": "arena",
+    "type": "matching",
+    "arenaId": {"$oid": "60d5ec9af682fbd39a1b8ba2"},
+    "question": "Arena Question 4 (Matching)",
+    "order": 4
+  },
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bb6"},
+    "category": "arena",
+    "type": "interactive",
+    "arenaId": {"$oid": "60d5ec9af682fbd39a1b8ba2"},
+    "question": "Arena Question 5 (Interactive)",
+    "order": 5
+  }
+]
+```
 
-### 9. Arenas (`Arena`, `Participation`)
-- **Quantity**: 1 Arena, 1 Participation
-- **Data**:
-  1. **Arena**: `_id: arena1`, `gradeId: grade1` (assumed), `isActive: true`.
-  2. **Participation**: `userId: student1`, `arenaId: arena1`, `status: finished`, `finishedAt: "2024-07-01T10:00:00Z"`.
+### 8. MiniGames (`minigames`)
+```json
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bc1"},
+    "title": "Math Quiz Challenge",
+    "isActive": true
+  }
+]
+```
 
-### 10. MiniGames (`MiniGame`)
-- **Quantity**: 1
-- **Data**:
-  1. `_id: game1`, `title: "Math Quiz Challenge"`, `isActive: true`.
+### 9. Missions (`missions`) & Achievements (`achievements`)
+```json
+// missions
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bc2"},
+    "title": "Daily Login",
+    "unitType": "daily_login",
+    "isActive": true
+  }
+]
+
+// achievements
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bc3"},
+    "userId": {"$oid": "60d5ec9af682fbd39a1b8b91"},
+    "missionId": {"$oid": "60d5ec9af682fbd39a1b8bc2"},
+    "finished": true,
+    "claimed": false
+  }
+]
+```
+
+### 10. Progress (`progresses`) & Results
+```json
+// progresses
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bc4"},
+    "userId": {"$oid": "60d5ec9af682fbd39a1b8b91"},
+    "lectureId": {"$oid": "60d5ec9af682fbd39a1b8b98"},
+    "status": "completed"
+  }
+]
+
+// lectureresults
+[
+  {
+    "_id": {"$oid": "60d5ec9af682fbd39a1b8bc5"},
+    "userId": {"$oid": "60d5ec9af682fbd39a1b8b91"},
+    "lectureId": {"$oid": "60d5ec9af682fbd39a1b8b98"},
+    "status": "pass"
+  }
+]
+```

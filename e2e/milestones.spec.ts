@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Milestones (Adventure Mode)', () => {
+  test.use({ storageState: 'playwright/.auth/student.json' });
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/auth');
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('student_user123');
-    await page.getByPlaceholder('Mật khẩu').fill('P@ssw0rd2026!');
-    await page.getByRole('button', { name: 'Đăng nhập' }).click();
     await page.goto('/student/lessons');
     const topicCard = page.locator(':has-text("Các phép tính với số có 2 chữ số")').last();
     await topicCard.click();
@@ -15,6 +13,8 @@ test.describe('Milestones (Adventure Mode)', () => {
     await expect(page.getByText(/Đang ở chế độ phiêu lưu/i)).toBeVisible();
     await expect(page.getByText(/CHỦ ĐỀ/i)).toBeVisible();
     await expect(page.getByText('Cộng trừ số có 2 chữ số (không nhớ)')).toBeVisible();
+    await expect(page.getByText('Cộng trừ số có 2 chữ số (có nhớ)')).toBeVisible();
+    await expect(page.getByText('Nhân chia số có 2 chữ số')).toBeVisible();
   });
 
   test('TC-05-02: Missing data load', async ({ page }) => {
@@ -25,8 +25,31 @@ test.describe('Milestones (Adventure Mode)', () => {
     const nextButton = page.locator('svg[data-icon="arrow-right"]');
     const prevButton = page.locator('svg[data-icon="arrow-left"]');
 
+    // Start with first lecture
+    await expect(page.getByText('Cộng trừ số có 2 chữ số (không nhớ)')).toBeVisible();
+
+    // Move to second lecture
     if (await nextButton.isVisible()) {
       await nextButton.click();
+      await expect(page.getByText('Cộng trừ số có 2 chữ số (có nhớ)')).toBeVisible();
+
+      // Move to third lecture
+      if (await nextButton.isVisible()) {
+        await nextButton.click();
+        await expect(page.getByText('Nhân chia số có 2 chữ số')).toBeVisible();
+
+        // Move back to second lecture
+        if (await prevButton.isVisible()) {
+          await prevButton.click();
+          await expect(page.getByText('Cộng trừ số có 2 chữ số (có nhớ)')).toBeVisible();
+        }
+      }
+
+      // Move back to first lecture (if we were on second)
+      if (await prevButton.isVisible() && await page.getByText('Cộng trừ số có 2 chữ số (có nhớ)').isVisible()) {
+        await prevButton.click();
+        await expect(page.getByText('Cộng trừ số có 2 chữ số (không nhớ)')).toBeVisible();
+      }
     }
   });
 

@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Toaster, toast } from "react-hot-toast";
 
-import mascot from "../../../public/assets/auth/dino_3d.avif";
+import mascot from "../../../public/assets/auth/dino_3d.webp";
 import student from "../../../public/assets/auth/student.png";
 import parents from "../../../public/assets/auth/parents.png";
 import leftHand from "../../../public/assets/auth/left.svg";
@@ -642,10 +642,13 @@ export default function Auth() {
           {/** Mascot 3D */}
           <div className="absolute right-10 bottom-10 flex items-end justify-center h-full w-1/2 overflow-hidden pointer-events-none">
             <Image
-              className="max-h-[150%] w-auto object-contain select-none"
+              className="w-auto object-contain select-none"
               src={mascot}
               alt=""
+              height={950}
+              width={950}
               priority
+              style={{ width: "100%", height: "auto" }}
             />
           </div>
         </div>

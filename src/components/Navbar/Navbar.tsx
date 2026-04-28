@@ -31,8 +31,7 @@ import ProfilePopup from "../ProfilePopup/ProfilePopup";
 import { getUserProfile } from "@/apis/user";
 import { logout } from "@/apis/auth";
 import { useLessonStore } from "@/stores/lessonStore";
-
-
+import { APIError } from "@/apis/config";
 
 const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   [
@@ -82,7 +81,9 @@ export default function Navbar({
       clearLessonStore();
       router.push("/auth");
     } catch (error) {
-      console.error("Logout failed:", error);
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     }
   };
 
@@ -102,7 +103,9 @@ export default function Navbar({
         setUsername(res.name.split(" ").pop() || "");
         setAvatar(res.avatarUrl);
       } catch (error) {
-        console.error("Error fetching user profile:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       }
     };
     fetchUserProfile();

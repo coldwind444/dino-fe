@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { baloo } from "@/app/fonts";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import boy from "../../../public/assets/home/boy_riding_pencil.png";
+import boy from "../../../public/assets/home/boy_riding_pencil.webp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faClose } from "@fortawesome/free-solid-svg-icons";
 import { TermResponse, TopicResponse } from "@/types";
@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import { getTermById } from "@/apis";
 import { useLessonStore } from "@/stores/lessonStore";
 import { useRouter } from "next/navigation";
-
 
 export default function TopicRecommendPopup({
   close,
@@ -160,12 +159,17 @@ export default function TopicRecommendPopup({
                                             hover:gap-7"
                   onClick={() => {
                     if (topic && topic._id) {
-                      router.push(`/student/adventure/${gradeLevel}/${topic?._id}`);
+                      router.push(
+                        `/student/adventure/${gradeLevel}/${topic?._id}`,
+                      );
                     }
                   }}
                 >
                   <span
-                    className={clsx("text-center leading-tight", baloo.className)}
+                    className={clsx(
+                      "text-center leading-tight",
+                      baloo.className,
+                    )}
                   >
                     HỌC <br /> NGAY
                   </span>
@@ -178,10 +182,20 @@ export default function TopicRecommendPopup({
               </>
             ) : (
               <div className="flex flex-col items-center justify-center h-full gap-5 pb-10">
-                <p className={clsx(baloo.className, "text-2xl text-amber-500 font-bold text-center leading-relaxed px-5")}>
-                  Hiện tại chưa có chủ đề gợi ý nào mới cho bạn hôm nay!
+                <p
+                  className={clsx(
+                    baloo.className,
+                    "text-2xl text-amber-500 font-bold text-center leading-relaxed px-5",
+                  )}
+                >
+                  Hiện tại chưa có chủ đề gợi ý nào mới <br /> cho bạn hôm nay!
                 </p>
-                <p className={clsx(baloo.className, "text-lg text-gray-500 font-medium text-center")}>
+                <p
+                  className={clsx(
+                    baloo.className,
+                    "text-lg text-gray-500 font-medium text-center",
+                  )}
+                >
                   Hãy quay lại sau hoặc chọn một chủ đề khác để học nhé.
                 </p>
               </div>

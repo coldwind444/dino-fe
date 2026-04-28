@@ -30,6 +30,7 @@ import TopicRecommendPopup from "@/components/TopicRecommendPopup/TopicRecommend
 import { TopicResponse } from "@/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { APIError } from "@/apis/config";
 
 const trophy = "/assets/home/trophy.png";
 
@@ -114,7 +115,9 @@ export default function StudentHome() {
           setCompletedTopics(filteredTopics);
         }
       } catch (error) {
-        console.error(error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsLoading(false);
       }

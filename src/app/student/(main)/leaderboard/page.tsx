@@ -17,6 +17,7 @@ import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { formatNumberAbbreviation, isValidUrl } from "@/helpers/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserAlt } from "@fortawesome/free-solid-svg-icons";
+import { APIError } from "@/apis/config";
 
 const gradientColors = [
   "from-yellow-400 to-orange-400",
@@ -59,7 +60,9 @@ export default function LeaderboardContent() {
           setLeaderboardMyRank(myRank);
         }
       } catch (error) {
-        console.error("Error fetching leaderboard data:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsLoading(false);
       }

@@ -69,7 +69,7 @@ export default function Onboarding() {
       .then((data: string[]) => {
         setSystemAvatars(data);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.log(error));
   }, []);
 
   // Open image select dialog

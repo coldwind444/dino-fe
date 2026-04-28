@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faClose } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
+import { APIError } from "@/apis/config";
 
 export default function MissionPage() {
   // Data state
@@ -59,7 +60,9 @@ export default function MissionPage() {
       const data = await getMyMission();
       setAchievements(data);
     } catch (error) {
-      console.error("Error claiming mission:", error);
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     } finally {
       setClaimingId(null);
     }
@@ -75,7 +78,9 @@ export default function MissionPage() {
         const data = await getMyMission();
         if (!ignore) setAchievements(data);
       } catch (error) {
-        console.error("Error fetching missions:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setLoading(false);
       }

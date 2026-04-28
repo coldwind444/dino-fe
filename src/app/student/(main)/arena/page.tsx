@@ -39,6 +39,7 @@ import {
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { formatNumberAbbreviation } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 export default function Arena() {
   const router = useRouter();
@@ -100,7 +101,9 @@ export default function Arena() {
               }
             }
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
@@ -132,11 +135,15 @@ export default function Arena() {
                 });
                 setLeaderboard(leaderboard);
               } catch (error) {
-                console.error(error);
+                if (error instanceof APIError) {
+                  console.log(error.message);
+                }
               }
             }
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
@@ -151,7 +158,9 @@ export default function Arena() {
               fetchPreviousArenaAndLeaderboard(currentArena),
             ]);
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
@@ -161,13 +170,17 @@ export default function Arena() {
             const rank = await getRankById(userProfile.rankId);
             if (!ignore) setUserRank(rank);
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
         await Promise.allSettled([fetchArenaData(), fetchRankData()]);
       } catch (error) {
-        console.error(error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsLoading(false);
       }

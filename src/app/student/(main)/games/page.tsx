@@ -38,7 +38,7 @@ export default function Games() {
         if (!ignore) setMinigames(minigames);
       } catch (error) {
         if (error instanceof APIError) {
-          console.error(error.message);
+          console.log(error.message);
         }
       } finally {
         setLoading(false);

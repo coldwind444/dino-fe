@@ -27,8 +27,6 @@ import { useLessonStore } from "@/stores/lessonStore";
 import { cleanedAnswerArray } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
 
-
-
 interface ExerciseViewProps {
   currentLecture: LectureResponse;
   userId: string;
@@ -160,7 +158,7 @@ export default function ExerciseView({
       onFinish(exercises.length);
     } catch (error) {
       if (error instanceof APIError) {
-        console.error(error.message);
+        console.log(error.message);
       }
       setIsSubmitting(false);
     }
@@ -176,7 +174,9 @@ export default function ExerciseView({
         });
         setExercises(exs.sort((a, b) => a.order - b.order));
       } catch (error) {
-        console.error("Error fetching exercises:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       }
     };
     fetchExercises();

@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HistoryRecord, AnswerResponse, ExerciseResponse } from "@/types";
 import { getAnswers } from "@/apis/study";
+import { APIError } from "@/apis/config";
 
 interface HistoryDetailProps {
   onBack: () => void;
@@ -95,7 +96,9 @@ export default function HistoryDetail({ onBack, record }: HistoryDetailProps) {
         setLiveTotal(answers.length);
         setLiveCorrect(answers.filter((a) => a.isCorrect).length);
       } catch (err) {
-        console.error("HistoryDetail fetch error:", err);
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
       } finally {
         setIsLoading(false);
       }

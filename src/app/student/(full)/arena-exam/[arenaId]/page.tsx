@@ -32,7 +32,7 @@ import TrueFalse from "@/components/ExerciseWebUI/TrueFalse";
 import FillIn from "@/components/ExerciseWebUI/FillIn";
 import Matching from "@/components/ExerciseWebUI/Matching";
 import Interactive from "@/components/ExerciseWebUI/Interactive";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import {
   checkAnswerForBasicExerciseType,
   cleanedAnswerArray,
@@ -145,8 +145,9 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         });
         setAnswers(answerMap);
       } catch (error) {
-        console.error("Initialization error:", error);
-        toast.error("Failed to load exam data");
+        if (error instanceof APIError) {
+          toast.error(error.message);
+        }
       } finally {
         setLoading(false);
       }
@@ -218,10 +219,11 @@ export default function ArenaExam({ params }: ArenaExamProps) {
       updateAnswerCorrectness();
       const currentAnswers = Array.from(answers.values());
       await upsertAnswers(cleanedAnswerArray(currentAnswers));
-      toast.success("Đã lưu tiến độ!");
-    } catch (err) {
-      console.error("Save failed:", err);
-      toast.error("Lưu tiến độ thất bại");
+      toast.success("Đã lưu tiến độ!", { toasterId: "arena-submit" });
+    } catch (error) {
+      if (error instanceof APIError) {
+        toast.error(error.message, { toasterId: "arena-submit" });
+      }
     }
   };
 
@@ -248,10 +250,12 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         correctCount: 0,
       });
 
-      toast.success("Nộp bài thành công!", { id: "arena-submit" });
+      toast.success("Nộp bài thành công!", { toasterId: "arena-submit" });
       router.push("/student/arena");
-    } catch (err) {
-      console.error("Submit failed:", err);
+    } catch (error) {
+      if (error instanceof APIError) {
+        toast.error(error.message, { toasterId: "arena-submit" });
+      }
     }
   };
 
@@ -342,6 +346,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
 
   return (
     <div className="h-screen w-screen flex relative">
+      <Toaster toasterId="arena-submit" />
       <div className="h-screen w-screen bg-[#F3F4F6] flex flex-row gap-[15px] pt-10 pb-5 pr-10">
         {/** Side area */}
         <div className="w-1/5 h-full flex flex-col gap-1 relative">

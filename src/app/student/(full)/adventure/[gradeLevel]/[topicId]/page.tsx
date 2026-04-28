@@ -21,6 +21,7 @@ import {
   UserProfileResponse,
 } from "@/types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { APIError } from "@/apis/config";
 
 interface LessonsPageProps {
   params: {
@@ -63,7 +64,9 @@ export default function LessonsPage({ params }: LessonsPageProps) {
         setLectures(lectures);
         setUser(user);
       } catch (error) {
-        console.error("Error fetching world data:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setLoading(false);
       }

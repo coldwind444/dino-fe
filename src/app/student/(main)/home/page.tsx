@@ -30,7 +30,6 @@ import TopicRecommendPopup from "@/components/TopicRecommendPopup/TopicRecommend
 import { TopicResponse } from "@/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { updateMissionProgress } from "@/apis/mission";
 
 const trophy = "/assets/home/trophy.png";
 
@@ -90,7 +89,12 @@ export default function StudentHome() {
         if (ignore) return;
 
         // Fetch recent studied topics
-        if (recentTopicsRes && recentTopicsRes.length > 0 && gradeRes && gradeRes.length > 0) {
+        if (
+          recentTopicsRes &&
+          recentTopicsRes.length > 0 &&
+          gradeRes &&
+          gradeRes.length > 0
+        ) {
           const filteredTopics = recentTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
@@ -98,7 +102,12 @@ export default function StudentHome() {
         }
 
         // Fetch completed topics
-        if (compTopicsRes && compTopicsRes.length > 0 && gradeRes && gradeRes.length > 0) {
+        if (
+          compTopicsRes &&
+          compTopicsRes.length > 0 &&
+          gradeRes &&
+          gradeRes.length > 0
+        ) {
           const filteredTopics = compTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
@@ -168,19 +177,7 @@ export default function StudentHome() {
       }
     };
 
-    const updateLogin = async () => {
-      try {
-        await updateMissionProgress({
-          unitType: "daily_login",
-          amount: 1,
-        });
-      } catch (error) {
-        console.log("Failed to update login.", error);
-      }
-    };
-
     fetchData();
-    updateLogin();
 
     return () => {
       ignore = true;
@@ -196,6 +193,7 @@ export default function StudentHome() {
       {showAssessmentFloatButton && (
         <div
           className="absolute h-15 w-15 top-25 right-5 cursor-pointer hover:brightness-110 z-20"
+          data-testid="assessment-float-btn"
           onClick={() => setIsEntranceTestModalOpened(true)}
         >
           {/* Ping circle */}

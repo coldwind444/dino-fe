@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Toaster, toast } from "react-hot-toast";
 
-import mascot from "../../../public/assets/auth/dino_3d.svg";
+import mascot from "../../../public/assets/auth/dino_3d.avif";
 import student from "../../../public/assets/auth/student.png";
 import parents from "../../../public/assets/auth/parents.png";
 import leftHand from "../../../public/assets/auth/left.svg";
@@ -28,7 +28,6 @@ import { useRouter } from "next/navigation";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
 import { APIError } from "@/apis/config";
-
 
 const ROLES = {
   STUDENT: "student",

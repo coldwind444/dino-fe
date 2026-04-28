@@ -5,7 +5,7 @@ import { roboto } from "@/app/fonts";
 import top1 from "../../../../../public/assets/leaderboard/top1.png";
 import top2 from "../../../../../public/assets/leaderboard/top2.svg";
 import top3 from "../../../../../public/assets/leaderboard/top3.svg";
-import dino from "../../../../../public/assets/leaderboard/dino_trophy.png";
+import dino from "../../../../../public/assets/leaderboard/dino_trophy.webp";
 import {
   MyPositionInRankResponse,
   QuartzLeaderboardItemResponse,
@@ -17,7 +17,6 @@ import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { formatNumberAbbreviation, isValidUrl } from "@/helpers/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserAlt } from "@fortawesome/free-solid-svg-icons";
-
 
 const gradientColors = [
   "from-yellow-400 to-orange-400",

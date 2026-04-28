@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import mission from "../../../../../public/assets/mission/mission.png";
+import mission from "../../../../../public/assets/mission/mission.webp";
 import { AchievementResponse } from "@/types";
 import { claimMissionReward, getMyMission } from "@/apis/mission";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";

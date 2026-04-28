@@ -82,11 +82,6 @@ export interface CreateLectureResultRequest {
   timeTaken: number;
 }
 
-export interface UpdateMissionProgressRequest {
-  unitType: string;
-  amount: number;
-}
-
 export interface PurchasePremiumRequest {
   packageId: string;
   paymentMethod: 'momo' | 'zalopay' | 'vnpay' | 'bank_transfer';

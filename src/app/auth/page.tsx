@@ -48,8 +48,8 @@ const AUTHSTEPS = {
 
 export default function Auth() {
   const router = useRouter();
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim() ?? "";
-  const hasGoogleClientId = clientId.length > 0;
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+  const hasGoogleClientId = clientId.trim().length > 0;
 
   // UI states
   const [tabIndex, setTabIndex] = useState(TABS.LOG_IN);

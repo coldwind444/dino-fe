@@ -164,7 +164,7 @@ export default function HistoryOverview({
   onViewDetail,
 }: HistoryOverviewProps) {
   const [userId, setUserId] = useState<string>("");
-  const [stats, setStats] = useState<StudentStatsResponse | null>(null);
+  const [, setStats] = useState<StudentStatsResponse | null>(null);
   const [records, setRecords] = useState<HistoryRecord[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);

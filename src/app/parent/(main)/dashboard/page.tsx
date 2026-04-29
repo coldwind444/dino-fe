@@ -31,8 +31,8 @@ export default function Dashboard() {
     studentId?: string,
     startDate?: Date,
     endDate?: Date,
-    category?: string,
-    keyword?: string,
+    _category?: string,
+    _keyword?: string,
   ): Promise<void> => {
     if (!studentId || !startDate || !endDate) {
       return;

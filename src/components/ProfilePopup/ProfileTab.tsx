@@ -9,8 +9,6 @@ import clsx from "clsx";
 import { getGrades, updateUserProfile, uploadAvatar } from "@/apis";
 import { Toaster, toast } from "react-hot-toast";
 import Loader from "../Loader/Loader";
-// 1. Import useRouter
-import { useRouter } from "next/navigation";
 import { APIError } from "@/apis/config";
 import { useLessonStore } from "@/stores/lessonStore";
 

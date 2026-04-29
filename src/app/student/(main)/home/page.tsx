@@ -185,6 +185,7 @@ export default function StudentHome() {
     return () => {
       ignore = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading || !username) {

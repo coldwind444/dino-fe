@@ -2,20 +2,15 @@
 
 import Image from "next/image";
 import clsx from "clsx";
-import arena from "../../../../../public/assets/arena/arena.png";
+import arena from "../../../../../public/assets/arena/arena.webp";
 import helmet from "../../../../../public/assets/arena/helmet.png";
-import r1 from "../../../../../public/assets/arena/rule_1.png";
-import r2 from "../../../../../public/assets/arena/rule_2.png";
-import r3 from "../../../../../public/assets/arena/rule_3.png";
-import r4 from "../../../../../public/assets/arena/rule_4.png";
-import r5 from "../../../../../public/assets/arena/rule_5.png";
+import r1 from "../../../../../public/assets/arena/rule_1.webp";
+import r2 from "../../../../../public/assets/arena/rule_2.webp";
+import r3 from "../../../../../public/assets/arena/rule_3.webp";
+import r4 from "../../../../../public/assets/arena/rule_4.webp";
+import r5 from "../../../../../public/assets/arena/rule_5.webp";
 
-import {
-  Baloo_2,
-  Patrick_Hand,
-  Patrick_Hand_SC,
-  Roboto,
-} from "next/font/google";
+import { roboto, baloo, patrick, patrick_sc } from "@/app/fonts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeftLong,
@@ -31,6 +26,7 @@ import {
   RankResponse,
   UserProfileResponse,
   LeaderboardResponse,
+  MyPositionInRankResponse,
 } from "@/types";
 import {
   getUserProfile,
@@ -38,14 +34,12 @@ import {
   getParticipations,
   getRankById,
   getArena,
-  getLeaderboard,
+  getArenaLeaderboard,
+  getMyRank,
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
-
-const roboto = Roboto();
-const baloo = Baloo_2();
-const patrick = Patrick_Hand({ weight: "400" });
-const patrick_sc = Patrick_Hand_SC({ weight: "400" });
+import { formatNumberAbbreviation } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 export default function Arena() {
   const router = useRouter();
@@ -62,6 +56,7 @@ export default function Arena() {
   const [previousArena, setPreviousArena] = useState<ArenaResponse | null>(
     null,
   );
+  const [myRank, setMyRank] = useState<MyPositionInRankResponse | null>(null);
 
   // UI states
   const [isLoading, setIsLoading] = useState(false);
@@ -79,101 +74,123 @@ export default function Arena() {
     return `${d}d ${h}h ${m}m`;
   };
 
-  const findUserRank = () => {
-    if (!leaderboard?.leaderboard || !userProfile) return 0;
-    const res = leaderboard.leaderboard.findIndex(
-      (record) => record.user._id === userProfile._id,
-    );
-    return res + 1;
-  };
-
   useEffect(() => {
+    let ignore = false;
+
+    // Fetch initial data
     const fetchData = async () => {
       try {
         setIsLoading(true);
         const userProfile = await getUserProfile();
-        setUserProfile(userProfile);
+        const myRank = await getMyRank();
+        if (!ignore) {
+          setUserProfile(userProfile);
+          setMyRank(myRank);
+        }
 
+        // Fetch participation data
         const fetchParticipationData = async (currentArena: ArenaResponse) => {
           try {
             const userParticipation = await getParticipations({
               userId: userProfile._id,
               arenaId: currentArena._id,
             });
-            if (userParticipation.length === 1) {
+            if (!ignore && userParticipation.length === 1) {
               if (userParticipation[0].status === "submitted") {
                 setArenaDone(true);
               }
             }
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
+        // Fetch previous arena and leaderboard
         const fetchPreviousArenaAndLeaderboard = async (
           currentArena: ArenaResponse,
         ) => {
           try {
-            const arenas = await getArena({ gradeId: userProfile.gradeId });
-            const endArenas = arenas
-              .filter(
-                (arena) =>
-                  arena.isActive === false &&
-                  arena.endTime <= currentArena.startTime,
-              )
-              .sort((a, b) => b.startTime.localeCompare(a.startTime));
-            const previousArena = endArenas.sort((a, b) =>
-              b.startTime.localeCompare(a.startTime),
-            )[0];
+            // Get all arenas for the user's grade that is not ongoing
+            const arenas = await getArena({
+              gradeId: userProfile.gradeId,
+              isActive: false,
+            });
 
-            if (previousArena) {
+            // Filter the past arenas and sort by start time in descending order
+            const endArenas = arenas
+              .filter((arena) => arena.endTime <= currentArena.startTime)
+              .sort((a, b) => b.startTime.localeCompare(a.startTime));
+
+            // Get the most recent past arena
+            const previousArena = endArenas[0];
+
+            if (!ignore && previousArena) {
               setPreviousArena(previousArena);
               try {
-                const leaderboard = await getLeaderboard({
+                const leaderboard = await getArenaLeaderboard({
                   arenaId: previousArena._id,
                   limit: 20,
                 });
                 setLeaderboard(leaderboard);
               } catch (error) {
-                console.error(error);
+                if (error instanceof APIError) {
+                  console.log(error.message);
+                }
               }
             }
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
+        // Fetch arena data
         const fetchArenaData = async () => {
           try {
             const currentArena = await getCurrentArena(userProfile.gradeId);
-            setCurrentArena(currentArena);
+            if (!ignore) setCurrentArena(currentArena);
 
             await Promise.allSettled([
               fetchParticipationData(currentArena),
               fetchPreviousArenaAndLeaderboard(currentArena),
             ]);
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
+        // Fetch rank data
         const fetchRankData = async () => {
           try {
             const rank = await getRankById(userProfile.rankId);
-            setUserRank(rank);
+            if (!ignore) setUserRank(rank);
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
         await Promise.allSettled([fetchArenaData(), fetchRankData()]);
       } catch (error) {
-        console.error(error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsLoading(false);
       }
     };
+
     fetchData();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -849,9 +866,11 @@ export default function Arena() {
                 >
                   <label
                     className={clsx(roboto.className)}
-                  >{`${userProfile?.battlePoints}`}</label>
+                  >{`${formatNumberAbbreviation(userProfile?.battlePoints || 0)}`}</label>
                   <label className={clsx(roboto.className)}>
-                    {findUserRank()}
+                    {myRank?.arena.global.rank
+                      ? formatNumberAbbreviation(myRank.arena.global.rank)
+                      : "Chưa xếp hạng"}
                   </label>
                 </div>
               </div>
@@ -875,7 +894,7 @@ export default function Arena() {
             ) : (
               <>
                 <h1 className="font-bold text-lg text-[rgba(0,0,0,0.8)] flex-shrink-0">
-                  {`Bảng xếp hạng ${previousArena?.title}`}
+                  {`Bảng xếp hạng ${previousArena?.title} (tuần trước)`}
                 </h1>
                 <div className="flex flex-col gap-[10px] flex-shrink-0">
                   {leaderboard?.leaderboard

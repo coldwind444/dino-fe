@@ -15,21 +15,19 @@ export const ERROR = {
   INTERNAL_SERVER_ERROR: { message: 'Lỗi hệ thống !', status: 500 },
 }
 
+export class APIError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const handleError = (error: any) => {
+export const handleError = (error: any): APIError => {
   const err = error as AxiosError<{ error?: string, message?: string }>;
   const status = err.response?.status;
-
-  const errorType = Object.values(ERROR).find((e) => e.status === status);
-
-  if (errorType) {
-    throw errorType;
-  }
-
-  throw {
-    message: err.response?.data?.error || err.response?.data?.message || err.message || ERROR.INTERNAL_SERVER_ERROR.message,
-    status: status || 500,
-  };
+  throw new APIError(err.response?.data?.error || err.response?.data?.message || err.message || ERROR.INTERNAL_SERVER_ERROR.message, status || 500);
 };
 
 export const setDuration = (duration: number) => {

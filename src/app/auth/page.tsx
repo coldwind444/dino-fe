@@ -7,12 +7,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { Roboto, Fredoka } from "next/font/google";
+import { roboto, fredoka } from "@/app/fonts";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Toaster, toast } from "react-hot-toast";
 
-import mascot from "../../../public/assets/auth/dino_3d.svg";
+import mascot from "../../../public/assets/auth/dino_3d.webp";
 import student from "../../../public/assets/auth/student.png";
 import parents from "../../../public/assets/auth/parents.png";
 import leftHand from "../../../public/assets/auth/left.svg";
@@ -27,9 +27,7 @@ import Loader from "@/components/Loader/Loader";
 import { useRouter } from "next/navigation";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
-
-const roboto = Roboto();
-const fredoka = Fredoka();
+import { APIError } from "@/apis/config";
 
 const ROLES = {
   STUDENT: "student",
@@ -117,9 +115,10 @@ export default function Auth() {
       } else if (res.user.role === "admin") {
         toast.error("Quản trị viên không có quyền truy cập vào trang này");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       resetLogin();
       setLoginLoading(false);
@@ -144,9 +143,10 @@ export default function Auth() {
       });
       toast.success("Đăng ký thành công !");
       resetRegister();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       setRegLoading(false);
     }
@@ -183,9 +183,10 @@ export default function Auth() {
         familyId: "",
       });
       router.push("/parent/dashboard");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
     } finally {
       resetLogin();
     }
@@ -309,9 +310,12 @@ export default function Auth() {
                     {/** Mascot animation */}
                     <div className="relative aspect-square h-[180px] border-2 border-[#1DA492] rounded-full overflow-hidden">
                       <iframe
+                        title="dino-animation"
                         src="https://cdn.lottielab.com/l/2HPdkE6AbKUhHe.html"
                         height={380}
                         className="-translate-x-[12px] translate-y-[20px] z-0"
+                        loading="lazy"
+                        style={{ border: "none" }}
                       />
                       <Image
                         src={leftHand}
@@ -376,7 +380,7 @@ export default function Auth() {
                     </Link>
                     {/** Login button */}
                     <button
-                      disabled={!canLogin()}
+                      disabled={!canLogin() || loginLoading}
                       className={clsx(
                         "h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium",
                         "disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center",
@@ -612,7 +616,7 @@ export default function Auth() {
                       />
                     </div>
                     <button
-                      disabled={!canRegister()}
+                      disabled={!canRegister() || regLoading}
                       className={clsx(
                         "h-[50px] rounded-full w-[330px] bg-[#23BEAA] text-white font-medium",
                         "disabled:bg-gray-300 cursor-not-allowed relative flex items-center justify-center",
@@ -638,10 +642,13 @@ export default function Auth() {
           {/** Mascot 3D */}
           <div className="absolute right-10 bottom-10 flex items-end justify-center h-full w-1/2 overflow-hidden pointer-events-none">
             <Image
-              className="max-h-[150%] w-auto object-contain select-none"
+              className="w-auto object-contain select-none"
               src={mascot}
               alt=""
+              height={950}
+              width={950}
               priority
+              style={{ width: "100%", height: "auto" }}
             />
           </div>
         </div>

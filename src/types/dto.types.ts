@@ -82,9 +82,9 @@ export interface CreateLectureResultRequest {
   timeTaken: number;
 }
 
-export interface UpdateMissionProgressRequest {
-  unitType: string;
-  amount: number;
+export interface PurchasePremiumRequest {
+  packageId: string;
+  paymentMethod: 'momo' | 'zalopay' | 'vnpay' | 'bank_transfer';
 }
 
 // Response
@@ -118,11 +118,18 @@ export interface UserProfileResponse {
     language: string;
     notifications: boolean;
   };
+  premium: {
+    isPremium: boolean;
+    packageId: string;
+    startDate: string;
+    expiryDate: string;
+  };
   _id: string;
   quartz: number;
   battlePoints: number;
   name: string;
   email: string;
+  username: string;
   avatarUrl: string;
   role: string;
   status: string;
@@ -175,6 +182,7 @@ export interface TopicResponse {
   gradeId: string;
   termId: string;
   weekNumbers: number[];
+  isPremium: boolean;
   level: number;
 }
 
@@ -186,6 +194,11 @@ export interface LectureResponse {
   difficulty: string;
   topicId: string;
   order: number;
+  theory: {
+    content: string;
+    videoUrl?: string;
+    imageUrls?: string[];
+  };
 }
 
 export interface ExerciseResponse {
@@ -215,6 +228,7 @@ export interface TermResponse {
   notes: string;
   createdAt: string;
   updatedAt: string;
+  isOngoing: boolean;
   __v: number;
 }
 
@@ -400,22 +414,22 @@ export interface AssessmentResultDetailedResponse {
 export interface ParticipationDetailedResponse {
   _id: string;
   userId:
-    | {
-        _id: string;
-        name: string;
-        avatarUrl: string;
-        email: string;
-      }
-    | string;
+  | {
+    _id: string;
+    name: string;
+    avatarUrl: string;
+    email: string;
+  }
+  | string;
   arenaId:
-    | {
-        _id: string;
-        title: string;
-        description: string;
-        startTime: string;
-        endTime: string;
-      }
-    | string;
+  | {
+    _id: string;
+    title: string;
+    description: string;
+    startTime: string;
+    endTime: string;
+  }
+  | string;
   correctCount: number;
   timeTaken: number;
   score: number;
@@ -437,4 +451,58 @@ export interface HistoryRecord {
   correctCount?: number;
   totalQuestions?: number;
   studentName?: string;
+}
+
+export interface QuartzLeaderboardItemResponse {
+  _id: string;
+  name: string;
+  avatarUrl: string;
+  quartz: number;
+  battlePoints: number;
+}
+
+export interface TransactionResponse {
+  userId: string;
+  packageId: string;
+  amount: number;
+  paymentMethod: "momo" | "zalopay" | "vnpay" | "bank_transfer" | "internal";
+  status: "pending" | "completed" | "failed";
+  transactionId: string;
+  processedAt: string;
+}
+
+export interface PackageResponse {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  durationDays: number;
+  features: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface MyPositionInRankResponse {
+  userId: string;
+  quartz: {
+    value: number;
+    rank: number | null;
+  };
+  arena: {
+    global: {
+      value: number;
+      rank: number | null;
+    };
+    recentMatches: {
+      arenaId: string;
+      title: string;
+      score: number;
+      timeTaken: number;
+      rank: number;
+      totalParticipants: number;
+      finishedAt: string;
+    }[];
+  };
 }

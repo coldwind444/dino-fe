@@ -197,83 +197,48 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
   }, [onAnswerChecked]);
 
   useEffect(() => {
-    const calculateScale = () => {
-      if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-      const container = containerRef.current;
-      const containerWidth = container.clientWidth;
-      const containerHeight = container.clientHeight;
+    const gameWidth = 1920;
+    const gameHeight = 1024;
 
-      if (containerWidth === 0 || containerHeight === 0) {
-        console.log("Container dimensions not ready, retrying...", {
-          containerWidth,
-          containerHeight,
-        });
-        setTimeout(calculateScale, 50);
-        return;
-      }
-
-      const gameWidth = 1920;
-      const gameHeight = 1024;
-
-      const scaleX = containerWidth / gameWidth;
-      const scaleY = containerHeight / gameHeight;
+    const calculateScale = (width: number, height: number) => {
+      if (width === 0 || height === 0) return;
+      const scaleX = width / gameWidth;
+      const scaleY = height / gameHeight;
       const newScale = Math.min(scaleX, scaleY, 1);
 
-      setScale(newScale);
+      setScale((prevScale) => {
+        if (Math.abs(prevScale - newScale) > 0.001) {
+          return newScale;
+        }
+        return prevScale;
+      });
     };
 
-    const timeouts: NodeJS.Timeout[] = [];
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentBoxSize) {
+          const contentBoxSize = Array.isArray(entry.contentBoxSize)
+            ? entry.contentBoxSize[0]
+            : entry.contentBoxSize;
+          calculateScale(contentBoxSize.inlineSize, contentBoxSize.blockSize);
+        } else {
+          calculateScale(entry.contentRect.width, entry.contentRect.height);
+        }
+      }
+    });
 
-    timeouts.push(setTimeout(calculateScale, 0));
+    resizeObserver.observe(container);
 
-    timeouts.push(setTimeout(calculateScale, 10));
-    timeouts.push(setTimeout(calculateScale, 50));
-    timeouts.push(setTimeout(calculateScale, 100));
-    timeouts.push(setTimeout(calculateScale, 200));
-    timeouts.push(setTimeout(calculateScale, 500));
-    timeouts.push(setTimeout(calculateScale, 1000));
-
-    window.addEventListener("resize", calculateScale);
+    // Initial calculation
+    calculateScale(container.clientWidth, container.clientHeight);
 
     return () => {
-      timeouts.forEach(clearTimeout);
-      window.removeEventListener("resize", calculateScale);
+      resizeObserver.disconnect();
     };
   }, []);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      const calculateScaleAfterRender = () => {
-        if (!containerRef.current) return;
-
-        const container = containerRef.current;
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-
-        if (containerWidth > 0 && containerHeight > 0) {
-          const gameWidth = 1920;
-          const gameHeight = 1024;
-          const scaleX = containerWidth / gameWidth;
-          const scaleY = containerHeight / gameHeight;
-          const newScale = Math.min(scaleX, scaleY, 1);
-
-          if (newScale !== scale) {
-            console.log("Post-render scale update:", {
-              containerWidth,
-              containerHeight,
-              newScale,
-            });
-            setScale(newScale);
-          }
-        }
-      };
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(calculateScaleAfterRender);
-      });
-    }
-  });
 
   const sendToCocos = useCallback(
     (type: string, payload: unknown) => {

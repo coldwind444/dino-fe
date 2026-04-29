@@ -4,15 +4,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef, Dispatch } from "react";
 import { SetStateAction } from "react";
 import { useSpring, animated } from "@react-spring/web";
-import congrats from "@/assets/exercises/praise.png";
-import sadFace from "@/assets/exercises/sad.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDoubleRight,
   faClose,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
-import { Roboto, Righteous } from "next/font/google";
+import congrats from "../../../../../../../../public/assets/exercises/praise.png";
+import sadFace from "../../../../../../../../public/assets/exercises/sad.png";
+import { roboto, righteous } from "@/app/fonts";
 import CocosGameWrapper, {
   type CocosGameWrapperRef,
 } from "@/components/GameComponent/CocosGameWrapper";
@@ -25,9 +25,7 @@ import ExplainModal, {
 } from "@/components/ExplainModal/ExplainModal";
 import { useLessonStore } from "@/stores/lessonStore";
 import { cleanedAnswerArray } from "@/helpers/utils";
-
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
-const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
+import { APIError } from "@/apis/config";
 
 interface ExerciseViewProps {
   currentLecture: LectureResponse;
@@ -158,9 +156,10 @@ export default function ExerciseView({
       }));
       await upsertAnswers(cleanedAnswerArray(modifiedAnswers));
       onFinish(exercises.length);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error(error?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
       setIsSubmitting(false);
     }
   };
@@ -175,7 +174,9 @@ export default function ExerciseView({
         });
         setExercises(exs.sort((a, b) => a.order - b.order));
       } catch (error) {
-        console.error("Error fetching exercises:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       }
     };
     fetchExercises();

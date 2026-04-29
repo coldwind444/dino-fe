@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Roboto, Coiny } from "next/font/google";
+import { roboto, coiny } from "@/app/fonts";
 import { useSpring, animated } from "@react-spring/web";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,16 +14,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { LectureResponse, TopicResponse } from "@/types";
 import { useEffect, useState, useRef } from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 import { createProgress, updateUserQuartz } from "@/apis";
 import Loader from "@/components/Loader/Loader";
-import { updateMissionProgress } from "@/apis/mission";
 
 const trophy = "/assets/exercises/trophy.png";
 const flags = "/assets/exercises/flags.png";
-
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
-const coiny = Coiny({ subsets: ["latin"], weight: ["400"] });
 
 interface FinishViewProps {
   grade: string;
@@ -86,14 +82,6 @@ export default function FinishView({
             lectureId: currentLecture._id,
             completion: 100,
             status: "completed",
-          }),
-          updateMissionProgress({
-            unitType: "lecture",
-            amount: 1,
-          }),
-          updateMissionProgress({
-            unitType: "exercise",
-            amount: maxScore,
           }),
         ]);
       } catch (error) {

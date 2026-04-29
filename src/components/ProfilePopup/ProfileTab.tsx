@@ -11,12 +11,15 @@ import { Toaster, toast } from "react-hot-toast";
 import Loader from "../Loader/Loader";
 // 1. Import useRouter
 import { useRouter } from "next/navigation";
+import { APIError } from "@/apis/config";
+import { useLessonStore } from "@/stores/lessonStore";
 
 interface ProfileFormData {
   name?: string;
   gradeId?: string;
   avatarUrl?: string;
   email?: string;
+  username?: string;
 }
 
 export default function ProfileTab({
@@ -26,9 +29,7 @@ export default function ProfileTab({
   profileData: UserProfileResponse;
   onUpdateSuccess: () => void;
 }) {
-  // 2. Initialize router
-  const router = useRouter();
-
+  const { clear: clearLessonStore } = useLessonStore();
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const avatarContainerRef = useRef<HTMLDivElement>(null);
@@ -55,6 +56,7 @@ export default function ProfileTab({
     gradeId: profileData.gradeId,
     avatarUrl: profileData.avatarUrl,
     email: profileData.email,
+    username: profileData.username,
   };
 
   const [formData, setFormData] = useState<ProfileFormData>(originalFormData);
@@ -112,6 +114,7 @@ export default function ProfileTab({
   }
 
   const handleUpdateProfile = async () => {
+    let success = false;
     try {
       setLoading(true);
       const req: ProfileFormData = { ...formData };
@@ -131,20 +134,28 @@ export default function ProfileTab({
       req.avatarUrl = finalAvatarUrl;
 
       await updateUserProfile(req);
-
+      clearLessonStore();
       toast.success("Cập nhật thông tin thành công!");
       onUpdateSuccess();
 
-      // 3. Refresh the router to fetch new data from server
-      router.refresh();
+      success = true;
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (error instanceof APIError) {
         toast.error(error.message);
       } else {
         toast.error("Lỗi không xác định xảy ra.");
       }
     } finally {
       setLoading(false);
+    }
+    // 3. Refresh the router to fetch new data from server
+    if (success) {
+      const confirmReload = confirm(
+        "Cập nhật thông tin thành công! Bạn cần tải lại trang để cập nhật nội dung mới nhất.",
+      );
+      if (confirmReload) {
+        window.location.reload();
+      }
     }
   };
 
@@ -158,6 +169,7 @@ export default function ProfileTab({
       gradeId: profileData.gradeId,
       avatarUrl: profileData.avatarUrl,
       email: profileData.email,
+      username: profileData.username,
     });
 
     // Reset Avatar Preview to new props
@@ -194,7 +206,7 @@ export default function ProfileTab({
           setAvatarType("user");
         }
       } catch (error) {
-        console.error("Failed to fetch avatars:", error);
+        console.log("Failed to fetch avatars:", error);
       }
     };
 
@@ -446,13 +458,19 @@ export default function ProfileTab({
         >
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email
+              {profileData.role === "parent"
+                ? "Email phụ huynh"
+                : "Tên tài khoản"}
             </label>
             <div className="relative">
               <input
-                type="email"
+                type={profileData.role === "parent" ? "email" : "text"}
                 readOnly
-                value={formData.email}
+                value={
+                  profileData.role === "parent"
+                    ? formData.email
+                    : formData.username
+                }
                 className="w-full p-3 pl-5 pr-10 border border-gray-300 bg-gray-100 
                                             cursor-not-allowed rounded-lg font-medium text-gray-500"
               />

@@ -16,8 +16,7 @@ import {
   faChartColumn,
   faHistory,
 } from "@fortawesome/free-solid-svg-icons";
-import { Roboto } from "next/font/google";
-import { Righteous } from "next/font/google";
+import { roboto, righteous } from "@/app/fonts";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
@@ -31,9 +30,8 @@ import Link from "next/link";
 import ProfilePopup from "../ProfilePopup/ProfilePopup";
 import { getUserProfile } from "@/apis/user";
 import { logout } from "@/apis/auth";
-
-const roboto = Roboto({ subsets: ["latin"] });
-const righteous = Righteous({ weight: "400" });
+import { useLessonStore } from "@/stores/lessonStore";
+import { APIError } from "@/apis/config";
 
 const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   [
@@ -66,12 +64,11 @@ export default function Navbar({
   notifications?: { title: string; content: string }[];
 }) {
   const router = useRouter();
+  const { clear: clearLessonStore } = useLessonStore();
   const [signUpHover, setSignUpHover] = useState(false);
   const [urls, setUrls] = useState<
     { name: string; icon: IconDefinition; pathname: string }[]
   >([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [notificationsShow, setNotificationsShow] = useState(false);
   const [profilePopupShow, setProfilePopupShow] = useState(false);
   const [username, setUsername] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
@@ -81,9 +78,12 @@ export default function Navbar({
   const handleLogout = async () => {
     try {
       await logout();
+      clearLessonStore();
       router.push("/auth");
     } catch (error) {
-      console.error("Logout failed:", error);
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     }
   };
 
@@ -103,11 +103,13 @@ export default function Navbar({
         setUsername(res.name.split(" ").pop() || "");
         setAvatar(res.avatarUrl);
       } catch (error) {
-        console.error("Error fetching user profile:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       }
     };
     fetchUserProfile();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

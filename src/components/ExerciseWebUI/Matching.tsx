@@ -200,7 +200,7 @@ export default function Matching({
         ))}
       </svg>
 
-      <div className="flex flex-col gap-4 w-1/3 z-0">
+      <div data-testid="matching-left-col" className="flex flex-col gap-4 w-1/3 z-0">
         {leftItems.map((left, idx) => {
           const isPaired = !!currentPairs[left];
           const isSelected = selectedLeft === left;
@@ -218,6 +218,7 @@ export default function Matching({
                     ? "border-[#23BEAA] bg-[#D8FFFA] text-[#23BEAA]"
                     : "border-[#4E5660] bg-white hover:border-[#F9740B]",
               )}
+              data-testid="matching-item"
               onClick={() => handleLeftClick(left)}
             >
               <div className="break-words">{left}</div>
@@ -237,7 +238,7 @@ export default function Matching({
         })}
       </div>
 
-      <div className="flex flex-col gap-4 w-1/3 z-0">
+      <div data-testid="matching-right-col" className="flex flex-col gap-4 w-1/3 z-0">
         {rightItems.map((right, idx) => {
           const pairedLeft = Object.keys(currentPairs).find(
             (key) => currentPairs[key] === right,
@@ -255,6 +256,7 @@ export default function Matching({
                   ? "border-[#23BEAA] bg-[#D8FFFA] text-[#23BEAA]"
                   : "border-[#4E5660] bg-white hover:border-[#F9740B]",
               )}
+              data-testid="matching-item"
               onClick={() => handleRightClick(right)}
             >
               <div className="break-words">{right}</div>

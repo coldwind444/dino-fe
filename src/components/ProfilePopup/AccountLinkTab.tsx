@@ -1,100 +1,221 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { UserProfileResponse } from "@/types";
+import { getFamilyCode, getUsers, getMyFamilyMembers } from "@/apis";
+import Image from "next/image";
+import { APIError } from "@/apis/config";
 
-export default function AccountLinkTab() {
-    const [linkCode, setLinkCode] = useState("");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [hasLinkedParent, setHasLinkedParent] = useState(true);
+type AccountLinkTabProps = {
+  profile: UserProfileResponse;
+};
 
-    return (
-        <>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Liên kết tài khoản</h2>
+export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
+  const [familyCode, setFamilyCode] = useState(".........");
+  const [linkedStudents, setLinkedStudents] = useState<UserProfileResponse[]>(
+    [],
+  );
+  const [parent, setParent] = useState<UserProfileResponse>();
+  const [copied, setCopied] = useState(false);
 
-            <div className="mb-6">
-                <h3 className="text-base font-medium text-gray-500 mb-4">Liên kết với tài khoản phụ huynh</h3>
-                <div className="flex gap-3 mb-4">
-                    <input
-                        type="text"
-                        value={linkCode}
-                        onChange={(e) => setLinkCode(e.target.value.toUpperCase())}
-                        maxLength={6}
-                        placeholder="Nhập mã liên kết"
-                        className="flex-1 p-3 border border-gray-300 rounded-lg focus:border-[#1ABC9C] focus:outline-none text-gray-800 placeholder:text-gray-400"
+  const isParent = profile.role === "parent";
+
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchFamilyCode = async () => {
+      try {
+        const res = await getFamilyCode(profile.familyId);
+        if (!ignore) {
+          setFamilyCode(res);
+        }
+      } catch (err) {
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
+      }
+    };
+
+    const fetchParentData = async () => {
+      if (isParent) return;
+      try {
+        const res = await getMyFamilyMembers();
+        if (!ignore && res.length > 0) {
+          const familyParent = res.find((u) => u.role === "parent");
+          setParent(familyParent);
+        }
+      } catch (err) {
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
+      }
+    };
+
+    const fetchLinkedStudents = async () => {
+      if (!isParent) return;
+      try {
+        const users = await getUsers({
+          familyId: profile.familyId,
+          role: "student",
+        });
+        if (!ignore) {
+          setLinkedStudents(users);
+        }
+      } catch (err) {
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
+      }
+    };
+
+    if (profile.familyId) {
+      fetchFamilyCode();
+      if (isParent) {
+        fetchLinkedStudents();
+      } else {
+        fetchParentData();
+      }
+    }
+
+    return () => {
+      ignore = true;
+    };
+  }, [profile, isParent]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(familyCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        Liên kết tài khoản
+      </h2>
+
+      {!isParent ? (
+        /* For students */
+        <div className="mb-6">
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-gray-500 mb-3">
+              Tài khoản phụ huynh được liên kết
+            </h4>
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-[#C5EDE5] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {parent?.avatarUrl ? (
+                    <Image
+                      width={64}
+                      height={64}
+                      src={parent.avatarUrl}
+                      alt={parent.name}
+                      className="w-full h-full object-cover"
                     />
-                    <button
-                        disabled={linkCode.length < 6}
-                        className={`px-6 py-3 rounded-lg font-semibold transition-colors whitespace-nowrap ${linkCode.length >= 6
-                                ? "bg-[#1ABC9C] text-white hover:bg-[#16A085]"
-                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                            }`}
-                    >
-                        Gửi yêu cầu
-                    </button>
+                  ) : (
+                    <span className="text-2xl">👤</span>
+                  )}
                 </div>
-
-                {!hasLinkedParent && (
-                    <div className="p-8 flex flex-col items-center justify-center mb-4">
-                        <div className="w-60 h-60 mb-4 opacity-50 bg-gray-200 rounded-lg flex items-center justify-center">
-                            <span className="text-8xl">🔗</span>
-                        </div>
-                        <p className="text-gray-400 font-medium text-center">Tài khoản của bạn chưa được liên kết</p>
+                <div className="flex-1">
+                  <h5 className="font-bold text-lg text-gray-800">
+                    {parent?.name}
+                  </h5>
+                  <p className="text-sm text-gray-500">{parent?.email}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-2">
+                    Mã liên kết tài khoản
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 font-mono text-sm">
+                      {familyCode}
                     </div>
-                )}
-
-                {hasLinkedParent && (
-                    <>
-                        <div className="mb-4">
-                            <h4 className="text-sm font-medium text-gray-500 mb-3">Tài khoản phụ huynh được liên kết</h4>
-                            <div className="bg-white border border-gray-200 rounded-lg p-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 rounded-full bg-[#C5EDE5] flex items-center justify-center flex-shrink-0">
-                                        <span className="text-2xl">👤</span>
-                                    </div>
-                                    <div className="flex-1">
-                                        <h5 className="font-bold text-lg text-gray-800">Nguyễn Văn H</h5>
-                                        <p className="text-sm text-gray-500">vanh@gmail.com</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500 mb-2">Mã liên kết tài khoản</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 font-mono text-sm">
-                                                7HS90F
-                                            </div>
-                                            <button className="text-[#1ABC9C] hover:text-[#16A085] cursor-pointer">
-                                                <FontAwesomeIcon icon={faCopy} className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 className="text-base font-medium text-gray-500 mb-4">Các thành viên khác trong gia đình</h3>
-                            <div className="space-y-3 max-h-60 overflow-y-auto">
-                                {["Nguyễn Văn A", "Nguyễn Văn B"].map((name, idx) => (
-                                    <div key={idx} className="bg-white border border-gray-200 rounded-lg p-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-16 h-16 rounded-full bg-[#C5EDE5] flex items-center justify-center flex-shrink-0">
-                                                <span className="text-2xl">👤</span>
-                                            </div>
-                                            <div>
-                                                <h5 className="font-bold text-base text-gray-800">{name}</h5>
-                                                <p className="text-sm text-gray-500">
-                                                    {name.toLowerCase().replace(/\s+/g, "")}@gmail.com
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </>
-                )}
+                    <button
+                      onClick={handleCopy}
+                      className={`${copied ? "text-[#16A085]" : "text-[#1ABC9C] hover:text-[#16A085]"} cursor-pointer transition-colors`}
+                    >
+                      <FontAwesomeIcon icon={faCopy} className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-        </>
-    );
+          </div>
+        </div>
+      ) : (
+        /* For parents */
+        <div className="space-y-8">
+          <div>
+            <div className="flex gap-4 items-center">
+              <div className="w-64">
+                <p className="text-base text-gray-500 mb-2">
+                  Mã liên kết tài khoản
+                </p>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={familyCode}
+                    readOnly
+                    className="w-full bg-white border border-[#1ABC9C] text-[#1ABC9C] font-mono rounded-lg py-2.5 px-4 outline-none"
+                  />
+                  <button
+                    onClick={handleCopy}
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 ${copied ? "text-[#16A085]" : "text-[#1ABC9C] hover:text-[#16A085]"} cursor-pointer transition-colors bg-white px-1`}
+                  >
+                    <FontAwesomeIcon icon={faCopy} className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1 pt-7">
+                <p className="text-[#F39C12] font-semibold italic text-sm">
+                  Bạn có thể chia sẻ mã liên kết này cho con để liên kết tài
+                  khoản.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p className="text-base text-gray-500 mb-4">
+              Các tài khoản đã được liên kết
+            </p>
+            <div className="space-y-4">
+              {linkedStudents.map((student) => (
+                <div
+                  key={student._id}
+                  className="flex items-center gap-4 pb-4 border-b border-gray-100 last:border-0"
+                >
+                  <div className="w-12 h-12 rounded-full bg-[#D6F8EB] flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {student.avatarUrl ? (
+                      <Image
+                        width={48}
+                        height={48}
+                        src={student.avatarUrl}
+                        alt={student.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-xl">👤</span>
+                    )}
+                  </div>
+                  <div>
+                    <h5 className="font-bold text-gray-800 text-sm">
+                      {student.name}
+                    </h5>
+                    <p className="text-sm text-gray-500">{student.email}</p>
+                  </div>
+                </div>
+              ))}
+              {linkedStudents.length === 0 && (
+                <p className="text-sm text-gray-500 italic">
+                  Chưa có tài khoản nào được liên kết.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

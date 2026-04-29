@@ -1,5 +1,14 @@
 import { AnswerResponse, ExerciseResponse } from "@/types";
 
+export const isValidUrl = (url: string) => {
+    try {
+        new URL(url);
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function cleanedAnswer(ans: any) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,3 +72,30 @@ export function checkAnswerForBasicExerciseType(ans: AnswerResponse, ex: Exercis
     }
     throw new Error("Invalid exercise type");
 }
+
+export function formatNumberAbbreviation(num: number): string {
+    const absNum = Math.abs(num);
+    const sign = num < 0 ? "-" : "";
+
+    if (absNum < 1000) {
+        return num.toString();
+    }
+
+    const units = [
+        { value: 1e12, symbol: "T" },
+        { value: 1e9, symbol: "B" },
+        { value: 1e6, symbol: "M" },
+        { value: 1e3, symbol: "K" },
+    ];
+
+    for (const unit of units) {
+        if (absNum >= unit.value) {
+            const formatted = (absNum / unit.value).toFixed(1).replace(/\.0$/, "");
+            return `${sign}${formatted}${unit.symbol}`;
+        }
+    }
+
+    return num.toString();
+}
+
+

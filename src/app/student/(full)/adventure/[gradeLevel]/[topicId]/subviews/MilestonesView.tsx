@@ -4,12 +4,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import { Roboto, Sriracha } from "next/font/google";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { roboto, sriracha } from "@/app/fonts";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
 import {
   WorldResponse,
@@ -18,12 +14,10 @@ import {
   LectureResponse,
 } from "@/types";
 import { useState } from "react";
-import bagOpen from "../../../../../../../../public/assets/exercises/bag_open.png";
-import map from "../../../../../../../../public/assets/exercises/map.png";
-import paper2 from "../../../../../../../../public/assets/exercises/paper_landscape.png";
-
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] });
-const sriracha = Sriracha({ subsets: ["latin"], weight: ["400"] });
+import bagOpen from "../../../../../../../../public/assets/exercises/bag_open.webp";
+import map from "../../../../../../../../public/assets/exercises/map.webp";
+import paper from "../../../../../../../../public/assets/exercises/paper.webp";
+import DOMPurify from "isomorphic-dompurify";
 
 interface MilestonesViewProps {
   world: WorldResponse;
@@ -204,67 +198,41 @@ export default function MilestonesView({
             </button>
             {/* Lesson theory — paper as background so content flows naturally */}
             <div
-              className="relative w-full max-w-[900px] flex flex-col justify-between px-[12%] pt-[8%] pb-[6%]"
+              className="relative w-full max-w-[1000px] flex flex-col justify-between px-[12%] pt-[8%] pb-[8%]"
               style={{
-                backgroundImage: `url(${paper2.src})`,
+                backgroundImage: `url(${paper.src})`,
                 backgroundSize: "100% 100%",
                 backgroundRepeat: "no-repeat",
-                aspectRatio: "900 / 600",
+                aspectRatio: "1000 / 620",
               }}
             >
               {/* Text content */}
               <div className="flex flex-col gap-4 overflow-hidden">
                 <h1 className="text-amber-700 font-bold text-2xl text-center">
-                  Bài 10: Cộng các số lớn
+                  {`Bài học: ${currentLecture?.title}`}
                 </h1>
-                <p className="text-black text-sm text-justify leading-relaxed overflow-auto">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                  cupidatat non proident, sunt in culpa qui officia deserunt
-                  mollit anim id est laborum Excepteur sint occaecat cupidatat
-                  non proident, sunt in culpa qui officia deserunt mollit anim
-                  id est laborum Excepteur sint occaecat cupidatat non proident,
-                  sunt in culpa qui officia deserunt mollit anim id est laborum
-                  Excepteur sint occaecat cupidatat non proident, sunt in culpa
-                  qui officia deserunt mollit anim id est
-                </p>
-              </div>
-              {/* Page navigator — pinned at the bottom of the paper */}
-              <div className="flex items-center justify-center gap-4 mt-4">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
-                  disabled={currentPage === 0}
-                  className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full bg-amber-800/30 hover:bg-amber-800/60 text-amber-900 transition-all duration-200 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
-                  <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
-                </button>
-                <div className="flex items-center gap-2">
-                  {Array.from({ length: TOTAL_PAGES }).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentPage(i)}
-                      className={clsx(
-                        "rounded-full transition-all duration-200",
-                        i === currentPage
-                          ? "w-6 h-3 bg-amber-600"
-                          : "w-3 h-3 bg-amber-800/40 hover:bg-amber-800/70",
-                      )}
-                    />
-                  ))}
-                </div>
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(TOTAL_PAGES - 1, p + 1))
-                  }
-                  disabled={currentPage === TOTAL_PAGES - 1}
-                  className="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full bg-amber-800/30 hover:bg-amber-800/60 text-amber-900 transition-all duration-200 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
-                  <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
-                </button>
+                <div
+                  className="overflow-auto prose prose-lg prose-headings:text-2xl prose-headings:font-bold prose-li:text-black 
+                  prose-p:text-black prose-ul:text-black prose-ol:text-black max-w-none
+                  prose-label:text-black px-5 mt-7"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      currentLecture?.theory?.content || "",
+                      {
+                        ADD_TAGS: ["style", "iframe", "video", "audio"],
+                        ADD_ATTR: [
+                          "style",
+                          "class",
+                          "target",
+                          "allow",
+                          "allowfullscreen",
+                          "frameborder",
+                          "controls",
+                        ],
+                      },
+                    ),
+                  }}
+                />
               </div>
             </div>
           </div>

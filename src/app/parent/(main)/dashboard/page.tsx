@@ -10,6 +10,8 @@ import {
 } from "@/types";
 import { getUserProfile, getStudentStats, getUsers, getRankById } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
+import { formatNumberAbbreviation } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 export default function Dashboard() {
   // Data state
@@ -48,8 +50,10 @@ export default function Dashboard() {
       const rank = await getRankById(currStudent?.rankId || "");
       setStudentStats(stats);
       setSelectedStudentRank(rank);
-    } catch (error: any) {
-      console.log(error?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     } finally {
       setIsFilterLoading(false);
     }
@@ -57,6 +61,7 @@ export default function Dashboard() {
 
   // Effects
   useEffect(() => {
+    let ignore = false;
     const fetchData = async () => {
       try {
         setIsPageLoading(true);
@@ -66,15 +71,22 @@ export default function Dashboard() {
           page: 1,
           limit: 100,
         });
-        setStudentList(studentList.filter((user) => user.role === "student"));
-      } catch (error: any) {
-        console.log(error?.message);
+        if (!ignore)
+          setStudentList(studentList.filter((user) => user.role === "student"));
+      } catch (error) {
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsPageLoading(false);
       }
     };
 
     fetchData();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (isPageLoading) {
@@ -224,7 +236,9 @@ export default function Dashboard() {
                       Battle Points
                     </label>
                     <span className="text-5xl font-bold mt-2 text-[#C03603] mr-auto ml-auto select-none">
-                      {studentStats.arena.battlePoints}
+                      {formatNumberAbbreviation(
+                        studentStats.arena.battlePoints,
+                      )}
                     </span>
                   </div>
                 </div>

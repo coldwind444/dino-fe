@@ -3,18 +3,17 @@
 import MascotWriting from "@/components/MascotWriting/MascotWriting";
 import Image from "next/image";
 import Link from "next/link";
-import { faCheck, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { useState, useRef, useEffect } from "react";
-
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import brand from "../../../../public/assets/brand.svg";
-import verify from "../../../../public/assets/auth/step_1.png";
-import otpImg from "../../../../public/assets/auth/step_2.png";
 import RoundedTextBox from "@/components/RoundedTextBox/RoundedTextBox";
 import RoundedPasswordBox from "@/components/RoundedPasswordBox/RoundedPasswordBox";
 import OTPInput from "@/components/OTPInput/OTPInput";
 import { sendOtp, resetPassword } from "@/apis/auth";
+import { APIError } from "@/apis/config";
 
 const STEPS = ["Gửi OTP về Email", "Xác thực & Đặt lại mật khẩu"];
 
@@ -28,7 +27,7 @@ const MESSAGES = {
 };
 
 export default function ResetPassword() {
-  const isFirstRender = useRef(true);
+  const router = useRouter();
 
   // UI states
   const [currStep, setCurrStep] = useState(0);
@@ -79,15 +78,6 @@ export default function ResetPassword() {
     };
   };
 
-  // Effects
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    showMessage(MESSAGES.INPUT_IDENTIFIER);
-  }, [currStep]);
-
   // Handlers
   const handleSendOtp = async () => {
     if (!isValidIdentifier() || sendingOtp) return;
@@ -100,8 +90,10 @@ export default function ResetPassword() {
       } else {
         showMessage(MESSAGES.INPUT_OTP_STUDENT);
       }
-    } catch (err: any) {
-      showMessage(err?.message ?? "Đã xảy ra lỗi, vui lòng thử lại !");
+    } catch (err) {
+      if (err instanceof APIError) {
+        showMessage(err.message);
+      }
     } finally {
       setSendingOtp(false);
     }
@@ -118,9 +110,14 @@ export default function ResetPassword() {
       setOtp("");
       setPassword("");
       setConfirm("");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      showMessage(err?.message ?? "Đã xảy ra lỗi, vui lòng thử lại !");
+      showMessage(MESSAGES.SUCCESS);
+      setTimeout(() => {
+        router.push("/auth");
+      }, 3000);
+    } catch (err) {
+      if (err instanceof APIError) {
+        showMessage(err.message);
+      }
     } finally {
       setResettingPassword(false);
     }
@@ -237,7 +234,6 @@ export default function ResetPassword() {
               currStep !== 0 ? "hidden" : "",
             )}
           >
-            <Image src={verify} alt="" className="h-[80px]" width={80} />
             <label className="font-medium text-[30px]">
               Xác thực tài khoản
             </label>
@@ -270,7 +266,6 @@ export default function ResetPassword() {
               currStep !== 1 ? "hidden" : "",
             )}
           >
-            <Image src={otpImg} alt="" className="h-[80px]" width={80} />
             <label className="font-medium text-[30px]">
               Xác thực & Đặt lại mật khẩu
             </label>
@@ -281,7 +276,7 @@ export default function ResetPassword() {
                 Mã OTP từ Email
               </span>
               <OTPInput
-                length={5}
+                length={6}
                 onChange={(val) => setOtp(val)}
                 onComplete={(val) => setOtp(val)}
                 autoFocus

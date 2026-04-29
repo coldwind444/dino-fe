@@ -32,6 +32,7 @@ export default function TrueFalse({
             ? "bg-[#D8FFFA] border-[#23BEAA] text-[#23BEAA] scale-105"
             : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#23BEAA]",
         )}
+        data-testid="true-option"
         onClick={() => handleSelect(true)}
       >
         Đúng
@@ -43,6 +44,7 @@ export default function TrueFalse({
             ? "bg-[#D8FFFA] border-[#FF5964] text-[#FF5964] scale-105"
             : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#FF5964]",
         )}
+        data-testid="false-option"
         onClick={() => handleSelect(false)}
       >
         Sai

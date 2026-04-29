@@ -4,18 +4,16 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Roboto } from "next/font/google";
+import { roboto } from "@/app/fonts";
 
 import { completeProfile, getGrades, uploadAvatar, logout } from "@/apis";
 import { Toaster, toast } from "react-hot-toast";
 
 import Loader from "@/components/Loader/Loader";
-import dinoWizard from "../../../public/assets/onboarding/wizard.svg";
+import dinoWizard from "../../../public/assets/onboarding/wizard.webp";
 import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
-
-const roboto = Roboto();
 
 const MESSAGES = {
   ASK_NAME:
@@ -63,12 +61,15 @@ export default function Onboarding() {
 
   // Fetch avatars
   useEffect(() => {
-    fetch("https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/sys_avatars.json", { cache: "no-store" })
+    fetch(
+      "https://cdn.jsdelivr.net/gh/coldwind444/sample_data@main/sys_avatars.json",
+      { cache: "no-store" },
+    )
       .then((res) => res.json())
       .then((data: string[]) => {
         setSystemAvatars(data);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.log(error));
   }, []);
 
   // Open image select dialog
@@ -87,7 +88,7 @@ export default function Onboarding() {
     // Validate MIME type (safer than relying only on 'accept' attribute)
     if (!file.type.startsWith("image/")) {
       alert("Please select a valid image file (PNG, JPG, etc.)");
-      e.target.value = ""; 
+      e.target.value = "";
       return;
     }
 
@@ -475,7 +476,7 @@ export default function Onboarding() {
                   )}
                   onClick={() => openFileDialog()}
                 >
-                   Tải ảnh lên
+                  Tải ảnh lên
                 </button>
                 <input
                   onChange={handleFileChange}
@@ -522,7 +523,7 @@ export default function Onboarding() {
               >
                 <input
                   className="h-full w-[90%] border-none outline-none pl-[20px] text-[20px]"
-                  placeholder="Mã liên kết (Không bắt buộc)"
+                  placeholder="Mã liên kết"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                 />

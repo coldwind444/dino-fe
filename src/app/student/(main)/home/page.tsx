@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import clsx from "clsx";
-import { Fredoka } from "next/font/google";
+import { fredoka } from "@/app/fonts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBriefcaseClock,
@@ -23,8 +23,6 @@ import {
   getPublishedAssessmentByGradeId,
   getRecentTopics,
   getRecommendedTopicByGradeId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getTopicById,
   getUserProfile,
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
@@ -32,9 +30,8 @@ import TopicRecommendPopup from "@/components/TopicRecommendPopup/TopicRecommend
 import { TopicResponse } from "@/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { updateMissionProgress } from "@/apis/mission";
+import { APIError } from "@/apis/config";
 
-const fredoka = Fredoka();
 const trophy = "/assets/home/trophy.png";
 
 export default function StudentHome() {
@@ -79,7 +76,9 @@ export default function StudentHome() {
 
   // Effects
   useEffect(() => {
+    let ignore = false;
     const fetchTopics = async () => {
+      if (!gradeLevel) return;
       try {
         setIsLoading(true);
         const [recentTopicsRes, compTopicsRes, gradeRes] = await Promise.all([
@@ -88,31 +87,49 @@ export default function StudentHome() {
           getGrades({ level: gradeLevel }),
         ]);
 
+        if (ignore) return;
+
         // Fetch recent studied topics
-        if (recentTopicsRes && recentTopicsRes.length > 0) {
+        if (
+          recentTopicsRes &&
+          recentTopicsRes.length > 0 &&
+          gradeRes &&
+          gradeRes.length > 0
+        ) {
           const filteredTopics = recentTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
-          setRecentTopic(filteredTopics[0]);
+          setRecentTopic(filteredTopics[0] || null);
         }
 
         // Fetch completed topics
-        if (compTopicsRes && compTopicsRes.length > 0) {
+        if (
+          compTopicsRes &&
+          compTopicsRes.length > 0 &&
+          gradeRes &&
+          gradeRes.length > 0
+        ) {
           const filteredTopics = compTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
           setCompletedTopics(filteredTopics);
         }
       } catch (error) {
-        console.error(error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsLoading(false);
       }
     };
     fetchTopics();
+    return () => {
+      ignore = true;
+    };
   }, [gradeLevel]);
 
   useEffect(() => {
+    let ignore = false;
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -123,10 +140,15 @@ export default function StudentHome() {
 
         // Grade data
         if (userRes.gradeId) {
-          const grade = await getGradeById(userRes.gradeId);
-          if (grade && gradeLevel === "") setGradeLevel(grade.level.toString());
-          const recommend = await getRecommendedTopicByGradeId(userRes.gradeId);
-          setRecommendedTopic(recommend);
+          const [grade, recommend] = await Promise.all([
+            getGradeById(userRes.gradeId),
+            getRecommendedTopicByGradeId(userRes.gradeId),
+          ]);
+          if (!ignore) {
+            setRecommendedTopic(recommend);
+            if (grade && (gradeLevel.length === 0 || !gradeLevel))
+              setGradeLevel(grade.level.toString());
+          }
         }
 
         // Entrance test data
@@ -158,19 +180,11 @@ export default function StudentHome() {
       }
     };
 
-    const updateLogin = async () => {
-      try {
-        await updateMissionProgress({
-          unitType: "daily_login",
-          amount: 1,
-        });
-      } catch (error) {
-        console.log("Failed to update login.", error);
-      }
-    };
-
     fetchData();
-    updateLogin();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   if (isLoading || !username) {
@@ -182,6 +196,7 @@ export default function StudentHome() {
       {showAssessmentFloatButton && (
         <div
           className="absolute h-15 w-15 top-25 right-5 cursor-pointer hover:brightness-110 z-20"
+          data-testid="assessment-float-btn"
           onClick={() => setIsEntranceTestModalOpened(true)}
         >
           {/* Ping circle */}

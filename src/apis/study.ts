@@ -29,9 +29,26 @@ export const getTermById = async (termid: string): Promise<TermResponse> => {
   }
 };
 
+export const getOngoingTerm = async (): Promise<TermResponse> => {
+  try {
+    const params = {
+      limit: 100,
+      page: 1,
+      isActive: true,
+    }
+    const res = await api.get(`/academic-terms`, { params });
+    const ongoingTerm = res.data.items.find((term: TermResponse) => term.isOngoing);
+    return ongoingTerm as TermResponse;
+  } catch (error) {
+    handleError(error);
+    throw error; // Never reached
+  }
+};
+
 // Grade APIs
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getGrades = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<GradeResponse[]> => {
   try {
@@ -93,8 +110,9 @@ export const getRecentTopics = async (
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getTopics = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<PaginationTopicResponse> => {
   try {
@@ -112,6 +130,18 @@ export const getCompletedTopics = async (
   try {
     const res = await api.get(`/progress/completed?limit=${limit}`);
     return res.data.items as TopicResponse[];
+  } catch (error) {
+    handleError(error);
+    throw error; // Never reached
+  }
+};
+
+export const getNoCompletedTopics = async (
+  limit?: number,
+): Promise<number> => {
+  try {
+    const res = await api.get(`/progress/completed?limit=${limit}`);
+    return res.data.total;
   } catch (error) {
     handleError(error);
     throw error; // Never reached
@@ -200,8 +230,9 @@ export type PaginatedLectureResultDetailedResponse = {
   pagination: Pagination;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getLectureResults = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<PaginatedLectureResultDetailedResponse> => {
   try {
@@ -229,7 +260,6 @@ export const getLectureResultById = async (
     const res = await api.get(`/lecture-results/${id}`);
     return (res.data.data ?? res.data) as LectureResultDetailedResponse;
   } catch (error) {
-    console.error("Error fetching lecture result by ID:", error);
     handleError(error);
     throw error;
   }
@@ -253,8 +283,9 @@ export type PaginatedAssessmentResultDetailedResponse = {
   pagination?: Pagination;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getAssessmentResultsList = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<{
   items: AssessmentResultDetailedResponse[];
@@ -274,8 +305,9 @@ export const getAssessmentResultsList = async (
 };
 
 // Exercise APIs
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getExercises = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<ExerciseResponse[]> => {
   try {
@@ -288,15 +320,15 @@ export const getExercises = async (
 };
 
 // Answer APIs
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const getAnswers = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>,
 ): Promise<AnswerResponse[]> => {
   try {
     const res = await api.get("/answers", { params });
     return res.data.items as AnswerResponse[];
   } catch (error) {
-    console.error("Error fetching answers:", error);
     handleError(error);
     return []; // Never reached
   }

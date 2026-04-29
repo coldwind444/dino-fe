@@ -25,6 +25,7 @@ import {
 import { getUserProfile, getStudentStats } from "@/apis";
 import { getLectureResults, getAssessmentResultsList } from "@/apis/study";
 import { getParticipationsPaginated } from "@/apis/arena";
+import { APIError } from "@/apis/config";
 
 interface HistoryOverviewProps {
   onViewDetail: (record: HistoryRecord) => void;
@@ -69,6 +70,7 @@ function formatDate(dateStr: string): string {
   return `${days[d.getDay()]}, ${h}:${m} ${dd}-${mm}-${d.getFullYear()}`;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getSafeDuration(item: any): number {
   // Lấy thời gian từ API gửi nếu có
   const apiTime = item.timeTaken ?? item.duration;
@@ -206,8 +208,10 @@ export default function HistoryOverview({
         );
         setStats(statsData);
         await fetchRecords(uid, sd, ed, cat, "", 1);
-      } catch (error: unknown) {
-        console.error((error as { message?: string })?.message);
+      } catch (error) {
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsPageLoading(false);
       }
@@ -241,7 +245,9 @@ export default function HistoryOverview({
           allItems = mapParticipations(res.items ?? []);
         } else if (category === "assessment") {
           const res = await getAssessmentResultsList(baseParams);
-          allItems = mapAssessmentResults(res.items ?? []);
+          allItems = mapAssessmentResults(
+            res.items.filter((item) => item.status === "graded") ?? [],
+          );
         } else if (category === "exercise") {
           const res = await getLectureResults(baseParams);
           allItems = mapLectureResults(res.items ?? []);
@@ -254,7 +260,9 @@ export default function HistoryOverview({
           ]);
           allItems = [
             ...mapParticipations(res1.items ?? []),
-            ...mapAssessmentResults(res2.items ?? []),
+            ...mapAssessmentResults(
+              res2.items?.filter((item) => item.status === "graded") ?? [],
+            ),
             ...mapLectureResults(res3.items ?? []),
           ];
         }
@@ -309,7 +317,9 @@ export default function HistoryOverview({
         setTotalPages(totalPagesVal);
         setTotalRecords(totalRecordsVal);
       } catch (err) {
-        console.error(err);
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
       }
     },
     [],
@@ -355,8 +365,10 @@ export default function HistoryOverview({
       );
       setStats(statsData);
       await fetchRecords(userId, sd, ed, cat, kw, 1);
-    } catch (error: unknown) {
-      console.error((error as { message?: string })?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     } finally {
       setIsFilterLoading(false);
     }
@@ -375,8 +387,10 @@ export default function HistoryOverview({
         lastFilter.keyword,
         newPage,
       );
-    } catch (error: unknown) {
-      console.error((error as { message?: string })?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     } finally {
       setIsFilterLoading(false);
     }

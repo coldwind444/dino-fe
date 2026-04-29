@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { Roboto } from "next/font/google";
+import { roboto } from "@/app/fonts";
 import { useRef, useState } from "react";
 
 type FilterParams = {
@@ -25,7 +25,7 @@ type FilterParams = {
   ) => Promise<void>;
 };
 
-const roboto = Roboto();
+
 
 function parseDateInput(value: string): Date | undefined {
   const trimmed = value.trim();
@@ -76,7 +76,7 @@ function formatDateForPicker(value?: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 export default function Filter({
   hasStudentSelectBox = false,
   hasSearchBox = false,

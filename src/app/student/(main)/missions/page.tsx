@@ -118,13 +118,9 @@ export default function MissionPage() {
             </p>
           </div>
 
-          <div
-            className="rounded-b-2xl h-[500px] flex items-center justify-center bg-cover bg-top"
-            style={{
-              backgroundImage: `url(${mission.src})`,
-              backgroundSize: "contain",
-            }}
-          ></div>
+          <div className="rounded-b-2xl h-[500px] flex items-center justify-center relative overflow-hidden">
+            <Image src={mission} alt="" priority fill />
+          </div>
         </div>
 
         <div className="flex-1 flex flex-col">
@@ -212,6 +208,7 @@ export default function MissionPage() {
                         alt="Crystal"
                         width={24}
                         height={24}
+                        priority
                       />
                       <p
                         className="text-2xl font-bold"
@@ -300,6 +297,7 @@ export default function MissionPage() {
                     alt="Crystal"
                     width={48}
                     height={48}
+                    priority
                   />
                   {rewardAmount}
                   <span className="text-white text-3xl font-bold">

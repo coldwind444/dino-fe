@@ -160,7 +160,7 @@ export default function HistoryOverview({
   onViewDetail,
 }: HistoryOverviewProps) {
   const [studentList, setStudentList] = useState<UserProfileResponse[]>([]);
-  const [stats, setStats] = useState<StudentStatsResponse | null>(null);
+  const [, setStats] = useState<StudentStatsResponse | null>(null);
   const [records, setRecords] = useState<HistoryRecord[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -226,6 +226,7 @@ export default function HistoryOverview({
       }
     };
     fetchStudents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchRecords = useCallback(

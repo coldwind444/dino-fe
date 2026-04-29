@@ -31,7 +31,7 @@ export default function Matching({
   customLeftItems,
   customRightItems,
 }: MatchingProps) {
-  const pairs = exercise.pairs || [];
+  const pairs = useMemo(() => exercise.pairs || [], [exercise.pairs]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const leftRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const rightRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});

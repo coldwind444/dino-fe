@@ -233,6 +233,7 @@ export default function LessonsPage() {
                   grade && (
                     <Image
                       src={grade?.description || ""}
+                      priority
                       alt="progress"
                       width={80}
                       height={80}
@@ -267,6 +268,7 @@ export default function LessonsPage() {
               <div className="flex items-center justify-center gap-3">
                 <div className="w-15 h-15 flex-shrink-0">
                   <Image
+                    priority
                     src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
                     alt="crystal"
                     width={70}
@@ -312,6 +314,7 @@ export default function LessonsPage() {
                       <div className="w-32 h-32 bg-gray-200 rounded-3xl animate-pulse" />
                     ) : featuredTopic ? (
                       <Image
+                        loading="lazy"
                         src={featuredTopic.description}
                         alt="featured topic"
                         width={120}
@@ -446,6 +449,7 @@ export default function LessonsPage() {
                     >
                       <div className="w-32 h-32 mb-6 flex items-center justify-center">
                         <Image
+                          loading="lazy"
                           src={topic.description}
                           alt="topic image"
                           width={120}

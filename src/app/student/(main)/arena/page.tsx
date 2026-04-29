@@ -231,6 +231,7 @@ export default function Arena() {
           alt=""
           className="rounded-br-[20px] rounded-bl-[20px] z-10"
           width={324}
+          priority
         />
         <div className="absolute top-0 flex flex-col items-center text-white w-full z-10">
           <h1
@@ -401,6 +402,7 @@ export default function Arena() {
                   alt=""
                   width={450}
                   className="h-[450px] aspect-square contrast-100"
+                  priority
                 />
               </div>
 
@@ -425,6 +427,7 @@ export default function Arena() {
                     alt=""
                     width={333}
                     className="h-[500px] aspect-square contrast-100 ml-[20px] relative z-[2]"
+                    priority
                   />
                 </div>
                 <div className="flex flex-col gap-[20px]">
@@ -491,6 +494,7 @@ export default function Arena() {
                   alt=""
                   width={450}
                   className="h-[450px] aspect-square contrast-100"
+                  priority
                 />
               </div>
 
@@ -521,6 +525,7 @@ export default function Arena() {
                     alt=""
                     width={450}
                     className="h-[450px] aspect-square contrast-100 ml-[20px] relative z-[2]"
+                    priority
                   />
                 </div>
                 <div className="flex flex-col gap-[10px]">
@@ -603,6 +608,7 @@ export default function Arena() {
                     alt=""
                     width={366}
                     className="h-[550px] aspect-square contrast-100 ml-[20px] -translate-y-16 relative z-[2]"
+                    priority
                   />
                 </div>
               </div>
@@ -670,6 +676,7 @@ export default function Arena() {
                 <Image
                   src={helmet}
                   alt=""
+                  priority
                   className="h-auto w-[150px] max-h-[160px] flex-shrink-0"
                 />
                 <div className="flex flex-col gap-[20px] min-w-0">
@@ -814,6 +821,7 @@ export default function Arena() {
                 <Image
                   src={userRank?.badge || ""}
                   alt=""
+                  priority
                   className="mt-[15px] w-auto h-[50%] aspect-square"
                   width={200}
                   height={200}
@@ -938,6 +946,7 @@ export default function Arena() {
                             <Image
                               src={record?.user?.avatarUrl}
                               alt=""
+                              priority
                               height={50}
                               width={50}
                             />

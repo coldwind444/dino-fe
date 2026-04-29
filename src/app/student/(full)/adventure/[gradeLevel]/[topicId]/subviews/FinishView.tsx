@@ -93,7 +93,7 @@ export default function FinishView({
     };
 
     updateResult();
-  }, [reward, score]);
+  }, [reward, score, currentLecture._id, topic._id]);
 
   return (
     <motion.div

@@ -51,8 +51,6 @@ export default function MilestonesView({
 
   // UI states
   const [mode, setMode] = useState<"select" | "lesson" | "slider">("slider");
-  const [currentPage, setCurrentPage] = useState(0);
-  const TOTAL_PAGES = 3; // TODO: wire up to real lecture pages
 
   const handleLectureChange = (lecture: LectureResponse) => {
     setCurrentLecture(lecture);
@@ -143,7 +141,6 @@ export default function MilestonesView({
               <div
                 className="flex flex-col items-center justify-center gap-8 cursor-pointer group"
                 onClick={() => {
-                  setCurrentPage(0);
                   setMode("lesson");
                 }}
               >

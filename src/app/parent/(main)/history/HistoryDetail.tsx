@@ -105,7 +105,7 @@ export default function HistoryDetail({ onBack, record }: HistoryDetailProps) {
     };
 
     fetchDetail();
-  }, [record?._id, record?.category]);
+  }, [record]);
 
   const totalQ = record?.totalQuestions ?? liveTotal ?? 0;
   const correctQ = record?.correctCount ?? liveCorrect ?? 0;

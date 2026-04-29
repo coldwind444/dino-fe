@@ -21,7 +21,8 @@ export default function ExerciseWebUI({ exercise, answer, onChange }: ExerciseWe
     [key: string]: { left: string[]; right: string[] };
   }>({});
 
-  const matchingExercise = useMemo(() => {
+  // Initialize cached matching shuffle on mount for this exercise
+  useMemo(() => {
     if (exercise.type !== "matching") return exercise;
 
     if (!matchingShuffleCache.current[exercise._id]) {
@@ -31,14 +32,6 @@ export default function ExerciseWebUI({ exercise, answer, onChange }: ExerciseWe
         right: pairs.map((p) => p.right).sort(() => Math.random() - 0.5),
       };
     }
-
-    // We override pairs with the mapped correctly so left and right match the cached arrays
-    const cached = matchingShuffleCache.current[exercise._id];
-    
-    // However, if Matching simply expects exercise.pairs to be ordered, we can just format it
-    // Wait, Matching currently expects pairs to have .left and .right on the same object, but they are conceptually separate columns!
-    // Since matching expects the lists to be detached anyway. Let's just pass leftItems and rightItems?
-    // Let's look at how Matching works. We'll pass them in via exercise object or directly.
     return exercise;
   }, [exercise]);
 

@@ -149,6 +149,7 @@ export default function LeaderboardContent() {
               alt="dino mascot"
               width={1536}
               height={1024}
+              priority
               className="h-full w-auto object-contain"
             />
           </div>

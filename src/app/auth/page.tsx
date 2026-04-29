@@ -320,6 +320,7 @@ export default function Auth() {
                       <Image
                         src={leftHand}
                         alt=""
+                        priority
                         height={60}
                         className={clsx(
                           "absolute -translate-y-[290px] transition-all duration-400 z-[1]",
@@ -332,6 +333,7 @@ export default function Auth() {
                       <Image
                         src={rightHand}
                         alt=""
+                        priority
                         height={60}
                         className={clsx(
                           "absolute -translate-y-[290px] transition-all duration-400 z-[1]",
@@ -462,6 +464,7 @@ export default function Auth() {
                       <Image
                         className="group-hover:scale-150 transition-all duration-200"
                         src={student}
+                        priority
                         height={100}
                         alt=""
                       />
@@ -485,6 +488,7 @@ export default function Auth() {
                       }}
                     >
                       <Image
+                        priority
                         className="group-hover:scale-150 transition-all duration-200"
                         src={parents}
                         height={100}

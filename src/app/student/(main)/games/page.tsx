@@ -118,7 +118,7 @@ export default function Games() {
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className="absolute -top-25 left-20"
               >
-                <Image src={single} alt="" height={280} width={280} />
+                <Image src={single} alt="" height={280} width={280} priority />
               </motion.div>
             ) : (
               <motion.div
@@ -129,7 +129,7 @@ export default function Games() {
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className="absolute -top-35 left-20"
               >
-                <Image src={pvp} alt="" height={340} width={340} />
+                <Image src={pvp} alt="" height={340} width={340} priority />
               </motion.div>
             )}
           </AnimatePresence>
@@ -221,13 +221,14 @@ export default function Games() {
                 )}
               >
                 {/** Thumbnail */}
-                <div className="h-1/2 w-full rounded-xl object-cover overflow-hidden">
+                <div className="h-1/2 w-full rounded-xl overflow-hidden">
                   <Image
                     src={val.thumbnail}
-                    height={500}
-                    width={200}
+                    height={640}
+                    width={349}
+                    loading="lazy"
                     alt=""
-                    className="w-auto h-full"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 {/** Label */}

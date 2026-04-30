@@ -32,6 +32,7 @@ import { getUserProfile } from "@/apis/user";
 import { logout } from "@/apis/auth";
 import { useLessonStore } from "@/stores/lessonStore";
 import { APIError } from "@/apis/config";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   [
@@ -245,9 +246,10 @@ export default function Navbar({
               {" "}
               {/* Added 'relative' */}
               <Image
-                src={avatar}
+                src={toCloudinaryWebP(avatar)}
                 alt="avatar"
                 fill
+                priority={true}
                 className="object-cover"
                 sizes="60px" // Good practice: tells Next.js this image is small
               />

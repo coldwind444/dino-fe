@@ -8,6 +8,7 @@ import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
 import lock from "../../../public/assets/exercises/lock.png";
 import { LectureResponse } from "@/types";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 type LectureSliderProps = {
   lectures: LectureResponse[];
@@ -86,10 +87,11 @@ export default function LectureSlider({
             <div key={index} className="flex flex-row gap-[20px] items-center">
               <div className="flex items-center justify-center relative">
                 <Image
-                  src={milestone}
+                  src={toCloudinaryWebP(milestone)}
                   alt=""
                   width={280}
                   height={280}
+                  priority={index < 3}
                   className={clsx(
                     "aspect-square flex-shrink-0 object-contain",
                     index === idx ? "scale-100" : "scale-75 opacity-60",

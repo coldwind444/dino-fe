@@ -10,7 +10,7 @@ import {
 } from "@/types";
 import { getUserProfile, getStudentStats, getUsers, getRankById } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
-import { formatNumberAbbreviation } from "@/helpers/utils";
+import { formatNumberAbbreviation, toCloudinaryWebP } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
 
 export default function Dashboard() {
@@ -212,7 +212,7 @@ export default function Dashboard() {
                   Bậc xếp hạng hiện tại
                 </label>
                 <Image
-                  src={selectedStudentRank?.badge || ""}
+                  src={toCloudinaryWebP(selectedStudentRank?.badge || "")}
                   alt="rank"
                   height={200}
                   width={200}

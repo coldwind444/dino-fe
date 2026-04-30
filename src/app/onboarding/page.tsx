@@ -14,6 +14,7 @@ import dinoWizard from "../../../public/assets/onboarding/wizard.webp";
 import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 const MESSAGES = {
   ASK_NAME:
@@ -263,7 +264,7 @@ export default function Onboarding() {
               <div className="relative h-[150px] w-[150px] flex-shrink-0 overflow-hidden rounded-full">
                 {finalAvatarUrl ? (
                   <Image
-                    src={finalAvatarUrl}
+                    src={toCloudinaryWebP(finalAvatarUrl)}
                     fill
                     alt="Selected avatar preview"
                     className="object-cover object-center"
@@ -419,7 +420,7 @@ export default function Onboarding() {
                         )}
                       >
                         <Image
-                          src={avt}
+                          src={toCloudinaryWebP(avt)}
                           alt="system avatar"
                           width={70}
                           height={70}

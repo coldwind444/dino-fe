@@ -7,6 +7,7 @@ import { UserProfileResponse } from "@/types";
 import { getFamilyCode, getUsers, getMyFamilyMembers } from "@/apis";
 import Image from "next/image";
 import { APIError } from "@/apis/config";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 type AccountLinkTabProps = {
   profile: UserProfileResponse;
@@ -110,8 +111,9 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
                     <Image
                       width={64}
                       height={64}
-                      src={parent.avatarUrl}
+                      src={toCloudinaryWebP(parent.avatarUrl)}
                       alt={parent.name}
+                      priority={true}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -181,7 +183,7 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
               Các tài khoản đã được liên kết
             </p>
             <div className="space-y-4">
-              {linkedStudents.map((student) => (
+              {linkedStudents.map((student, index) => (
                 <div
                   key={student._id}
                   className="flex items-center gap-4 pb-4 border-b border-gray-100 last:border-0"
@@ -191,8 +193,9 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
                       <Image
                         width={48}
                         height={48}
-                        src={student.avatarUrl}
+                        src={toCloudinaryWebP(student.avatarUrl)}
                         alt={student.name}
+                        priority={index < 3}
                         className="w-full h-full object-cover"
                       />
                     ) : (

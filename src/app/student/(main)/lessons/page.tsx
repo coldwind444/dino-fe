@@ -24,7 +24,7 @@ import {
   getNoCompletedTopics,
   getMyFamilyMembers,
 } from "@/apis";
-import { formatNumberAbbreviation } from "@/helpers/utils";
+import { formatNumberAbbreviation, toCloudinaryWebP } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
 
 const TOPICS_PER_PAGE = 4;
@@ -232,7 +232,7 @@ export default function LessonsPage() {
                 ) : (
                   grade && (
                     <Image
-                      src={grade?.description || ""}
+                      src={toCloudinaryWebP(grade?.description || "")}
                       priority
                       alt="progress"
                       width={80}
@@ -269,7 +269,7 @@ export default function LessonsPage() {
                 <div className="w-15 h-15 flex-shrink-0">
                   <Image
                     priority
-                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/f_auto,q_auto/v1761541691/crystal_x9l493.svg"
                     alt="crystal"
                     width={70}
                     height={70}
@@ -314,8 +314,8 @@ export default function LessonsPage() {
                       <div className="w-32 h-32 bg-gray-200 rounded-3xl animate-pulse" />
                     ) : featuredTopic ? (
                       <Image
-                        loading="lazy"
-                        src={featuredTopic.description}
+                        priority
+                        src={toCloudinaryWebP(featuredTopic.description)}
                         alt="featured topic"
                         width={120}
                         height={120}
@@ -449,8 +449,8 @@ export default function LessonsPage() {
                     >
                       <div className="w-32 h-32 mb-6 flex items-center justify-center">
                         <Image
-                          loading="lazy"
-                          src={topic.description}
+                          priority={index < 3}
+                          src={toCloudinaryWebP(topic.description)}
                           alt="topic image"
                           width={120}
                           height={120}

@@ -8,7 +8,6 @@ import feather from "../../../public/assets/home/feather.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 
-
 type EntranceTestPopupProps = {
   close: () => void;
   start: () => void;
@@ -42,6 +41,7 @@ export default function EntranceTestPopup({
             height={500}
             width={500}
             alt=""
+            priority={true}
             className="absolute -translate-x-1/3"
           />
           {/** Close button */}

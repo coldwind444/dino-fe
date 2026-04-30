@@ -193,7 +193,7 @@ export default function FinishView({
                 </div>
                 <div className="font-medium text-3xl flex flex-row items-center">
                   <Image
-                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/f_auto,q_auto/v1761541691/crystal_x9l493.svg"
                     height={30}
                     width={30}
                     alt=""

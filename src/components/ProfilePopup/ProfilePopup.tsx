@@ -17,6 +17,7 @@ import { UserProfileResponse } from "@/types";
 import { getUserProfile } from "@/apis";
 import Image from "next/image";
 import clsx from "clsx";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 interface ProfilePopupProps {
   isOpen: boolean;
@@ -144,10 +145,11 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                       <div className="w-26 h-26 bg-[#D6F8EB] rounded-full flex items-center justify-center overflow-hidden">
                         {profile?.avatarUrl ? (
                           <Image
-                            src={profile.avatarUrl}
+                            src={toCloudinaryWebP(profile.avatarUrl)}
                             alt="Avatar"
                             height={150}
                             width={150}
+                            priority={true}
                             className="object-cover w-full h-full"
                           />
                         ) : (

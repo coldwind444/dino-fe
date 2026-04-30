@@ -24,7 +24,7 @@ import ExplainModal, {
   themeBackgrounds,
 } from "@/components/ExplainModal/ExplainModal";
 import { useLessonStore } from "@/stores/lessonStore";
-import { cleanedAnswerArray } from "@/helpers/utils";
+import { cleanedAnswerArray, toCloudinaryWebP } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
 
 interface ExerciseViewProps {
@@ -99,7 +99,6 @@ export default function ExerciseView({
     };
     setAnswers([...answers, ans]);
     setIsAnswerCorrect(isCorrect);
-    console.log("userAnswer: ", JSON.stringify(userAnswer));
 
     if (!doneExercises.includes(currExIdx)) {
       setShowSubmitBanner(true);
@@ -411,7 +410,7 @@ export default function ExerciseView({
                       +
                       <span>
                         <Image
-                          src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                          src="https://res.cloudinary.com/dirr7ovdh/image/upload/f_auto,q_auto/v1761541691/crystal_x9l493.svg"
                           height={50}
                           width={50}
                           alt=""

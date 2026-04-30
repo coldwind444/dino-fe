@@ -204,7 +204,7 @@ export default function MissionPage() {
 
                     <div className="flex items-center justify-center space-x-2">
                       <Image
-                        src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                        src="https://res.cloudinary.com/dirr7ovdh/image/upload/f_auto,q_auto/v1761541691/crystal_x9l493.svg"
                         alt="Crystal"
                         width={24}
                         height={24}
@@ -293,7 +293,7 @@ export default function MissionPage() {
                 Chúc mừng bạn đã nhận được <br />
                 <span className="text-orange-400 text-5xl flex items-center gap-4 mt-4">
                   <Image
-                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/f_auto,q_auto/v1761541691/crystal_x9l493.svg"
                     alt="Crystal"
                     width={48}
                     height={48}

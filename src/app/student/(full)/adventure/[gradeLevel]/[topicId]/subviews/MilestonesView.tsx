@@ -18,6 +18,7 @@ import bagOpen from "../../../../../../../../public/assets/exercises/bag_open.we
 import map from "../../../../../../../../public/assets/exercises/map.webp";
 import paper from "../../../../../../../../public/assets/exercises/paper.webp";
 import DOMPurify from "isomorphic-dompurify";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 interface MilestonesViewProps {
   world: WorldResponse;
@@ -86,7 +87,7 @@ export default function MilestonesView({
         </div>
         <div className="flex flex-col items-center justify-center mt-7 gap-[20px]">
           <Image
-            src={topic?.description || ""}
+            src={toCloudinaryWebP(topic?.description || "")}
             alt=""
             height={120}
             width={120}

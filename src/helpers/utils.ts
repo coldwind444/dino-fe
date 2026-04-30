@@ -98,4 +98,8 @@ export function formatNumberAbbreviation(num: number): string {
     return num.toString();
 }
 
-
+export function toCloudinaryWebP(url: string): string {
+    if (!url.includes("res.cloudinary.com")) return url;
+    if (url.includes("f_webp")) return url;
+    return url.replace("/upload/", "/upload/f_webp,q_auto/");
+}

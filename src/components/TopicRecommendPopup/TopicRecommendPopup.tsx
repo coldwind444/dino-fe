@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { getTermById } from "@/apis";
 import { useLessonStore } from "@/stores/lessonStore";
 import { useRouter } from "next/navigation";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 export default function TopicRecommendPopup({
   close,
@@ -83,6 +84,7 @@ export default function TopicRecommendPopup({
             height={550}
             width={550}
             alt=""
+            priority={true}
             className="absolute -translate-x-1/2"
           />
           {/** Close button */}
@@ -113,10 +115,11 @@ export default function TopicRecommendPopup({
               <>
                 {/** Image placeholder */}
                 <Image
-                  src={topic.description || ""}
+                  src={toCloudinaryWebP(topic.description || "")}
                   height={120}
                   width={120}
                   alt=""
+                  priority={true}
                 />
                 {/** Topic info */}
                 <div

@@ -18,6 +18,7 @@ import { getMinigames } from "@/apis/minigame";
 import { MiniGameResponse } from "@/types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { APIError } from "@/apis/config";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 export default function Games() {
   // Data state
@@ -213,10 +214,10 @@ export default function Games() {
                 {/** Thumbnail */}
                 <div className="h-1/2 w-full rounded-xl overflow-hidden">
                   <Image
-                    src={val.thumbnail}
+                    src={toCloudinaryWebP(val.thumbnail)}
                     height={640}
                     width={349}
-                    loading="lazy"
+                    priority={idx < 3}
                     alt=""
                     className="w-full h-full object-cover"
                   />

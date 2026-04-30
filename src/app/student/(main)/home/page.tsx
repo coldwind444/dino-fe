@@ -31,6 +31,7 @@ import { TopicResponse } from "@/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { APIError } from "@/apis/config";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 const trophy = "/assets/home/trophy.png";
 
@@ -329,7 +330,7 @@ export default function StudentHome() {
                     )}
                   >
                     <Image
-                      src={recentTopic?.description || ""}
+                      src={toCloudinaryWebP(recentTopic?.description || "")}
                       alt="rtopic"
                       width={120}
                       height={120}

@@ -24,7 +24,7 @@ import ExplainModal, {
   themeBackgrounds,
 } from "@/components/ExplainModal/ExplainModal";
 import { useLessonStore } from "@/stores/lessonStore";
-import { cleanedAnswerArray, toCloudinaryWebP } from "@/helpers/utils";
+import { cleanedAnswerArray } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
 
 interface ExerciseViewProps {

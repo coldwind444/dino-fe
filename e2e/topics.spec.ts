@@ -18,7 +18,7 @@ test.describe('Topics', () => {
 
   test('TC-04-02: Missing data load', async ({ page }) => {
     await page.getByRole('button', { name: 'CHỌN LỚP' }).click();
-    await page.getByRole('button', { name: 'Lớp 1' }).click();
+    await page.getByRole('button', { name: 'Lớp 2' }).click();
     await expect(page.getByText('Chưa có dữ liệu')).toBeVisible();
     await expect(page.getByText('Chưa có chủ đề nào')).toBeVisible();
     await expect(page.getByText('Nội dung đang được cập nhật')).toBeVisible();
@@ -26,8 +26,8 @@ test.describe('Topics', () => {
 
   test('TC-04-03: Switching grade', async ({ page }) => {
     await page.getByRole('button', { name: 'CHỌN LỚP' }).click();
-    await page.getByRole('button', { name: 'Lớp 2' }).click();
-    await expect(page.getByText('Chương trình lớp 2')).toBeVisible();
+    await page.getByRole('button', { name: 'Lớp 1' }).click();
+    await expect(page.getByText('Chương trình lớp 1')).toBeVisible();
   });
 
   test('TC-04-04: Recent topic redirect', async ({ page }) => {

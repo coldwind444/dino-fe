@@ -15,6 +15,7 @@ import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { toCloudinaryWebP } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 const MESSAGES = {
   ASK_NAME:
@@ -158,8 +159,8 @@ export default function Onboarding() {
 
       toast.success("Hoàn thành hồ sơ thành công ! Đang chuyển hướng ...");
       router.push("/student/home");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
+    } catch (error) {
+      if (error instanceof APIError) {
         toast.error(error.message);
       } else {
         toast.error("Lỗi không xác định xảy ra.");
@@ -346,6 +347,7 @@ export default function Onboarding() {
                   "disabled:opacity-60 disabled:cursor-not-allowed",
                 )}
                 onClick={() => setStep(STEPS.AVATAR)}
+                data-testid="continue-btn1"
               >
                 <div
                   className={clsx(
@@ -366,6 +368,7 @@ export default function Onboarding() {
                 {/** Customized radio box */}
                 <div className="block">
                   <div
+                    data-testid="system-avatar-radio"
                     className={clsx(
                       "h-[20px] aspect-square border-2 rounded-full transition-all duration-150 cursor-pointer",
                       "flex items-center justify-center",
@@ -494,6 +497,7 @@ export default function Onboarding() {
                   "disabled:opacity-60 disabled:cursor-not-allowed ml-auto mr-auto",
                 )}
                 onClick={() => setStep(STEPS.CODE)}
+                data-testid="continue-btn2"
               >
                 <div
                   className={clsx(
@@ -537,6 +541,7 @@ export default function Onboarding() {
                 )}
               >
                 <div
+                  data-testid="complete-btn"
                   className={clsx(
                     "h-full w-full bg-[#23BEAA] text-white font-medium text-[18px]",
                     "rounded-bl-[50px] rounded-tr-[50px] rounded-tl-[10px] rounded-br-[10px]",

@@ -42,18 +42,24 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
+      testIgnore: /.*(login|register|reset-password)\.spec\.ts/,
     },
-
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
       dependencies: ['setup'],
+      testIgnore: /.*(login|register|reset-password)\.spec\.ts/,
     },
-
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
       dependencies: ['setup'],
+      testIgnore: /.*(login|register|reset-password)\.spec\.ts/,
+    },
+    {
+      name: 'auth',
+      testMatch: /.*(login|register|reset-password)\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
     },
 
     /* Test against mobile viewports. */
@@ -67,10 +73,10 @@ export default defineConfig({
     // },
 
     /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
+    {
+      name: 'Microsoft Edge',
+      use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    },
     // {
     //   name: 'Google Chrome',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },

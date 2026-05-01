@@ -85,6 +85,13 @@ test.describe('Assessment and Arena', () => {
       await expect(page.getByText('NỘP BÀI')).toBeVisible();
       await expect(page.getByText('Câu 1')).toBeVisible();
 
+      // Do first question
+      const exerciseCard = page.getByTestId('exercise-card');
+      const choiceOption = exerciseCard.getByTestId('choice-option').first();
+      await choiceOption.click();
+      await expect(choiceOption).toHaveClass(/bg-\[#D8FFFA\]/);
+      await page.getByTestId('next-question-btn').click();
+
       // Check submit confirmation
       await page.getByText('NỘP BÀI').click();
       await expect(page.getByText('Bạn có chắc chắn muốn nộp bài không ?')).toBeVisible();
@@ -111,6 +118,7 @@ test.describe('Assessment and Arena', () => {
 
     if (!(await joinBtn.isVisible())) {
       // Fallback to Entrance Test if Arena is not available
+      await page.goto('/student/home');
       const floatButton = page.locator('svg[data-icon="flask-vial"]').locator('..');
       if (await floatButton.isVisible()) {
         await floatButton.click();

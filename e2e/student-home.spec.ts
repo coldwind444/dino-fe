@@ -10,18 +10,18 @@ test.describe('Student Home', () => {
   test('TC-03-01: Full data load', async ({ page }) => {
     await expect(page.getByText('Tiếp tục học', { exact: true })).toBeVisible();
     await expect(page.getByText('Ôn lại kiến thức', { exact: true })).toBeVisible();
-    await expect(page.getByText('Cộng trừ số có 2 chữ số', { exact: true })).toBeVisible();
-    await expect(page.getByText('Các số có 2 chữ số', { exact: true })).toBeVisible();
+    await expect(page.getByText('Các phép tính với số có 2 chữ số', { exact: true })).toBeVisible();
   });
 
   test('TC-03-02: Missing data load', async ({ page }) => {
+    await page.getByRole('button', { name: '2', exact: true }).click();
     await expect(page.getByText(/Bạn chưa học chủ đề nào/)).toBeVisible();
     await expect(page.getByText(/Bạn chưa hoàn thành chủ đề nào/)).toBeVisible();
   });
 
   test('TC-03-03: Switching grade', async ({ page }) => {
-    await page.getByRole('button', { name: '2', exact: true }).click();
-    await expect(page.getByText(/Lớp 2/)).toBeVisible();
+    await page.getByRole('button', { name: '1', exact: true }).click();
+    await expect(page.getByText(/Lớp 1/)).toBeVisible();
   });
 
   test('TC-03-04: Recent topic redirect', async ({ page }) => {

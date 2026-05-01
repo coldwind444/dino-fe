@@ -8,7 +8,7 @@ test.describe('Mission', () => {
   });
 
   test('TC-07-01: Missions found', async ({ page }) => {
-    await expect(page.getByText('Đăng nhập hằng ngày')).toBeVisible();
+    await expect(page.getByText('Đi học đầy đủ')).toBeVisible();
   });
 
   test('TC-07-02: Missions not found', async ({ page }) => {
@@ -16,7 +16,7 @@ test.describe('Mission', () => {
   });
 
   test('TC-07-03: Claim rewards', async ({ page }) => {
-    const mission = page.getByText('Đăng nhập hằng ngày');
+    const mission = page.getByText('Đi học đầy đủ');
     await expect(mission).toBeVisible();
 
     const claimBtn = mission.getByRole('button', { name: /Nhận/i });

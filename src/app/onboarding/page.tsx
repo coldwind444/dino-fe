@@ -340,7 +340,7 @@ export default function Onboarding() {
               </div>
 
               <button
-                disabled={name.length === 0}
+                disabled={name.length === 0 || grade === ""}
                 className={clsx(
                   "h-[60px] w-[370px] rounded-[10px] bg-[#1DA492] cursor-pointer hover:opacity-90",
                   "disabled:opacity-60 disabled:cursor-not-allowed",
@@ -530,7 +530,12 @@ export default function Onboarding() {
                 />
               </div>
               <button
-                disabled={name.length === 0 || finalAvatarUrl.length === 0}
+                disabled={
+                  name.length === 0 ||
+                  finalAvatarUrl.length === 0 ||
+                  grade === "" ||
+                  code.length === 0
+                }
                 className={clsx(
                   "h-[60px] w-[370px] rounded-[10px] bg-[#1DA492] cursor-pointer hover:opacity-90",
                   "disabled:opacity-60 disabled:cursor-not-allowed",

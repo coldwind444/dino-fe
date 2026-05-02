@@ -534,6 +534,7 @@ export default function Onboarding() {
                 />
               </div>
               <button
+                data-testid="complete-btn"
                 disabled={
                   name.length === 0 ||
                   finalAvatarUrl.length === 0 ||
@@ -546,7 +547,6 @@ export default function Onboarding() {
                 )}
               >
                 <div
-                  data-testid="complete-btn"
                   className={clsx(
                     "h-full w-full bg-[#23BEAA] text-white font-medium text-[18px]",
                     "rounded-bl-[50px] rounded-tr-[50px] rounded-tl-[10px] rounded-br-[10px]",

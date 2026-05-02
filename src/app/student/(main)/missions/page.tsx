@@ -130,6 +130,7 @@ export default function MissionPage() {
             </h3>
             <div className="flex bg-gray-100 rounded-full py-1 px-2 border-2 border-teal-500/20">
               <button
+                data-testid="incomplete-tab"
                 onClick={() => setActiveTab("incomplete")}
                 className={clsx(
                   "px-5 py-2 rounded-full font-bold transition-all duration-200 cursor-pointer",
@@ -141,6 +142,7 @@ export default function MissionPage() {
                 Chưa hoàn thành
               </button>
               <button
+                data-testid="complete-tab"
                 onClick={() => setActiveTab("complete")}
                 className={clsx(
                   "px-5 py-2 rounded-full font-bold transition-all duration-200 cursor-pointer",
@@ -156,7 +158,7 @@ export default function MissionPage() {
 
           <div className="space-y-3 h-[550px] overflow-y-auto pr-2 custom-scrollbar">
             {filteredAchievements && filteredAchievements.length > 0 ? (
-              filteredAchievements.map((m) => (
+              filteredAchievements.map((m, idx) => (
                 <div
                   key={m._id}
                   className="relative bg-[#A8EDEA] rounded-[30px] flex items-center justify-between pl-8 pr-4 py-6 shadow-sm overflow-hidden h-[110px] flex-shrink-0"
@@ -221,6 +223,7 @@ export default function MissionPage() {
 
                   <div className="relative z-10 flex items-center justify-end">
                     <button
+                      data-testid={`claim-btn-${m.title[m.title.length - 1]}`}
                       onClick={() =>
                         claimMission(m.achievementId, m._id, m.reward)
                       }
@@ -257,15 +260,12 @@ export default function MissionPage() {
       </main>
 
       <AnimatePresence>
-        {true && (
+        {showRewardModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className={clsx(
-              "fixed inset-0 z-[100] flex items-center justify-center",
-              !showRewardModal && "hidden",
-            )}
+            className="fixed inset-0 z-[100] flex items-center justify-center"
           >
             {/* Overlay */}
             <div
@@ -282,6 +282,7 @@ export default function MissionPage() {
             >
               {/* Close Button */}
               <button
+                data-testid="close-modal-btn"
                 onClick={() => setShowRewardModal(false)}
                 className="absolute -top-10 -right-10 text-white/80 hover:text-white text-3xl transition-colors cursor-pointer"
               >

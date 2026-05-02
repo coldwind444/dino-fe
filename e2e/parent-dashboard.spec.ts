@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Parent Dashboard', () => {
-  test.use({ storageState: 'playwright/.auth/parent.json' });
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/parent/dashboard');

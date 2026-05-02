@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Assessment and Arena', () => {
-  test.use({ storageState: 'playwright/.auth/student.json' });
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/student/home');

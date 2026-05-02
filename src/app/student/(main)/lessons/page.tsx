@@ -206,6 +206,7 @@ export default function LessonsPage() {
       <div className="flex gap-6 p-6">
         <aside className="w-64 flex-shrink-0">
           <button
+            data-testid="select-grade-btn"
             onClick={() => setIsSelectGradeOpen(true)}
             className="h-16 w-full bg-amber-500 text-white font-medium text-base cursor-pointer 
           rounded-3xl mb-4 relative hover:scale-105 hover:shadow-xl transition-all duration-150 hover:brightness-110"
@@ -355,6 +356,7 @@ export default function LessonsPage() {
                     onClick={() =>
                       featuredTopic && navigateToLecture(featuredTopic._id)
                     }
+                    data-testid="continue-learning-btn"
                   >
                     <span className="absolute top-2 right-4 w-2 h-2 rounded-full bg-white/40" />
                     {recentTopic ? "Tiếp tục" : "Bắt đầu"}
@@ -436,6 +438,7 @@ export default function LessonsPage() {
 
                 return (
                   <div
+                    data-testid={`topic-card-${index}`}
                     key={index}
                     className="relative h-[320px] transition-all hover:scale-105"
                     onClick={() =>
@@ -531,6 +534,7 @@ export default function LessonsPage() {
           <div className="flex justify-center gap-6">
             {[1, 2, 3].map((g) => (
               <button
+                data-testid={`grade-btn-${g}`}
                 key={g}
                 onClick={() => {
                   setGradeLevel(g.toString());
@@ -555,6 +559,7 @@ export default function LessonsPage() {
           <div className="flex justify-center gap-6">
             {[4, 5].map((g) => (
               <button
+                data-testid={`grade-btn-${g}`}
                 key={g}
                 onClick={() => {
                   setGradeLevel(g.toString());

@@ -1,5 +1,6 @@
 import { CompleteProfileRequest, GoogleLoginRequest, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "@/types";
-import { publicApi, api, setAccessToken, clearAccessToken, handleError } from "./config";
+import { publicApi, api, setAccessToken, clearAccessToken, handleError, APIError } from "./config";
+import { AxiosError } from "axios";
 
 export const register = async (req: RegisterRequest): Promise<RegisterResponse> => {
     try {
@@ -47,9 +48,10 @@ export const googleLogin = async (req: GoogleLoginRequest) => {
 export const sendOtp = async (identifier: string) => {
     try {
         const res = await publicApi.post('/auth/forgot-password', { identifier });
-        return res.data;
+        if (res.status === 200) throw new APIError('Tài khoản không tồn tại', 404);
     } catch (error) {
         handleError(error);
+        throw error;
     }
 }
 

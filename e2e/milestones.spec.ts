@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Milestones (Adventure Mode)', () => {
-  test.use({ storageState: 'playwright/.auth/student.json' });
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/student/lessons');

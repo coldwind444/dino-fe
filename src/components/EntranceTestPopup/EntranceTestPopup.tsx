@@ -46,6 +46,7 @@ export default function EntranceTestPopup({
           />
           {/** Close button */}
           <div
+            data-testid="close-entrance-test-btn"
             className="absolute aspect-square h-20 bg-amber-500 rounded-full top-0 right-0 translate-x-1/3 -translate-y-1/4
                                     hover:brightness-110 cursor-pointer flex items-center justify-center
                                     text-white text-3xl shadow-inner"

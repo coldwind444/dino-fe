@@ -12,7 +12,7 @@ test.describe('Reset Password', () => {
   });
 
   test('TC-11-02: Empty OTP', async ({ page }) => {
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user');
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user1');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
 
     await page.getByPlaceholder('Mật khẩu mới').fill('NewPassword@1');
@@ -22,7 +22,7 @@ test.describe('Reset Password', () => {
   });
 
   test('TC-11-03: Invalid OTP', async ({ page }) => {
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user');
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user2');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
 
     const firstDigit = page.getByLabel('Digit 1 of 6');
@@ -36,7 +36,7 @@ test.describe('Reset Password', () => {
   });
 
   test('TC-11-04: Invalid password', async ({ page }) => {
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user');
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user3');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
 
     // Pause for OTP
@@ -49,7 +49,7 @@ test.describe('Reset Password', () => {
   });
 
   test('TC-11-05: Unmatch confirmation', async ({ page }) => {
-    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user');
+    await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user4');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
 
     // Pause for OTP
@@ -76,6 +76,7 @@ test.describe('Reset Password', () => {
     await resetBtn.click();
 
     await expect(page.getByText('Tuyệt vời ! Mật khẩu mới, khởi đầu mới đúng không nè !')).toBeVisible();
+    await page.waitForURL(/auth/, { timeout: 5000 })
     await expect(page).toHaveURL(/\/auth/, { timeout: 5000 });
   });
 });

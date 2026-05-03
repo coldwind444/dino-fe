@@ -378,16 +378,16 @@ export default function StudentHome() {
         </div>
 
         {/* Review Section */}
-        <aside className="lg:col-span-5 w-fit h-fit">
+        <aside className="lg:col-span-7 h-fit pr-5 ">
           {completedTopic && completedTopic.length > 0 ? (
-            <div>
+            <div className="w-full">
               <h4 className="font-semibold">Ôn lại kiến thức</h4>
               <div className="mt-3 flex flex-col gap-3 h-full w-full overflow-y-auto pr-2">
                 {completedTopic.map((val, idx) => (
                   <div
                     key={`review-${idx}`}
                     className={clsx(
-                      "flex items-center justify-between p-4 rounded-[20px]",
+                      "flex items-center justify-between p-4 rounded-[20px] w-full",
                       "bg-[#FFF6F6] border-2 border-[#FF9292] min-h-[80px] pl-[50px]",
                     )}
                   >
@@ -400,7 +400,7 @@ export default function StudentHome() {
                       className={clsx(
                         "w-10 h-10 rounded-full bg-white flex items-center justify-center",
                         "shadow-md border border-gray-200 hover:shadow-lg hover:scale-105",
-                        "transition-all duration-200 group",
+                        "transition-all duration-200 group cursor-pointer",
                       )}
                       onClick={() => {
                         router.push(

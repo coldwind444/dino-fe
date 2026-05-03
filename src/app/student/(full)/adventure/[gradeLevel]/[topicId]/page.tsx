@@ -62,9 +62,11 @@ export default function LessonsPage({ params }: LessonsPageProps) {
   // UI states (from LessonView)
   const [mode, setMode] = useState(MODE.LECTURE);
   const [isCelebrating, setIsCelebrating] = useState(false);
-  
+
   const [currLand, setCurrLand] = useState<LandResponse | null>(null);
-  const [currentLecture, setCurrentLecture] = useState<LectureResponse | null>(null);
+  const [currentLecture, setCurrentLecture] = useState<LectureResponse | null>(
+    null,
+  );
   const [totalScore, setTotalScore] = useState(0);
   const [totalReward, setTotalReward] = useState(0);
   const [maxScore, setMaxScore] = useState(0);
@@ -94,10 +96,12 @@ export default function LessonsPage({ params }: LessonsPageProps) {
         setCurrTopic(topic);
         setLectures(lectures);
         setUser(user);
-        
+
         // Init state dependent on fetched data
         if (lands.length > 0) {
-          setCurrLand(lands.find((land) => land.difficulty === "easy") || lands[0]);
+          setCurrLand(
+            lands.find((land) => land.difficulty === "easy") || lands[0],
+          );
         }
         if (lectures.length > 0) {
           setCurrentLecture(lectures[0]);
@@ -158,13 +162,33 @@ export default function LessonsPage({ params }: LessonsPageProps) {
   }, [mode]);
 
   // Determine if all required images are fully loaded
-  const areImagesLoaded = loadedLandsCount >= lands.length && isMilestoneLoaded;
+  const areImagesLoaded =
+    lectures.length === 0
+      ? true
+      : loadedLandsCount >= lands.length && isMilestoneLoaded;
 
   // Determine if the screen loader should be shown
-  const showLoader = loading || !currGrade || !currWorld || !currTopic || !lectures || !lands || !user || !areImagesLoaded;
+  const showLoader =
+    loading ||
+    !currGrade ||
+    !currWorld ||
+    !currTopic ||
+    !lectures ||
+    !lands ||
+    !user ||
+    !areImagesLoaded;
 
   // If data is not ready, we can't even render the images yet
-  if (!currGrade || !currWorld || !currTopic || !lectures || !lands || !user || !currLand || !currentLecture) {
+  if (
+    !currGrade ||
+    !currWorld ||
+    !currTopic ||
+    !lectures ||
+    !lands ||
+    !user ||
+    !currLand ||
+    !currentLecture
+  ) {
     return <ScreenLoader />;
   }
 
@@ -194,7 +218,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
           key={land._id}
           className={clsx(
             "h-full w-full object-cover absolute inset-0",
-            land._id === currLand._id ? "opacity-100 z-0" : "opacity-0 -z-10"
+            land._id === currLand._id ? "opacity-100 z-0" : "opacity-0 -z-10",
           )}
           fill
           priority
@@ -253,8 +277,8 @@ export default function LessonsPage({ params }: LessonsPageProps) {
                     Chưa có bài học nào
                   </h2>
                   <p className="text-gray-600 font-medium text-lg">
-                    Nội dung cho chủ đề này đang được cập nhật. Vui lòng quay lại
-                    sau!
+                    Nội dung cho chủ đề này đang được cập nhật. Vui lòng quay
+                    lại sau!
                   </p>
                   <button
                     onClick={() => router.back()}

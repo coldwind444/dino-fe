@@ -257,15 +257,12 @@ export default function MissionPage() {
       </main>
 
       <AnimatePresence>
-        {true && (
+        {showRewardModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className={clsx(
-              "fixed inset-0 z-[100] flex items-center justify-center",
-              !showRewardModal && "hidden",
-            )}
+            className="fixed inset-0 z-[100] flex items-center justify-center"
           >
             {/* Overlay */}
             <div

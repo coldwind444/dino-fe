@@ -236,7 +236,6 @@ export default function ExerciseView({
             roboto.className,
           )}
         >
-          <label className="text-[18px] font-semibold">{`Bài ${1}`}</label>
           <h2 className="max-w-[250px] text-wrap text-[23px] font-bold">
             {currentLecture?.title}
           </h2>

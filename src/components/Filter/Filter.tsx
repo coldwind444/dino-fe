@@ -9,7 +9,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
 import { roboto } from "@/app/fonts";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type FilterParams = {
   hasStudentSelectBox?: boolean;
@@ -24,8 +24,6 @@ type FilterParams = {
     keyword?: string,
   ) => Promise<void>;
 };
-
-
 
 function parseDateInput(value: string): Date | undefined {
   const trimmed = value.trim();
@@ -76,7 +74,6 @@ function formatDateForPicker(value?: Date): string {
   return `${year}-${month}-${day}`;
 }
 
- 
 export default function Filter({
   hasStudentSelectBox = false,
   hasSearchBox = false,
@@ -170,6 +167,17 @@ export default function Filter({
     input.focus();
     input.click();
   };
+
+  useEffect(() => {
+    if (
+      studentList &&
+      studentList.length > 0 &&
+      hasStudentSelectBox &&
+      !studentId
+    ) {
+      setStudentId(studentList[0]._id);
+    }
+  }, [studentList, hasStudentSelectBox, studentId]);
 
   return (
     <div className="bg-white rounded-2xl h-full min-w-[420px] shadow-[0_0_10px_rgba(0,0,0,0.25)] flex flex-col gap-4 p-5">

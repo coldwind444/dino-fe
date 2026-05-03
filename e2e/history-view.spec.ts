@@ -1,8 +1,26 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
+
+async function fillLoginForm(page: Page, identifier: string, password: string) {
+  const identifierInput = page.getByPlaceholder('Email hoặc tên đăng nhập');
+  const passwordInput = page.getByPlaceholder('Mật khẩu');
+
+  await identifierInput.click();
+  await identifierInput.pressSequentially(identifier, { delay: 50 });
+  await expect(identifierInput).toHaveValue(identifier);
+
+  await passwordInput.click();
+  await passwordInput.pressSequentially(password, { delay: 50 });
+  await expect(passwordInput).toHaveValue(password);
+}
 
 test.describe('History View - Student Role', () => {
-
   test.beforeEach(async ({ page }) => {
+    await page.goto('/auth');
+    await fillLoginForm(page, 'student_user123', 'P@ssw0rd2026!');
+    const loginBtn = page.getByRole('button', { name: 'Đăng nhập', exact: true });
+    await expect(loginBtn).toBeEnabled();
+    await loginBtn.click();
+    await page.waitForURL(/\/student\/home/, { waitUntil: 'commit', timeout: 15000 });
     await page.goto('/student/history');
   });
 
@@ -10,6 +28,9 @@ test.describe('History View - Student Role', () => {
     await expect(page.getByText('Thống kê tổng quát')).toBeVisible();
     await expect(page.getByText('Số bài tập đã làm')).toBeVisible();
     await expect(page.getByText('Lịch sử làm bài')).toBeVisible();
+    await expect(page.getByText('Nhân chia số có 2 chữ số')).toBeVisible();
+    await expect(page.getByText('Cộng trừ số có 2 chữ số (không nhớ)')).toBeVisible();
+    await expect(page.getByText('Cộng trừ số có 2 chữ số (có nhớ)')).toBeVisible();
   });
 
   test('TC-08-02: Filter by category and keyword', async ({ page }) => {

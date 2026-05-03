@@ -98,6 +98,7 @@ export default function Games() {
             className="text-xl text-[rgba(255,255,255,0.5)]"
           />
           <input
+            data-testid="search-input"
             className="h-full flex-1 outline-none border-none text-white text-[18px]"
             type="text"
             onChange={(e) => setSearch(e.target.value)}
@@ -250,6 +251,7 @@ export default function Games() {
                     "hover:brightness-110 cursor-pointer transition-all duration-150",
                   )}
                   onClick={() => window.open(val.gameUrl)}
+                  data-testid={`play-btn-${idx}`}
                 >
                   <label className="mr-auto ml-20 cursor-pointer">
                     {true ? "Chơi ngay" : "Mua Premium"}

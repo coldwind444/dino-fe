@@ -236,7 +236,6 @@ export default function ExerciseView({
             roboto.className,
           )}
         >
-          <label className="text-[18px] font-semibold">{`Bài ${1}`}</label>
           <h2 className="max-w-[250px] text-wrap text-[23px] font-bold">
             {currentLecture?.title}
           </h2>
@@ -283,6 +282,7 @@ export default function ExerciseView({
             "transition-all duration-200 overflow-hidden font-bold text-white mt-auto mb-10",
           )}
           onClick={isSubmitting ? undefined : submitLectureResult}
+          data-testid="submit-btn"
         >
           <div
             className={clsx(
@@ -331,6 +331,7 @@ export default function ExerciseView({
         {/** Interactive area */}
         <div className="max-h-[440px] w-full flex items-center justify-center">
           <CocosGameWrapper
+            data-testid="cocos-game"
             exercises={exercises}
             currentExerciseIndex={currExIdx}
             ref={cocosGameRef}

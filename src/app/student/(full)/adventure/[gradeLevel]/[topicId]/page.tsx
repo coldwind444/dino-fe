@@ -62,12 +62,15 @@ export default function LessonsPage({ params }: LessonsPageProps) {
   // UI states (from LessonView)
   const [mode, setMode] = useState(MODE.LECTURE);
   const [isCelebrating, setIsCelebrating] = useState(false);
-  
+
   const [currLand, setCurrLand] = useState<LandResponse | null>(null);
-  const [currentLecture, setCurrentLecture] = useState<LectureResponse | null>(null);
+  const [currentLecture, setCurrentLecture] = useState<LectureResponse | null>(
+    null,
+  );
   const [totalScore, setTotalScore] = useState(0);
   const [totalReward, setTotalReward] = useState(0);
   const [maxScore, setMaxScore] = useState(0);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   // Image preloading states
   const [loadedLandsCount, setLoadedLandsCount] = useState(0);
@@ -94,10 +97,12 @@ export default function LessonsPage({ params }: LessonsPageProps) {
         setCurrTopic(topic);
         setLectures(lectures);
         setUser(user);
-        
+
         // Init state dependent on fetched data
         if (lands.length > 0) {
-          setCurrLand(lands.find((land) => land.difficulty === "easy") || lands[0]);
+          setCurrLand(
+            lands.find((land) => land.difficulty === "easy") || lands[0],
+          );
         }
         if (lectures.length > 0) {
           setCurrentLecture(lectures[0]);
@@ -113,6 +118,10 @@ export default function LessonsPage({ params }: LessonsPageProps) {
 
     fetchData();
   }, [params]);
+
+  useEffect(() => {
+    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+  }, []);
 
   // Functions
   const onExit = () => {
@@ -157,14 +166,24 @@ export default function LessonsPage({ params }: LessonsPageProps) {
     }
   }, [mode]);
 
-  // Determine if all required images are fully loaded
-  const areImagesLoaded = loadedLandsCount >= lands.length && isMilestoneLoaded;
+  // When there are no lectures, skip the image-loading gate so the "no lessons" placeholder shows immediately.
+  const areImagesLoaded =
+    lectures.length === 0
+      ? true
+      : loadedLandsCount >= lands.length && isMilestoneLoaded;
 
   // Determine if the screen loader should be shown
-  const showLoader = loading || !currGrade || !currWorld || !currTopic || !lectures || !lands || !user || !areImagesLoaded;
+  const showLoader =
+    loading ||
+    !currGrade ||
+    !currWorld ||
+    !currTopic ||
+    !user ||
+    !areImagesLoaded;
 
-  // If data is not ready, we can't even render the images yet
-  if (!currGrade || !currWorld || !currTopic || !lectures || !lands || !user || !currLand || !currentLecture) {
+  // If core data is not ready, we can't render anything yet.
+  // currLand and currentLecture may be null when lectures is empty — handled by the "no lessons" UI below.
+  if (!currGrade || !currWorld || !currTopic || !user) {
     return <ScreenLoader />;
   }
 
@@ -194,7 +213,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
           key={land._id}
           className={clsx(
             "h-full w-full object-cover absolute inset-0",
-            land._id === currLand._id ? "opacity-100 z-0" : "opacity-0 -z-10"
+            land._id === currLand?._id ? "opacity-100 z-0" : "opacity-0 -z-10",
           )}
           fill
           priority
@@ -209,8 +228,8 @@ export default function LessonsPage({ params }: LessonsPageProps) {
         <>
           {/** Full screen confetti for finish view */}
           <Confetti
-            width={window.innerWidth}
-            height={window.innerHeight}
+            width={windowSize.width}
+            height={windowSize.height}
             className={clsx(
               isCelebrating ? "opacity-100 z-20" : "opacity-0 -z-10",
               "transition-opacity duration-200 absolute",
@@ -253,8 +272,8 @@ export default function LessonsPage({ params }: LessonsPageProps) {
                     Chưa có bài học nào
                   </h2>
                   <p className="text-gray-600 font-medium text-lg">
-                    Nội dung cho chủ đề này đang được cập nhật. Vui lòng quay lại
-                    sau!
+                    Nội dung cho chủ đề này đang được cập nhật. Vui lòng quay
+                    lại sau!
                   </p>
                   <button
                     onClick={() => router.back()}
@@ -270,7 +289,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
                 {mode === MODE.LECTURE && (
                   <MilestonesView
                     world={currWorld}
-                    land={currLand}
+                    land={currLand!}
                     topic={currTopic}
                     lectures={lectures}
                     onBack={() => router.back()}
@@ -285,7 +304,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
                     totalScore={totalScore}
                     setTotalScore={setTotalScore}
                     setTotalReward={setTotalReward}
-                    currentLecture={currentLecture}
+                    currentLecture={currentLecture!}
                     onExit={onExit}
                     onFinish={onFinish}
                   />
@@ -297,7 +316,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
                     topic={currTopic}
                     score={totalScore}
                     reward={totalReward}
-                    currentLecture={currentLecture}
+                    currentLecture={currentLecture!}
                     maxScore={maxScore}
                     onContinue={onContinue}
                   />

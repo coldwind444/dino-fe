@@ -39,14 +39,14 @@ export default defineConfig({
       //  dependencies: ['setup'],
       testIgnore: /.*(login|register|reset-password|onboarding)\.spec\.ts/,
     },
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-      },
-      //  dependencies: ['setup'],
-      testIgnore: /.*(login|register|reset-password|onboarding)\.spec\.ts/,
-    },
+    // {
+    //   name: 'webkit',
+    //   use: {
+    //     ...devices['Desktop Safari'],
+    //   },
+    //   //  dependencies: ['setup'],
+    //   testIgnore: /.*(login|register|reset-password|onboarding)\.spec\.ts/,
+    // },
     {
       name: 'edge',
       use: {

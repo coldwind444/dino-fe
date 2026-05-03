@@ -1,4 +1,4 @@
-'use client";';
+"use client";
 
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -130,17 +130,19 @@ export default function MilestonesView({
           <div className="h-full w-full overflow-hidden flex flex-col items-center gap-[100px] relative">
             {/* Back button */}
             <button
+              data-testid="back-to-milestones-btn"
               onClick={() => setMode("slider")}
               className="absolute top-1 left-7 flex items-center cursor-pointer justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all duration-200 hover:scale-110"
             >
               <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />
             </button>
             <h1 className="text-white font-bold text-[25px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
-              {`Bài 10: ${currentLecture?.title}`}
+              {currentLecture?.title}
             </h1>
             <div className="flex flex-row items-end justify-center gap-40 w-full">
               <div
                 className="flex flex-col items-center justify-center gap-8 cursor-pointer group"
+                data-testid="theory-button"
                 onClick={() => {
                   setMode("lesson");
                 }}
@@ -163,6 +165,7 @@ export default function MilestonesView({
               </div>
               <div
                 className="flex flex-col items-center justify-center gap-8 cursor-pointer group"
+                data-testid="exercise-button"
                 onClick={onDoExercise}
               >
                 <Image
@@ -189,10 +192,14 @@ export default function MilestonesView({
           <div className="h-full w-full overflow-hidden flex flex-col items-center gap-4 relative">
             {/* Back button */}
             <button
+              data-testid="back-to-select-btn"
               onClick={() => setMode("select")}
-              className="absolute top-1 left-7 flex items-center cursor-pointer justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all duration-200 hover:scale-110"
+              className="absolute z-20 top-1 left-7 flex items-center cursor-pointer justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all duration-200 hover:scale-110"
             >
-              <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                className="text-sm cursor-pointer"
+              />
             </button>
             {/* Lesson theory — paper as background so content flows naturally */}
             <div

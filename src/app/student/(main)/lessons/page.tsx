@@ -73,7 +73,9 @@ export default function LessonsPage() {
 
   const navigateToLecture = (topicId: string) => {
     setIsRedirecting(true);
-    router.push(`/student/adventure/${gradeLevel}/${topicId}`);
+    const gLevel = grade?.level;
+    if (!gLevel) return;
+    router.push(`/student/adventure/${gLevel}/${topicId}`);
   };
 
   // Init fetch grade and user data

@@ -545,6 +545,7 @@ export default function HistoryOverview({
                     </div>
                     {/** View button */}
                     <div
+                      data-testid={`view-btn-${idx}`}
                       className={clsx(
                         "h-fit w-fit px-8 py-2 font-medium text-white flex items-center justify-center rounded-full",
                         "cursor-pointer hover:brightness-110 transition-all duration-200 ml-auto mr-5",

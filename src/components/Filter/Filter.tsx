@@ -25,8 +25,6 @@ type FilterParams = {
   ) => Promise<void>;
 };
 
-
-
 function parseDateInput(value: string): Date | undefined {
   const trimmed = value.trim();
 
@@ -76,7 +74,6 @@ function formatDateForPicker(value?: Date): string {
   return `${year}-${month}-${day}`;
 }
 
- 
 export default function Filter({
   hasStudentSelectBox = false,
   hasSearchBox = false,

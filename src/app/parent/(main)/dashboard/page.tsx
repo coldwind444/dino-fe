@@ -34,16 +34,14 @@ export default function Dashboard() {
     _category?: string,
     _keyword?: string,
   ): Promise<void> => {
-    if (!studentId || !startDate || !endDate) {
-      return;
-    }
+    const params = {
+      userId: studentId ?? "",
+      startDate: startDate ? startDate.toISOString() : "",
+      endDate: endDate ? endDate.toISOString() : "",
+    };
     try {
       setIsFilterLoading(true);
-      const stats = await getStudentStats(
-        studentId,
-        startDate.toISOString(),
-        endDate.toISOString(),
-      );
+      const stats = await getStudentStats(params);
       const currStudent = studentList.find(
         (student) => student._id === studentId,
       );
@@ -71,8 +69,12 @@ export default function Dashboard() {
           page: 1,
           limit: 100,
         });
-        if (!ignore)
-          setStudentList(studentList.filter((user) => user.role === "student"));
+        if (!ignore) {
+          const filtered = studentList.filter(
+            (user) => user.role === "student",
+          );
+          setStudentList(filtered);
+        }
       } catch (error) {
         if (error instanceof APIError) {
           console.log(error.message);
@@ -88,6 +90,16 @@ export default function Dashboard() {
       ignore = true;
     };
   }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    if (studentList.length > 0 && studentStats === null && !ignore) {
+      handleFilter(studentList[0]?._id);
+    }
+    return () => {
+      ignore = true;
+    };
+  }, [studentList]);
 
   if (isPageLoading) {
     return <ScreenLoader />;

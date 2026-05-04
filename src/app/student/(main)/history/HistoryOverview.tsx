@@ -199,13 +199,12 @@ export default function HistoryOverview({
           category: cat,
           keyword: "",
         });
-        const statsEndDate = ed ?? new Date();
-        const statsStartDate = sd ?? new Date("2000-01-01T00:00:00.000Z");
-        const statsData = await getStudentStats(
-          uid,
-          statsStartDate.toISOString(),
-          statsEndDate.toISOString(),
-        );
+        const params = {
+          userId: uid ?? "",
+          startDate: sd ? new Date(sd).toISOString() : "",
+          endDate: ed ? new Date(ed).toISOString() : "",
+        };
+        const statsData = await getStudentStats(params);
         setStats(statsData);
         await fetchRecords(uid, sd, ed, cat, "", 1);
       } catch (error) {
@@ -355,14 +354,12 @@ export default function HistoryOverview({
       setTotalRecords(0);
       setLastFilter({ startDate: sd, endDate: ed, category: cat, keyword: kw });
 
-      const statsEndDate = ed ?? new Date();
-      const statsStartDate = sd ?? new Date("2000-01-01T00:00:00.000Z");
-
-      const statsData = await getStudentStats(
-        userId,
-        statsStartDate.toISOString(),
-        statsEndDate.toISOString(),
-      );
+      const params = {
+        userId: userId ?? "",
+        startDate: sd ? new Date(sd).toISOString() : "",
+        endDate: ed ? new Date(ed).toISOString() : "",
+      };
+      const statsData = await getStudentStats(params);
       setStats(statsData);
       await fetchRecords(userId, sd, ed, cat, kw, 1);
     } catch (error) {

@@ -166,7 +166,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
     }
   }, [mode]);
 
-  // When there are no lectures, skip the image-loading gate so the "no lessons" placeholder shows immediately.
+  // Determine if all required images are fully loaded
   const areImagesLoaded =
     lectures.length === 0
       ? true
@@ -178,12 +178,22 @@ export default function LessonsPage({ params }: LessonsPageProps) {
     !currGrade ||
     !currWorld ||
     !currTopic ||
+    !lectures ||
+    !lands ||
     !user ||
     !areImagesLoaded;
 
-  // If core data is not ready, we can't render anything yet.
-  // currLand and currentLecture may be null when lectures is empty — handled by the "no lessons" UI below.
-  if (!currGrade || !currWorld || !currTopic || !user) {
+  // If data is not ready, we can't even render the images yet
+  if (
+    !currGrade ||
+    !currWorld ||
+    !currTopic ||
+    !lectures ||
+    !lands ||
+    !user ||
+    !currLand ||
+    !currentLecture
+  ) {
     return <ScreenLoader />;
   }
 
@@ -213,7 +223,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
           key={land._id}
           className={clsx(
             "h-full w-full object-cover absolute inset-0",
-            land._id === currLand?._id ? "opacity-100 z-0" : "opacity-0 -z-10",
+            land._id === currLand._id ? "opacity-100 z-0" : "opacity-0 -z-10",
           )}
           fill
           priority

@@ -199,13 +199,12 @@ export default function HistoryOverview({
           category: cat,
           keyword: "",
         });
-        const statsEndDate = ed ?? new Date();
-        const statsStartDate = sd ?? new Date("2000-01-01T00:00:00.000Z");
-        const statsData = await getStudentStats(
-          uid,
-          statsStartDate.toISOString(),
-          statsEndDate.toISOString(),
-        );
+        const params = {
+          userId: uid ?? "",
+          startDate: sd ? new Date(sd).toISOString() : "",
+          endDate: ed ? new Date(ed).toISOString() : "",
+        };
+        const statsData = await getStudentStats(params);
         setStats(statsData);
         await fetchRecords(uid, sd, ed, cat, "", 1);
       } catch (error) {
@@ -355,14 +354,12 @@ export default function HistoryOverview({
       setTotalRecords(0);
       setLastFilter({ startDate: sd, endDate: ed, category: cat, keyword: kw });
 
-      const statsEndDate = ed ?? new Date();
-      const statsStartDate = sd ?? new Date("2000-01-01T00:00:00.000Z");
-
-      const statsData = await getStudentStats(
-        userId,
-        statsStartDate.toISOString(),
-        statsEndDate.toISOString(),
-      );
+      const params = {
+        userId: userId ?? "",
+        startDate: sd ? new Date(sd).toISOString() : "",
+        endDate: ed ? new Date(ed).toISOString() : "",
+      };
+      const statsData = await getStudentStats(params);
       setStats(statsData);
       await fetchRecords(userId, sd, ed, cat, kw, 1);
     } catch (error) {
@@ -450,7 +447,7 @@ export default function HistoryOverview({
         </div>
         {/** History */}
         {(records.length > 0 || isFilterLoading) && (
-          <div className="flex flex-1 flex-col gap-4">
+          <div className="flex flex-1 flex-col gap-4 pr-5">
             <label className="font-medium text-xl">Lịch sử làm bài</label>
             {/** List */}
             {records.length > 0 && (
@@ -512,52 +509,53 @@ export default function HistoryOverview({
                         </div>
                       </div>
                     </div>
-                    {/** Accuracy */}
-                    <div className="flex flex-col gap-1 ml-50">
-                      <div className="flex flex-row gap-3 items-center">
-                        <label
-                          className={clsx(
-                            "text-2xl font-medium",
-                            val.accuracy >= 80
-                              ? "text-[#23BEAA]"
-                              : val.accuracy >= 50
-                                ? "text-[#F9740B]"
-                                : "text-[#FF5964]",
-                          )}
-                        >
-                          {`${val.accuracy}%`}
-                        </label>
-                        <div className="flex flex-row gap-1 text-amber-400">
-                          {[
-                            ...Array(
+                    {/** Accuracy + View button (right-aligned group) */}
+                    <div className="flex flex-row items-center gap-8 ml-auto mr-5">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex flex-row gap-3 items-center">
+                          <label
+                            className={clsx(
+                              "text-2xl font-medium",
                               val.accuracy >= 80
-                                ? 3
+                                ? "text-[#23BEAA]"
                                 : val.accuracy >= 50
-                                  ? 2
-                                  : 1,
-                            ),
-                          ].map((_, i) => (
-                            <FontAwesomeIcon key={i} icon={faStar} />
-                          ))}
+                                  ? "text-[#F9740B]"
+                                  : "text-[#FF5964]",
+                            )}
+                          >
+                            {`${val.accuracy}%`}
+                          </label>
+                          <div className="flex flex-row gap-1 text-amber-400">
+                            {[
+                              ...Array(
+                                val.accuracy >= 80
+                                  ? 3
+                                  : val.accuracy >= 50
+                                    ? 2
+                                    : 1,
+                              ),
+                            ].map((_, i) => (
+                              <FontAwesomeIcon key={i} icon={faStar} />
+                            ))}
+                          </div>
                         </div>
+                        <label className="font-medium text-[rgba(0,0,0,0.5)]">{`${val.accuracy}/100`}</label>
                       </div>
-                      <label className="font-medium text-[rgba(0,0,0,0.5)]">{`${val.accuracy}/100`}</label>
-                    </div>
-                    {/** View button */}
-                    <div
-                      data-testid={`view-btn-${idx}`}
-                      className={clsx(
-                        "h-fit w-fit px-8 py-2 font-medium text-white flex items-center justify-center rounded-full",
-                        "cursor-pointer hover:brightness-110 transition-all duration-200 ml-auto mr-5",
-                        val.accuracy >= 80
-                          ? "bg-[#23BEAA]"
-                          : val.accuracy >= 50
-                            ? "bg-[#F9740B]"
-                            : "bg-[#FF5964]",
-                      )}
-                      onClick={() => onViewDetail(val)}
-                    >
-                      Xem
+                      {/** View button */}
+                      <div
+                        className={clsx(
+                          "h-fit w-fit px-8 py-2 font-medium text-white flex items-center justify-center rounded-full",
+                          "cursor-pointer hover:brightness-110 transition-all duration-200",
+                          val.accuracy >= 80
+                            ? "bg-[#23BEAA]"
+                            : val.accuracy >= 50
+                              ? "bg-[#F9740B]"
+                              : "bg-[#FF5964]",
+                        )}
+                        onClick={() => onViewDetail(val)}
+                      >
+                        Xem
+                      </div>
                     </div>
                   </div>
                 ))}

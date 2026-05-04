@@ -392,7 +392,7 @@ export default function StudentHome() {
         </div>
 
         {/* Review Section */}
-        <aside className="lg:col-span-7 flex h-fit pr-5">
+        <aside className="lg:col-span-7 h-fit pr-5 ">
           {completedTopic && completedTopic.length > 0 ? (
             <div className="w-full">
               <h4 className="font-semibold">Ôn lại kiến thức</h4>
@@ -418,7 +418,7 @@ export default function StudentHome() {
                       className={clsx(
                         "w-10 h-10 rounded-full bg-white flex items-center justify-center",
                         "shadow-md border border-gray-200 hover:shadow-lg hover:scale-105",
-                        "transition-all duration-200 group",
+                        "transition-all duration-200 group cursor-pointer",
                       )}
                       onClick={() => {
                         router.push(

@@ -9,10 +9,13 @@ export default function StudentLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const sessionStartRef = useRef<number | null>(new Date().getTime());
+  const sessionStartRef = useRef<number | null>(null);
   const accumulatedRef = useRef<number>(0);
 
   useEffect(() => {
+    // Initialize session start on client mount (not SSR render time)
+    sessionStartRef.current = new Date().getTime();
+    accumulatedRef.current = 0;
     const trackDuration = async (seconds: number) => {
       const token = getAccessToken();
       if (!token) return;

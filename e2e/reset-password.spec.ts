@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Reset Password', () => {
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/auth/reset-password');
   });
@@ -8,6 +10,7 @@ test.describe('Reset Password', () => {
   test('TC-11-01: No account found', async ({ page }) => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('nonexistent_user');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
+    await page.waitForResponse(response => response.status() === 404);
     await expect(page.getByText(/Tài khoản không tồn tại/)).toBeVisible();
   });
 
@@ -32,15 +35,17 @@ test.describe('Reset Password', () => {
     await page.getByPlaceholder('Mật khẩu mới').fill('NewPassword@1');
     await page.getByPlaceholder('Xác nhận mật khẩu').fill('NewPassword@1');
     const resetBtn = page.getByRole('button', { name: 'Đổi mật khẩu' });
-    await expect(resetBtn).toBeDisabled();
+    await resetBtn.click();
+    await expect(page.getByText(/Mã OTP không hợp lệ hoặc đã hết hạn/)).toBeVisible();
   });
 
   test('TC-11-04: Invalid password', async ({ page }) => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user3');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
 
-    // Pause for OTP
-    await page.pause();
+    const firstDigit = page.getByLabel('Digit 1 of 6');
+    await firstDigit.click();
+    await page.keyboard.type('123456');
 
     await page.getByPlaceholder('Mật khẩu mới').fill('pass');
     await page.getByPlaceholder('Xác nhận mật khẩu').fill('pass');
@@ -52,8 +57,9 @@ test.describe('Reset Password', () => {
     await page.getByPlaceholder('Email hoặc tên đăng nhập').fill('reset_user4');
     await page.getByRole('button', { name: 'Gửi mã xác thực' }).click();
 
-    // Pause for OTP
-    await page.pause();
+    const firstDigit = page.getByLabel('Digit 1 of 6');
+    await firstDigit.click();
+    await page.keyboard.type('123456');
 
     await page.getByPlaceholder('Mật khẩu mới').fill('NewPassword@1');
     await page.getByPlaceholder('Xác nhận mật khẩu').fill('DiffPassword@2');

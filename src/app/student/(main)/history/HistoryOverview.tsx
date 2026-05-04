@@ -10,6 +10,7 @@ import {
   faVialCircleCheck,
   faWarning,
   faXmarkSquare,
+  faFolderOpen,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
@@ -418,7 +419,10 @@ export default function HistoryOverview({
                                 text-white rounded-xl px-5 py-2.5 gap-8 relative shadow-lg"
             >
               <label className="font-medium">Số bài tập đã làm</label>
-              <label className="ml-auto mr-auto text-5xl font-medium">
+              <label
+                className="ml-auto mr-auto text-5xl font-medium"
+                data-testid="total-exercises"
+              >
                 {isFilterLoading ? "…" : totalRecords}
               </label>
               <FontAwesomeIcon
@@ -431,7 +435,10 @@ export default function HistoryOverview({
                                 text-white rounded-xl px-5 py-2.5 gap-8 relative shadow-lg"
             >
               <label className="font-medium">Độ chính xác</label>
-              <label className="ml-auto mr-auto text-5xl font-medium">
+              <label
+                className="ml-auto mr-auto text-5xl font-medium"
+                data-testid="accuracy"
+              >
                 {isFilterLoading
                   ? "…"
                   : filteredAccuracy !== null
@@ -446,155 +453,177 @@ export default function HistoryOverview({
           </div>
         </div>
         {/** History */}
-        {(records.length > 0 || isFilterLoading) && (
-          <div className="flex flex-1 flex-col gap-4 pr-5">
-            <label className="font-medium text-xl">Lịch sử làm bài</label>
-            {/** List */}
-            {records.length > 0 && (
-              <div className="flex flex-col gap-2 w-full flex-1">
-                {records.map((val, idx) => (
-                  <div
-                    key={idx}
-                    className={clsx(
-                      "h-24 w-full rounded-xl border-2 flex flex-row px-5 py-2 items-center",
+        <div className="flex flex-1 flex-col gap-4 pr-5">
+          <label className="font-medium text-xl">Lịch sử làm bài</label>
+          {isFilterLoading ? (
+            <div className="flex flex-col gap-2 w-full flex-1">
+              {[...Array(PAGE_LIMIT)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-24 w-full rounded-xl border-2 border-gray-100 bg-gray-50 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : records.length > 0 ? (
+            <div className="flex flex-col gap-2 w-full flex-1">
+              {records.map((val, idx) => (
+                <div
+                  key={idx}
+                  className={clsx(
+                    "h-24 w-full rounded-xl border-2 flex flex-row px-5 py-2 items-center",
+                    val.accuracy >= 80
+                      ? "border-[#23BEAA] "
+                      : val.accuracy >= 50
+                        ? "border-[#F9740B]"
+                        : "border-[#FF5964]",
+                  )}
+                >
+                  {/** Icon */}
+                  <FontAwesomeIcon
+                    icon={
                       val.accuracy >= 80
-                        ? "border-[#23BEAA] "
+                        ? faCheckCircle
                         : val.accuracy >= 50
-                          ? "border-[#F9740B]"
-                          : "border-[#FF5964]",
+                          ? faWarning
+                          : faXmarkSquare
+                    }
+                    className={clsx(
+                      "text-5xl",
+                      val.accuracy >= 80
+                        ? "text-[#23BEAA]"
+                        : val.accuracy >= 50
+                          ? "text-[#F9740B]"
+                          : "text-[#FF5964]",
                     )}
-                  >
-                    {/** Icon */}
-                    <FontAwesomeIcon
-                      icon={
-                        val.accuracy >= 80
-                          ? faCheckCircle
-                          : val.accuracy >= 50
-                            ? faWarning
-                            : faXmarkSquare
-                      }
+                  />
+                  {/** Info */}
+                  <div className="flex flex-col ml-5 gap-1">
+                    <label
                       className={clsx(
-                        "text-5xl",
+                        "text-xl font-bold",
                         val.accuracy >= 80
                           ? "text-[#23BEAA]"
                           : val.accuracy >= 50
                             ? "text-[#F9740B]"
                             : "text-[#FF5964]",
                       )}
-                    />
-                    {/** Info */}
-                    <div className="flex flex-col ml-5 gap-1">
-                      <label
-                        className={clsx(
-                          "text-xl font-bold",
-                          val.accuracy >= 80
-                            ? "text-[#23BEAA]"
-                            : val.accuracy >= 50
-                              ? "text-[#F9740B]"
-                              : "text-[#FF5964]",
-                        )}
-                      >
-                        {val.name}
-                      </label>
-                      <div className="flex flex-row gap-5 font-medium">
-                        {val.category !== "exercise" && (
-                          <div className="flex flex-row gap-1 text-[rgba(0,0,0,0.5)] items-center">
-                            <FontAwesomeIcon icon={faClock} />
-                            <label>{val.duration}</label>
-                          </div>
-                        )}
+                    >
+                      {val.name}
+                    </label>
+                    <div className="flex flex-row gap-5 font-medium">
+                      {val.category !== "exercise" && (
                         <div className="flex flex-row gap-1 text-[rgba(0,0,0,0.5)] items-center">
-                          <FontAwesomeIcon icon={faCalendar} />
-                          <label>{val.date}</label>
+                          <FontAwesomeIcon icon={faClock} />
+                          <label>{val.duration}</label>
                         </div>
+                      )}
+                      <div className="flex flex-row gap-1 text-[rgba(0,0,0,0.5)] items-center">
+                        <FontAwesomeIcon icon={faCalendar} />
+                        <label>{val.date}</label>
                       </div>
                     </div>
-                    {/** Accuracy + View button (right-aligned group) */}
-                    <div className="flex flex-row items-center gap-8 ml-auto mr-5">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex flex-row gap-3 items-center">
-                          <label
-                            className={clsx(
-                              "text-2xl font-medium",
+                  </div>
+                  {/** Accuracy + View button (right-aligned group) */}
+                  <div className="flex flex-row items-center gap-8 ml-auto mr-5">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex flex-row gap-3 items-center">
+                        <label
+                          className={clsx(
+                            "text-2xl font-medium",
+                            val.accuracy >= 80
+                              ? "text-[#23BEAA]"
+                              : val.accuracy >= 50
+                                ? "text-[#F9740B]"
+                                : "text-[#FF5964]",
+                          )}
+                        >
+                          {`${val.accuracy}%`}
+                        </label>
+                        <div className="flex flex-row gap-1 text-amber-400">
+                          {[
+                            ...Array(
                               val.accuracy >= 80
-                                ? "text-[#23BEAA]"
+                                ? 3
                                 : val.accuracy >= 50
-                                  ? "text-[#F9740B]"
-                                  : "text-[#FF5964]",
-                            )}
-                          >
-                            {`${val.accuracy}%`}
-                          </label>
-                          <div className="flex flex-row gap-1 text-amber-400">
-                            {[
-                              ...Array(
-                                val.accuracy >= 80
-                                  ? 3
-                                  : val.accuracy >= 50
-                                    ? 2
-                                    : 1,
-                              ),
-                            ].map((_, i) => (
-                              <FontAwesomeIcon key={i} icon={faStar} />
-                            ))}
-                          </div>
+                                  ? 2
+                                  : 1,
+                            ),
+                          ].map((_, i) => (
+                            <FontAwesomeIcon key={i} icon={faStar} />
+                          ))}
                         </div>
-                        <label className="font-medium text-[rgba(0,0,0,0.5)]">{`${val.accuracy}/100`}</label>
                       </div>
-                      {/** View button */}
-                      <div
-                        className={clsx(
-                          "h-fit w-fit px-8 py-2 font-medium text-white flex items-center justify-center rounded-full",
-                          "cursor-pointer hover:brightness-110 transition-all duration-200",
-                          val.accuracy >= 80
-                            ? "bg-[#23BEAA]"
-                            : val.accuracy >= 50
-                              ? "bg-[#F9740B]"
-                              : "bg-[#FF5964]",
-                        )}
-                        onClick={() => onViewDetail(val)}
-                      >
-                        Xem
-                      </div>
+                      <label className="font-medium text-[rgba(0,0,0,0.5)]">{`${val.accuracy}/100`}</label>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {/** Pagination */}
-            {totalRecords > 0 && (
-              <div className="flex flex-row items-center mb-5">
-                <label className="font-medium text-[rgba(0,0,0,0.5)]">
-                  {`Hiển thị ${displayFrom}-${displayTo} trên ${totalRecords} kết quả`}
-                </label>
-                <div className="ml-auto mr-0 flex flex-row gap-2">
-                  <div
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={clsx(
-                      "h-fit w-30 px-5 py-2 border-2 border-black flex items-center justify-center rounded-2xl font-medium",
-                      currentPage <= 1
-                        ? "opacity-40 cursor-not-allowed"
-                        : "cursor-pointer hover:bg-gray-100",
-                    )}
-                  >
-                    Trước
-                  </div>
-                  <div
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={clsx(
-                      "h-fit w-30 px-5 py-2 border-2 border-black flex items-center justify-center rounded-2xl font-medium",
-                      currentPage >= totalPages
-                        ? "opacity-40 cursor-not-allowed"
-                        : "cursor-pointer hover:bg-gray-100",
-                    )}
-                  >
-                    Sau
+                    {/** View button */}
+                    <div
+                      className={clsx(
+                        "h-fit w-fit px-8 py-2 font-medium text-white flex items-center justify-center rounded-full",
+                        "cursor-pointer hover:brightness-110 transition-all duration-200",
+                        val.accuracy >= 80
+                          ? "bg-[#23BEAA]"
+                          : val.accuracy >= 50
+                            ? "bg-[#F9740B]"
+                            : "bg-[#FF5964]",
+                      )}
+                      onClick={() => onViewDetail(val)}
+                      data-testid={`view-detail-btn-${idx}`}
+                    >
+                      Xem
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-4 py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+              <FontAwesomeIcon
+                icon={faFolderOpen}
+                className="text-7xl text-gray-300"
+              />
+              <div className="flex flex-col items-center gap-1">
+                <label className="text-xl font-bold text-gray-500">
+                  Chưa có kết quả nào
+                </label>
+                <label className="text-gray-400">
+                  Hãy thử thay đổi bộ lọc để tìm kiếm kết quả khác
+                </label>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+          {/** Pagination */}
+          {totalRecords > 0 && (
+            <div className="flex flex-row items-center mb-5">
+              <label className="font-medium text-[rgba(0,0,0,0.5)]">
+                {`Hiển thị ${displayFrom}-${displayTo} trên ${totalRecords} kết quả`}
+              </label>
+              <div className="ml-auto mr-0 flex flex-row gap-2">
+                <div
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={clsx(
+                    "h-fit w-30 px-5 py-2 border-2 border-black flex items-center justify-center rounded-2xl font-medium",
+                    currentPage <= 1
+                      ? "opacity-40 cursor-not-allowed"
+                      : "cursor-pointer hover:bg-gray-100",
+                  )}
+                >
+                  Trước
+                </div>
+                <div
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={clsx(
+                    "h-fit w-30 px-5 py-2 border-2 border-black flex items-center justify-center rounded-2xl font-medium",
+                    currentPage >= totalPages
+                      ? "opacity-40 cursor-not-allowed"
+                      : "cursor-pointer hover:bg-gray-100",
+                  )}
+                >
+                  Sau
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

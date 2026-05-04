@@ -47,8 +47,7 @@ export const googleLogin = async (req: GoogleLoginRequest) => {
 
 export const sendOtp = async (identifier: string) => {
     try {
-        const res = await publicApi.post('/auth/forgot-password', { identifier });
-        if (res.status === 200) throw new APIError('Tài khoản không tồn tại', 404);
+        await publicApi.post('/auth/forgot-password', { identifier });
     } catch (error) {
         handleError(error);
         throw error;

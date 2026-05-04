@@ -122,6 +122,7 @@ export default function HistoryDetail({ onBack, record }: HistoryDetailProps) {
           onClick={onBack}
           className="text-[rgba(0,0,0,0.5)] cursor-pointer hover:underline"
           href=""
+          data-testid="back-link"
         >
           Lịch sử
         </Link>

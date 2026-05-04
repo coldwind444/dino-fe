@@ -21,6 +21,9 @@ export default function Dashboard() {
   const [selectedStudentRank, setSelectedStudentRank] =
     useState<RankResponse | null>(null);
   const [studentList, setStudentList] = useState<UserProfileResponse[]>([]);
+  const [currentUserQuartz, setCurrentUserQuartz] = useState<number | null>(
+    null,
+  );
 
   // Loading state
   const [isPageLoading, setIsPageLoading] = useState(false);
@@ -48,6 +51,7 @@ export default function Dashboard() {
       const rank = await getRankById(currStudent?.rankId || "");
       setStudentStats(stats);
       setSelectedStudentRank(rank);
+      setCurrentUserQuartz(currStudent?.quartz || null);
     } catch (error) {
       if (error instanceof APIError) {
         console.log(error.message);
@@ -183,6 +187,17 @@ export default function Dashboard() {
                   </label>
                   <span className="text-5xl font-bold mt-2 text-[#FF1493] mr-auto ml-auto select-none">
                     {studentStats.study.activeHours}
+                  </span>
+                </div>
+              </div>
+              {/** Quartz */}
+              <div className="h-40 w-1/3 rounded-2xl bg-orange-600">
+                <div className="flex flex-col bg-white border-2 border-orange-600 rounded-2xl h-[97%] w-[98%] gap-5 py-2">
+                  <label className="cursor-pointer text-[16px] font-bold text-orange-600 w-full text-center">
+                    Số thạch anh
+                  </label>
+                  <span className="text-5xl font-bold mt-2 text-orange-600 mr-auto ml-auto select-none">
+                    {formatNumberAbbreviation(currentUserQuartz ?? 0)}
                   </span>
                 </div>
               </div>

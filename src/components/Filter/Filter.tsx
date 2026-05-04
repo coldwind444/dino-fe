@@ -113,9 +113,9 @@ export default function Filter({
       };
     }
 
-    if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
+    if (parsedStartDate && parsedEndDate && parsedStartDate >= parsedEndDate) {
       return {
-        error: "Từ ngày không được lớn hơn đến ngày.",
+        error: "Ngày bắt đầu phải trước ngày kết thúc",
       };
     }
 
@@ -127,8 +127,6 @@ export default function Filter({
   };
 
   const applyFilter = async (
-    nextStartDate?: Date,
-    nextEndDate?: Date,
     nextCategory = category,
     nextKeyword = keyword,
   ) => {
@@ -145,8 +143,8 @@ export default function Filter({
 
     await filter(
       studentId,
-      nextStartDate ?? parsedStartDate,
-      nextEndDate ?? parsedEndDate,
+      parsedStartDate,
+      parsedEndDate,
       nextCategory,
       nextKeyword,
     );
@@ -179,6 +177,16 @@ export default function Filter({
     }
   }, [studentList, hasStudentSelectBox, studentId]);
 
+  useEffect(() => {
+    const parsedStart = parseDateInput(startDateValue);
+    const parsedEnd = parseDateInput(endDateValue);
+    if (parsedStart && parsedEnd && parsedStart >= parsedEnd) {
+      setDateError("Ngày bắt đầu phải trước ngày kết thúc");
+    } else if (dateError === "Ngày bắt đầu phải trước ngày kết thúc") {
+      setDateError("");
+    }
+  }, [startDateValue, endDateValue, dateError]);
+
   return (
     <div className="bg-white rounded-2xl h-full min-w-[420px] shadow-[0_0_10px_rgba(0,0,0,0.25)] flex flex-col gap-4 p-5">
       {/** Header */}
@@ -203,6 +211,7 @@ export default function Filter({
               </label>
               <div className="h-10 w-60 border border-[rgba(0,0,0,0.2)] rounded-xl pl-3 flex items-center focus-within:border-[#23BEAA]">
                 <select
+                  data-testid="student-select"
                   className="h-full w-[95%] outline-none border-none cursor-pointer font-medium"
                   name="student-select"
                   id="std-sl"
@@ -232,6 +241,7 @@ export default function Filter({
                   className="h-full w-[95%] outline-none border-none cursor-pointer font-medium"
                   name="category-select"
                   id="ctg-sl"
+                  data-testid="category-select"
                   onChange={(e) => setCategory(e.target.value)}
                 >
                   <option value="all">Tất cả</option>
@@ -257,6 +267,7 @@ export default function Filter({
             </label>
             <div className="relative h-10 w-60 border border-[rgba(0,0,0,0.2)] rounded-xl pl-3 pr-2 flex items-center gap-2 focus-within:border-[#23BEAA]">
               <input
+                data-testid="start-date-input"
                 value={startDateValue}
                 onChange={(e) => {
                   setStartDateValue(e.target.value);
@@ -268,7 +279,7 @@ export default function Filter({
                 }}
                 type="text"
                 inputMode="numeric"
-                placeholder="dd/mm/yy"
+                placeholder="dd/MM/yy"
                 className="border-none outline-none h-full flex-1"
               />
               <button
@@ -314,6 +325,7 @@ export default function Filter({
             </label>
             <div className="relative h-10 w-60 border border-[rgba(0,0,0,0.2)] rounded-xl pl-3 pr-2 flex items-center gap-2 focus-within:border-[#23BEAA]">
               <input
+                data-testid="end-date-input"
                 value={endDateValue}
                 onChange={(e) => {
                   setEndDateValue(e.target.value);
@@ -325,7 +337,7 @@ export default function Filter({
                 }}
                 type="text"
                 inputMode="numeric"
-                placeholder="dd/mm/yy"
+                placeholder="dd/MM/yy"
                 className="border-none outline-none h-full flex-1"
               />
               <button
@@ -364,13 +376,13 @@ export default function Filter({
           )}
           {/** Clear button */}
           <div
+            data-testid="reset-date-btn"
             onClick={async () => {
               setStartDate(undefined);
               setEndDate(undefined);
               setStartDateValue("");
               setEndDateValue("");
               setDateError("");
-              await filter(studentId, undefined, undefined, category, keyword);
             }}
             className="h-fit w-fit px-5 py-2 text-white bg-[#FF5964] rounded-xl ml-auto mr-0 cursor-pointer hover:opacity-90"
           >
@@ -397,6 +409,7 @@ export default function Filter({
                 className="text-[rgba(0,0,0,0.25)]"
               />
               <input
+                data-testid="keyword-input"
                 onChange={(e) => setKeyword(e.target.value)}
                 type="search"
                 placeholder="Tìm kiếm..."
@@ -407,9 +420,10 @@ export default function Filter({
         )}
         {/** Filter button */}
         <div
-          onClick={() => applyFilter(startDate, endDate, category, keyword)}
+          onClick={() => applyFilter(category, keyword)}
           className="h-12 w-full bg-[#8A2BE2] rounded-xl text-white font-medium cursor-pointer hover:opacity-90
                                 flex items-center justify-center mt-auto mb-0"
+          data-testid="filter-btn"
         >
           Lọc kết quả
         </div>

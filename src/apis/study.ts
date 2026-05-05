@@ -345,7 +345,7 @@ export const upsertAnswers = async (answers: AnswerResponse[]) => {
 
 // Entrance test APIs
 export const getPublishedAssessmentByGradeId = async (
-  gradeId: string,
+  gradeId: string
 ): Promise<AssessmentResponse | null> => {
   try {
     const res = await api.get(`/assessments?gradeId=${gradeId}`);

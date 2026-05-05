@@ -29,7 +29,12 @@ export type PopupModalParams = {
   customMessage?: string;
 };
 
-export default function PopupModal({ type, action, close, customMessage }: PopupModalParams) {
+export default function PopupModal({
+  type,
+  action,
+  close,
+  customMessage,
+}: PopupModalParams) {
   return (
     <AnimatePresence>
       <motion.div
@@ -65,6 +70,7 @@ export default function PopupModal({ type, action, close, customMessage }: Popup
                 "cursor-pointer hover:opacity-90 flex items-center justify-center",
                 baloo.className,
               )}
+              data-testid="cancel-btn"
               onClick={close}
             >
               Không
@@ -77,6 +83,7 @@ export default function PopupModal({ type, action, close, customMessage }: Popup
                 baloo.className,
               )}
               onClick={action}
+              data-testid="confirm-btn"
             >
               Có
             </div>

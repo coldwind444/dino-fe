@@ -14,6 +14,7 @@ async function fillLoginForm(page: Page, identifier: string, password: string) {
 }
 
 test.describe('History View - Parent Role', () => {
+    test.describe.configure({ mode: 'serial' });
     test.beforeEach(async ({ page }) => {
         await page.goto('/auth');
         await fillLoginForm(page, 'rasenganlk55123@gmail.com', 'P@ssw0rd2026!');
@@ -144,7 +145,7 @@ test.describe('History View - Parent Role', () => {
         const endDateInput = page.getByTestId('end-date-input');
         await startDateInput.fill('04/05/26');
         await endDateInput.fill('01/04/26');
-        expect(page.getByText("Ngày bắt đầu phải trước ngày kết thúc")).toBeVisible();
+        await expect(page.getByText("Ngày bắt đầu phải trước ngày kết thúc")).toBeVisible();
     });
 
     test('TC-08B-06: View history record detail', async ({ page }) => {

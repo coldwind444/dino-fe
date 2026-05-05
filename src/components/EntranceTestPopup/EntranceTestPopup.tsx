@@ -81,6 +81,7 @@ export default function EntranceTestPopup({
                   baloo.className,
                 )}
                 onClick={close}
+                data-testid="cancel-entrance-test-btn"
               >
                 Huỷ
               </div>
@@ -92,6 +93,7 @@ export default function EntranceTestPopup({
                   baloo.className,
                 )}
                 onClick={start}
+                data-testid="start-entrance-test-btn"
               >
                 Làm bài
               </div>

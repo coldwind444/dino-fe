@@ -29,14 +29,14 @@ export default function FillIn({ exercise, answer, onChange }: FillInProps) {
     } else {
       setResponses(new Array(questions.length).fill(""));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise._id, answer]);
 
   const handleInputChange = (idx: number, value: string) => {
     const newResponses = [...responses];
     newResponses[idx] = value;
     setResponses(newResponses);
-    
+
     // Convert to target object
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const outObj: any = {};
@@ -59,7 +59,7 @@ export default function FillIn({ exercise, answer, onChange }: FillInProps) {
             {pIdx < parts.length - 1 && (
               <input
                 type="text"
-                data-testid="fill-in-input"
+                data-testid={`fill-in-input-${idx}`}
                 className="w-24 h-10 border-b-2 border-[#23BEAA] focus:border-[#F9740B] outline-none text-center text-[#F9740B] font-bold"
                 value={responses[idx] || ""}
                 onChange={(e) => handleInputChange(idx, e.target.value)}

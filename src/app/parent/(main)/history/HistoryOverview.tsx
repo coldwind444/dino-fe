@@ -436,7 +436,10 @@ export default function HistoryOverview({
                                 text-white rounded-xl px-5 py-2.5 gap-8 relative shadow-lg"
             >
               <label className="font-medium">Số bài tập đã làm</label>
-              <label className="ml-auto mr-auto text-5xl font-medium">
+              <label
+                data-testid="total-exercises"
+                className="ml-auto mr-auto text-5xl font-medium"
+              >
                 {isFilterLoading ? "…" : totalRecords}
               </label>
               <FontAwesomeIcon
@@ -449,7 +452,10 @@ export default function HistoryOverview({
                                 text-white rounded-xl px-5 py-2.5 gap-8 relative shadow-lg"
             >
               <label className="font-medium">Độ chính xác</label>
-              <label className="ml-auto mr-auto text-5xl font-medium">
+              <label
+                data-testid="accuracy"
+                className="ml-auto mr-auto text-5xl font-medium"
+              >
                 {isFilterLoading
                   ? "…"
                   : filteredAccuracy !== null
@@ -584,6 +590,7 @@ export default function HistoryOverview({
                           )?.name ?? "";
                         onViewDetail({ ...val, studentName });
                       }}
+                      data-testid={`view-detail-btn-${idx}`}
                     >
                       Xem
                     </div>

@@ -114,7 +114,7 @@ export default function Interactive({
                   ? "bg-gray-200 border-gray-300 text-gray-400 opacity-50 cursor-not-allowed"
                   : "bg-white border-[#3B84F2] text-[#3B84F2] hover:bg-[#3B84F2] hover:text-white",
               )}
-              data-testid="interactive-option"
+              data-testid={`interactive-option-${idx}`}
               onClick={() => !isUsed && handleOptionClick(option)}
             >
               {option}

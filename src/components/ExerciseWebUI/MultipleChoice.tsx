@@ -31,7 +31,7 @@ export default function MultipleChoice({
       {exercise.options.map((option, idx) => (
         <div
           key={idx}
-          data-testid="choice-option"
+          data-testid={`choice-option-${idx}`}
           className={clsx(
             "h-fit w-fit py-4 px-10 rounded-4xl border-2 text-balance font-medium cursor-pointer transition-all duration-200",
             selectedIndex === idx

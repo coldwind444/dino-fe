@@ -66,6 +66,7 @@ export const getQuartzLeaderboard = async (limit: number = 8): Promise<QuartzLea
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getStudentStats = async (params?: Record<string, any>) => {
     try {
         const res = await api.get(`/statistics/student`, { params: params });

@@ -10,7 +10,7 @@ import {
 } from "@/types";
 import { getUserProfile, getStudentStats, getUsers, getRankById } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
-import { formatNumberAbbreviation } from "@/helpers/utils";
+import { formatNumberAbbreviation, toCloudinaryWebP } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
 
 export default function Dashboard() {
@@ -21,6 +21,9 @@ export default function Dashboard() {
   const [selectedStudentRank, setSelectedStudentRank] =
     useState<RankResponse | null>(null);
   const [studentList, setStudentList] = useState<UserProfileResponse[]>([]);
+  const [currentUserQuartz, setCurrentUserQuartz] = useState<number | null>(
+    null,
+  );
 
   // Loading state
   const [isPageLoading, setIsPageLoading] = useState(false);
@@ -31,25 +34,24 @@ export default function Dashboard() {
     studentId?: string,
     startDate?: Date,
     endDate?: Date,
-    category?: string,
-    keyword?: string,
+    _category?: string,
+    _keyword?: string,
   ): Promise<void> => {
-    if (!studentId || !startDate || !endDate) {
-      return;
-    }
+    const params = {
+      userId: studentId ?? "",
+      startDate: startDate ? startDate.toISOString() : "",
+      endDate: endDate ? endDate.toISOString() : "",
+    };
     try {
       setIsFilterLoading(true);
-      const stats = await getStudentStats(
-        studentId,
-        startDate.toISOString(),
-        endDate.toISOString(),
-      );
+      const stats = await getStudentStats(params);
       const currStudent = studentList.find(
         (student) => student._id === studentId,
       );
       const rank = await getRankById(currStudent?.rankId || "");
       setStudentStats(stats);
       setSelectedStudentRank(rank);
+      setCurrentUserQuartz(currStudent?.quartz || null);
     } catch (error) {
       if (error instanceof APIError) {
         console.log(error.message);
@@ -71,8 +73,12 @@ export default function Dashboard() {
           page: 1,
           limit: 100,
         });
-        if (!ignore)
-          setStudentList(studentList.filter((user) => user.role === "student"));
+        if (!ignore) {
+          const filtered = studentList.filter(
+            (user) => user.role === "student",
+          );
+          setStudentList(filtered);
+        }
       } catch (error) {
         if (error instanceof APIError) {
           console.log(error.message);
@@ -88,6 +94,16 @@ export default function Dashboard() {
       ignore = true;
     };
   }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    if (studentList.length > 0 && studentStats === null && !ignore) {
+      handleFilter(studentList[0]?._id);
+    }
+    return () => {
+      ignore = true;
+    };
+  }, [studentList]);
 
   if (isPageLoading) {
     return <ScreenLoader />;
@@ -174,6 +190,17 @@ export default function Dashboard() {
                   </span>
                 </div>
               </div>
+              {/** Quartz */}
+              <div className="h-40 w-1/3 rounded-2xl bg-orange-600">
+                <div className="flex flex-col bg-white border-2 border-orange-600 rounded-2xl h-[97%] w-[98%] gap-5 py-2">
+                  <label className="cursor-pointer text-[16px] font-bold text-orange-600 w-full text-center">
+                    Số thạch anh
+                  </label>
+                  <span className="text-5xl font-bold mt-2 text-orange-600 mr-auto ml-auto select-none">
+                    {formatNumberAbbreviation(currentUserQuartz ?? 0)}
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -212,7 +239,7 @@ export default function Dashboard() {
                   Bậc xếp hạng hiện tại
                 </label>
                 <Image
-                  src={selectedStudentRank?.badge || ""}
+                  src={toCloudinaryWebP(selectedStudentRank?.badge || "")}
                   alt="rank"
                   height={200}
                   width={200}

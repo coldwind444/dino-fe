@@ -260,7 +260,6 @@ export const getLectureResultById = async (
     const res = await api.get(`/lecture-results/${id}`);
     return (res.data.data ?? res.data) as LectureResultDetailedResponse;
   } catch (error) {
-    console.error("Error fetching lecture result by ID:", error);
     handleError(error);
     throw error;
   }
@@ -330,7 +329,6 @@ export const getAnswers = async (
     const res = await api.get("/answers", { params });
     return res.data.items as AnswerResponse[];
   } catch (error) {
-    console.error("Error fetching answers:", error);
     handleError(error);
     return []; // Never reached
   }
@@ -347,7 +345,7 @@ export const upsertAnswers = async (answers: AnswerResponse[]) => {
 
 // Entrance test APIs
 export const getPublishedAssessmentByGradeId = async (
-  gradeId: string,
+  gradeId: string
 ): Promise<AssessmentResponse | null> => {
   try {
     const res = await api.get(`/assessments?gradeId=${gradeId}`);

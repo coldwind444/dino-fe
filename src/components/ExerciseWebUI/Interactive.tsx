@@ -89,6 +89,7 @@ export default function Interactive({
                     ? "bg-[#D8FFFA] border-[#23BEAA] text-[#23BEAA] font-bold"
                     : "bg-[#F3F4F6] border-dashed border-[#9CA3AF] text-[#9CA3AF] text-sm",
                 )}
+                data-testid="interactive-blank"
                 onClick={() => removeBlank(idx)}
               >
                 {blanks[idx] || "Kéo vào đây"}
@@ -113,6 +114,7 @@ export default function Interactive({
                   ? "bg-gray-200 border-gray-300 text-gray-400 opacity-50 cursor-not-allowed"
                   : "bg-white border-[#3B84F2] text-[#3B84F2] hover:bg-[#3B84F2] hover:text-white",
               )}
+              data-testid={`interactive-option-${idx}`}
               onClick={() => !isUsed && handleOptionClick(option)}
             >
               {option}

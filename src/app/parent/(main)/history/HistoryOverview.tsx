@@ -10,6 +10,7 @@ import {
   faVialCircleCheck,
   faWarning,
   faXmarkSquare,
+  faFolderOpen,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
@@ -26,6 +27,7 @@ import {
 import { getUserProfile, getUsers, getStudentStats } from "@/apis";
 import { getLectureResults, getAssessmentResultsList } from "@/apis/study";
 import { getParticipationsPaginated } from "@/apis/arena";
+import { APIError } from "@/apis/config";
 
 interface HistoryOverviewProps {
   onViewDetail: (record: HistoryRecord) => void;
@@ -159,7 +161,7 @@ export default function HistoryOverview({
   onViewDetail,
 }: HistoryOverviewProps) {
   const [studentList, setStudentList] = useState<UserProfileResponse[]>([]);
-  const [stats, setStats] = useState<StudentStatsResponse | null>(null);
+  const [, setStats] = useState<StudentStatsResponse | null>(null);
   const [records, setRecords] = useState<HistoryRecord[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -206,23 +208,25 @@ export default function HistoryOverview({
             keyword: "",
           });
 
-          const statsEndDate = ed ?? new Date();
-          const statsStartDate = sd ?? new Date("2000-01-01T00:00:00.000Z");
-          const statsData = await getStudentStats(
-            firstStudentId,
-            statsStartDate.toISOString(),
-            statsEndDate.toISOString(),
-          );
+          const params = {
+            userId: firstStudentId ?? "",
+            startDate: sd ? new Date(sd).toISOString() : "",
+            endDate: ed ? new Date(ed).toISOString() : "",
+          };
+          const statsData = await getStudentStats(params);
           setStats(statsData);
           await fetchRecords(firstStudentId, sd, ed, cat, "", 1);
         }
-      } catch (error: unknown) {
-        console.error((error as { message?: string })?.message);
+      } catch (error) {
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsPageLoading(false);
       }
     };
     fetchStudents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchRecords = useCallback(
@@ -250,7 +254,9 @@ export default function HistoryOverview({
           allItems = mapParticipations(res.items ?? []);
         } else if (category === "assessment") {
           const res = await getAssessmentResultsList(baseParams);
-          allItems = mapAssessmentResults(res.items ?? []);
+          allItems = mapAssessmentResults(
+            res.items.filter((item) => item.status === "graded") ?? [],
+          );
         } else if (category === "exercise") {
           const res = await getLectureResults(baseParams);
           allItems = mapLectureResults(res.items ?? []);
@@ -263,7 +269,9 @@ export default function HistoryOverview({
           ]);
           allItems = [
             ...mapParticipations(res1.items ?? []),
-            ...mapAssessmentResults(res2.items ?? []),
+            ...mapAssessmentResults(
+              res2.items?.filter((item) => item.status === "graded") ?? [],
+            ),
             ...mapLectureResults(res3.items ?? []),
           ];
         }
@@ -314,11 +322,15 @@ export default function HistoryOverview({
           startIndex + PAGE_LIMIT,
         );
 
+        console.log("finalFiltered: ", finalFiltered);
+
         setRecords(pagedItems);
         setTotalPages(totalPagesVal);
         setTotalRecords(totalRecordsVal);
       } catch (err) {
-        console.error(err);
+        if (err instanceof APIError) {
+          console.log(err.message);
+        }
       }
     },
     [],
@@ -359,21 +371,18 @@ export default function HistoryOverview({
         category: cat,
         keyword: kw,
       });
-
-      const statsEndDate = ed ?? new Date();
-      const statsStartDate = sd ?? new Date("2000-01-01T00:00:00.000Z");
-
-      const [statsData] = await Promise.all([
-        getStudentStats(
-          studentId,
-          statsStartDate.toISOString(),
-          statsEndDate.toISOString(),
-        ),
-      ]);
+      const params = {
+        userId: studentId ?? "",
+        startDate: sd ? new Date(sd).toISOString() : "",
+        endDate: ed ? new Date(ed).toISOString() : "",
+      };
+      const statsData = await getStudentStats(params);
       setStats(statsData);
       await fetchRecords(studentId, sd, ed, cat, kw, 1);
-    } catch (error: unknown) {
-      console.error((error as { message?: string })?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     } finally {
       setIsFilterLoading(false);
     }
@@ -392,8 +401,10 @@ export default function HistoryOverview({
         lastFilter.keyword,
         newPage,
       );
-    } catch (error: unknown) {
-      console.error((error as { message?: string })?.message);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     } finally {
       setIsFilterLoading(false);
     }
@@ -425,7 +436,10 @@ export default function HistoryOverview({
                                 text-white rounded-xl px-5 py-2.5 gap-8 relative shadow-lg"
             >
               <label className="font-medium">Số bài tập đã làm</label>
-              <label className="ml-auto mr-auto text-5xl font-medium">
+              <label
+                data-testid="total-exercises"
+                className="ml-auto mr-auto text-5xl font-medium"
+              >
                 {isFilterLoading ? "…" : totalRecords}
               </label>
               <FontAwesomeIcon
@@ -438,7 +452,10 @@ export default function HistoryOverview({
                                 text-white rounded-xl px-5 py-2.5 gap-8 relative shadow-lg"
             >
               <label className="font-medium">Độ chính xác</label>
-              <label className="ml-auto mr-auto text-5xl font-medium">
+              <label
+                data-testid="accuracy"
+                className="ml-auto mr-auto text-5xl font-medium"
+              >
                 {isFilterLoading
                   ? "…"
                   : filteredAccuracy !== null
@@ -453,71 +470,79 @@ export default function HistoryOverview({
           </div>
         </div>
         {/** History */}
-        {(records.length > 0 || isFilterLoading) && (
-          <div className="flex flex-1 flex-col gap-4">
-            <label className="font-medium text-xl">Lịch sử làm bài</label>
-            {/** List */}
-            {records.length > 0 && (
-              <div className="flex flex-col gap-2 w-full flex-1">
-                {records.map((val, idx) => (
-                  <div
-                    key={idx}
-                    className={clsx(
-                      "h-24 w-full rounded-xl border-2 flex flex-row px-5 py-2 items-center",
+        <div className="flex flex-1 flex-col gap-4 pr-5">
+          <label className="font-medium text-xl">Lịch sử làm bài</label>
+          {isFilterLoading ? (
+            <div className="flex flex-col gap-2 w-full flex-1">
+              {[...Array(PAGE_LIMIT)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-24 w-full rounded-xl border-2 border-gray-100 bg-gray-50 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : records.length > 0 ? (
+            <div className="flex flex-col gap-2 w-full flex-1">
+              {records.map((val, idx) => (
+                <div
+                  key={idx}
+                  className={clsx(
+                    "h-24 w-full rounded-xl border-2 flex flex-row px-5 py-2 items-center",
+                    val.accuracy >= 80
+                      ? "border-[#23BEAA] "
+                      : val.accuracy >= 50
+                        ? "border-[#F9740B]"
+                        : "border-[#FF5964]",
+                  )}
+                >
+                  {/** Icon */}
+                  <FontAwesomeIcon
+                    icon={
                       val.accuracy >= 80
-                        ? "border-[#23BEAA] "
+                        ? faCheckCircle
                         : val.accuracy >= 50
-                          ? "border-[#F9740B]"
-                          : "border-[#FF5964]",
+                          ? faWarning
+                          : faXmarkSquare
+                    }
+                    className={clsx(
+                      "text-5xl",
+                      val.accuracy >= 80
+                        ? "text-[#23BEAA]"
+                        : val.accuracy >= 50
+                          ? "text-[#F9740B]"
+                          : "text-[#FF5964]",
                     )}
-                  >
-                    {/** Icon */}
-                    <FontAwesomeIcon
-                      icon={
-                        val.accuracy >= 80
-                          ? faCheckCircle
-                          : val.accuracy >= 50
-                            ? faWarning
-                            : faXmarkSquare
-                      }
+                  />
+                  {/** Info */}
+                  <div className="flex flex-col ml-5 gap-1">
+                    <label
                       className={clsx(
-                        "text-5xl",
+                        "text-xl font-bold",
                         val.accuracy >= 80
                           ? "text-[#23BEAA]"
                           : val.accuracy >= 50
                             ? "text-[#F9740B]"
                             : "text-[#FF5964]",
                       )}
-                    />
-                    {/** Info */}
-                    <div className="flex flex-col ml-5 gap-1">
-                      <label
-                        className={clsx(
-                          "text-xl font-bold",
-                          val.accuracy >= 80
-                            ? "text-[#23BEAA]"
-                            : val.accuracy >= 50
-                              ? "text-[#F9740B]"
-                              : "text-[#FF5964]",
-                        )}
-                      >
-                        {val.name}
-                      </label>
-                      <div className="flex flex-row gap-5 font-medium">
-                        {val.category !== "exercise" && (
-                          <div className="flex flex-row gap-1 text-[rgba(0,0,0,0.5)] items-center">
-                            <FontAwesomeIcon icon={faClock} />
-                            <label>{val.duration}</label>
-                          </div>
-                        )}
+                    >
+                      {val.name}
+                    </label>
+                    <div className="flex flex-row gap-5 font-medium">
+                      {val.category !== "exercise" && (
                         <div className="flex flex-row gap-1 text-[rgba(0,0,0,0.5)] items-center">
-                          <FontAwesomeIcon icon={faCalendar} />
-                          <label>{val.date}</label>
+                          <FontAwesomeIcon icon={faClock} />
+                          <label>{val.duration}</label>
                         </div>
+                      )}
+                      <div className="flex flex-row gap-1 text-[rgba(0,0,0,0.5)] items-center">
+                        <FontAwesomeIcon icon={faCalendar} />
+                        <label>{val.date}</label>
                       </div>
                     </div>
-                    {/** Accuracy */}
-                    <div className="flex flex-col gap-1 ml-50">
+                  </div>
+                  {/** Accuracy + View button (right-aligned group) */}
+                  <div className="flex flex-row items-center gap-8 ml-auto mr-5">
+                    <div className="flex flex-col gap-1">
                       <div className="flex flex-row gap-3 items-center">
                         <label
                           className={clsx(
@@ -551,7 +576,7 @@ export default function HistoryOverview({
                     <div
                       className={clsx(
                         "h-fit w-fit px-8 py-2 font-medium text-white flex items-center justify-center rounded-full",
-                        "cursor-pointer hover:brightness-110 transition-all duration-200 ml-auto mr-5",
+                        "cursor-pointer hover:brightness-110 transition-all duration-200",
                         val.accuracy >= 80
                           ? "bg-[#23BEAA]"
                           : val.accuracy >= 50
@@ -565,47 +590,63 @@ export default function HistoryOverview({
                           )?.name ?? "";
                         onViewDetail({ ...val, studentName });
                       }}
+                      data-testid={`view-detail-btn-${idx}`}
                     >
                       Xem
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-            {/** Pagination */}
-            {totalRecords > 0 && (
-              <div className="flex flex-row items-center mb-5">
-                <label className="font-medium text-[rgba(0,0,0,0.5)]">
-                  {`Hiển thị ${displayFrom}-${displayTo} trên ${totalRecords} kết quả`}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-4 py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+              <FontAwesomeIcon
+                icon={faFolderOpen}
+                className="text-7xl text-gray-300"
+              />
+              <div className="flex flex-col items-center gap-1">
+                <label className="text-xl font-bold text-gray-500">
+                  Chưa có kết quả nào
                 </label>
-                <div className="ml-auto mr-0 flex flex-row gap-2">
-                  <div
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={clsx(
-                      "h-fit w-30 px-5 py-2 border-2 border-black flex items-center justify-center rounded-2xl font-medium",
-                      currentPage <= 1
-                        ? "opacity-40 cursor-not-allowed"
-                        : "cursor-pointer hover:bg-gray-100",
-                    )}
-                  >
-                    Trước
-                  </div>
-                  <div
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={clsx(
-                      "h-fit w-30 px-5 py-2 border-2 border-black flex items-center justify-center rounded-2xl font-medium",
-                      currentPage >= totalPages
-                        ? "opacity-40 cursor-not-allowed"
-                        : "cursor-pointer hover:bg-gray-100",
-                    )}
-                  >
-                    Sau
-                  </div>
+                <label className="text-gray-400">
+                  Hãy thử thay đổi bộ lọc để tìm kiếm kết quả khác
+                </label>
+              </div>
+            </div>
+          )}
+          {/** Pagination */}
+          {totalRecords > 0 && (
+            <div className="flex flex-row items-center mb-5">
+              <label className="font-medium text-[rgba(0,0,0,0.5)]">
+                {`Hiển thị ${displayFrom}-${displayTo} trên ${totalRecords} kết quả`}
+              </label>
+              <div className="ml-auto mr-0 flex flex-row gap-2">
+                <div
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={clsx(
+                    "h-fit w-30 px-5 py-2 border-2 border-black flex items-center justify-center rounded-2xl font-medium",
+                    currentPage <= 1
+                      ? "opacity-40 cursor-not-allowed"
+                      : "cursor-pointer hover:bg-gray-100",
+                  )}
+                >
+                  Trước
+                </div>
+                <div
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={clsx(
+                    "h-fit w-30 px-5 py-2 border-2 border-black flex items-center justify-center rounded-2xl font-medium",
+                    currentPage >= totalPages
+                      ? "opacity-40 cursor-not-allowed"
+                      : "cursor-pointer hover:bg-gray-100",
+                  )}
+                >
+                  Sau
                 </div>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

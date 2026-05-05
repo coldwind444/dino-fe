@@ -66,9 +66,10 @@ export const getQuartzLeaderboard = async (limit: number = 8): Promise<QuartzLea
     }
 }
 
-export const getStudentStats = async (userId: string, startDate: string, endDate: string) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getStudentStats = async (params?: Record<string, any>) => {
     try {
-        const res = await api.get(`/statistics/student?userId=${userId}&startDate=${startDate}&endDate=${endDate}`);
+        const res = await api.get(`/statistics/student`, { params: params });
         return res.data as StudentStatsResponse;
     } catch (error) {
         handleError(error);

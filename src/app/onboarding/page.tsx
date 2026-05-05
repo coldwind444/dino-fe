@@ -10,11 +10,12 @@ import { completeProfile, getGrades, uploadAvatar, logout } from "@/apis";
 import { Toaster, toast } from "react-hot-toast";
 
 import Loader from "@/components/Loader/Loader";
-import dinoWizard from "../../../public/assets/onboarding/wizard.svg";
+import dinoWizard from "../../../public/assets/onboarding/wizard.webp";
 import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
-
+import { toCloudinaryWebP } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 const MESSAGES = {
   ASK_NAME:
@@ -70,7 +71,7 @@ export default function Onboarding() {
       .then((data: string[]) => {
         setSystemAvatars(data);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.log(error));
   }, []);
 
   // Open image select dialog
@@ -158,8 +159,8 @@ export default function Onboarding() {
 
       toast.success("Hoàn thành hồ sơ thành công ! Đang chuyển hướng ...");
       router.push("/student/home");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
+    } catch (error) {
+      if (error instanceof APIError) {
         toast.error(error.message);
       } else {
         toast.error("Lỗi không xác định xảy ra.");
@@ -264,7 +265,7 @@ export default function Onboarding() {
               <div className="relative h-[150px] w-[150px] flex-shrink-0 overflow-hidden rounded-full">
                 {finalAvatarUrl ? (
                   <Image
-                    src={finalAvatarUrl}
+                    src={toCloudinaryWebP(finalAvatarUrl)}
                     fill
                     alt="Selected avatar preview"
                     className="object-cover object-center"
@@ -340,12 +341,13 @@ export default function Onboarding() {
               </div>
 
               <button
-                disabled={name.length === 0}
+                disabled={name.length === 0 || grade === ""}
                 className={clsx(
                   "h-[60px] w-[370px] rounded-[10px] bg-[#1DA492] cursor-pointer hover:opacity-90",
                   "disabled:opacity-60 disabled:cursor-not-allowed",
                 )}
                 onClick={() => setStep(STEPS.AVATAR)}
+                data-testid="continue-btn1"
               >
                 <div
                   className={clsx(
@@ -366,6 +368,7 @@ export default function Onboarding() {
                 {/** Customized radio box */}
                 <div className="block">
                   <div
+                    data-testid="system-avatar-radio"
                     className={clsx(
                       "h-[20px] aspect-square border-2 rounded-full transition-all duration-150 cursor-pointer",
                       "flex items-center justify-center",
@@ -420,7 +423,7 @@ export default function Onboarding() {
                         )}
                       >
                         <Image
-                          src={avt}
+                          src={toCloudinaryWebP(avt)}
                           alt="system avatar"
                           width={70}
                           height={70}
@@ -494,6 +497,7 @@ export default function Onboarding() {
                   "disabled:opacity-60 disabled:cursor-not-allowed ml-auto mr-auto",
                 )}
                 onClick={() => setStep(STEPS.CODE)}
+                data-testid="continue-btn2"
               >
                 <div
                   className={clsx(
@@ -530,7 +534,13 @@ export default function Onboarding() {
                 />
               </div>
               <button
-                disabled={name.length === 0 || finalAvatarUrl.length === 0}
+                data-testid="complete-btn"
+                disabled={
+                  name.length === 0 ||
+                  finalAvatarUrl.length === 0 ||
+                  grade === "" ||
+                  code.length === 0
+                }
                 className={clsx(
                   "h-[60px] w-[370px] rounded-[10px] bg-[#1DA492] cursor-pointer hover:opacity-90",
                   "disabled:opacity-60 disabled:cursor-not-allowed",

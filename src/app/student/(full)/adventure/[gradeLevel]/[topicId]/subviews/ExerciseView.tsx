@@ -27,8 +27,6 @@ import { useLessonStore } from "@/stores/lessonStore";
 import { cleanedAnswerArray } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
 
-
-
 interface ExerciseViewProps {
   currentLecture: LectureResponse;
   userId: string;
@@ -101,7 +99,6 @@ export default function ExerciseView({
     };
     setAnswers([...answers, ans]);
     setIsAnswerCorrect(isCorrect);
-    console.log("userAnswer: ", JSON.stringify(userAnswer));
 
     if (!doneExercises.includes(currExIdx)) {
       setShowSubmitBanner(true);
@@ -160,7 +157,7 @@ export default function ExerciseView({
       onFinish(exercises.length);
     } catch (error) {
       if (error instanceof APIError) {
-        console.error(error.message);
+        console.log(error.message);
       }
       setIsSubmitting(false);
     }
@@ -176,7 +173,9 @@ export default function ExerciseView({
         });
         setExercises(exs.sort((a, b) => a.order - b.order));
       } catch (error) {
-        console.error("Error fetching exercises:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       }
     };
     fetchExercises();
@@ -237,7 +236,6 @@ export default function ExerciseView({
             roboto.className,
           )}
         >
-          <label className="text-[18px] font-semibold">{`Bài ${1}`}</label>
           <h2 className="max-w-[250px] text-wrap text-[23px] font-bold">
             {currentLecture?.title}
           </h2>
@@ -284,6 +282,7 @@ export default function ExerciseView({
             "transition-all duration-200 overflow-hidden font-bold text-white mt-auto mb-10",
           )}
           onClick={isSubmitting ? undefined : submitLectureResult}
+          data-testid="submit-btn"
         >
           <div
             className={clsx(
@@ -332,6 +331,7 @@ export default function ExerciseView({
         {/** Interactive area */}
         <div className="max-h-[440px] w-full flex items-center justify-center">
           <CocosGameWrapper
+            data-testid="cocos-game"
             exercises={exercises}
             currentExerciseIndex={currExIdx}
             ref={cocosGameRef}
@@ -411,7 +411,7 @@ export default function ExerciseView({
                       +
                       <span>
                         <Image
-                          src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                          src="https://res.cloudinary.com/dirr7ovdh/image/upload/f_auto,q_auto/v1761541691/crystal_x9l493.svg"
                           height={50}
                           width={50}
                           alt=""

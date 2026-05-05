@@ -17,6 +17,7 @@ import { UserProfileResponse } from "@/types";
 import { getUserProfile } from "@/apis";
 import Image from "next/image";
 import clsx from "clsx";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 interface ProfilePopupProps {
   isOpen: boolean;
@@ -144,10 +145,11 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                       <div className="w-26 h-26 bg-[#D6F8EB] rounded-full flex items-center justify-center overflow-hidden">
                         {profile?.avatarUrl ? (
                           <Image
-                            src={profile.avatarUrl}
+                            src={toCloudinaryWebP(profile.avatarUrl)}
                             alt="Avatar"
                             height={150}
                             width={150}
+                            priority={true}
                             className="object-cover w-full h-full"
                           />
                         ) : (
@@ -183,6 +185,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                 {/* Menu Items */}
                 <div className="space-y-2">
                   <button
+                    data-testid="profile-tab"
                     onClick={() => setActiveTab("profile")}
                     className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${
                       activeTab === "profile"
@@ -195,6 +198,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                   </button>
 
                   <button
+                    data-testid="password-tab"
                     onClick={() => setActiveTab("password")}
                     className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${
                       activeTab === "password"
@@ -207,6 +211,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                   </button>
 
                   <button
+                    data-testid="link-tab"
                     onClick={() => setActiveTab("link")}
                     className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${
                       activeTab === "link"
@@ -220,6 +225,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
 
                   {isParent && (
                     <button
+                      data-testid="upgrade-tab"
                       onClick={() => setActiveTab("upgrade")}
                       className={`w-full rounded-2xl p-4 flex items-center gap-3 text-left font-semibold cursor-pointer ${
                         activeTab === "upgrade"
@@ -236,6 +242,7 @@ export default function ProfilePopup({ isOpen, onClose }: ProfilePopupProps) {
                 {/* Close Button */}
                 <div className="mt-auto pt-8">
                   <button
+                    data-testid="close-btn"
                     onClick={onClose}
                     className="text-red-600 p-4 flex items-center gap-3 text-left hover:bg-red-50 transition-colors rounded-xl cursor-pointer w-full"
                   >

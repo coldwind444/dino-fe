@@ -30,7 +30,8 @@ import TopicRecommendPopup from "@/components/TopicRecommendPopup/TopicRecommend
 import { TopicResponse } from "@/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { updateMissionProgress } from "@/apis/mission";
+import { APIError } from "@/apis/config";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 const trophy = "/assets/home/trophy.png";
 
@@ -90,7 +91,12 @@ export default function StudentHome() {
         if (ignore) return;
 
         // Fetch recent studied topics
-        if (recentTopicsRes && recentTopicsRes.length > 0 && gradeRes && gradeRes.length > 0) {
+        if (
+          recentTopicsRes &&
+          recentTopicsRes.length > 0 &&
+          gradeRes &&
+          gradeRes.length > 0
+        ) {
           const filteredTopics = recentTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
@@ -98,14 +104,21 @@ export default function StudentHome() {
         }
 
         // Fetch completed topics
-        if (compTopicsRes && compTopicsRes.length > 0 && gradeRes && gradeRes.length > 0) {
+        if (
+          compTopicsRes &&
+          compTopicsRes.length > 0 &&
+          gradeRes &&
+          gradeRes.length > 0
+        ) {
           const filteredTopics = compTopicsRes.filter(
             (t) => t.gradeId === gradeRes[0]._id,
           );
           setCompletedTopics(filteredTopics);
         }
       } catch (error) {
-        console.error(error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -168,23 +181,12 @@ export default function StudentHome() {
       }
     };
 
-    const updateLogin = async () => {
-      try {
-        await updateMissionProgress({
-          unitType: "daily_login",
-          amount: 1,
-        });
-      } catch (error) {
-        console.log("Failed to update login.", error);
-      }
-    };
-
     fetchData();
-    updateLogin();
 
     return () => {
       ignore = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading || !username) {
@@ -196,6 +198,7 @@ export default function StudentHome() {
       {showAssessmentFloatButton && (
         <div
           className="absolute h-15 w-15 top-25 right-5 cursor-pointer hover:brightness-110 z-20"
+          data-testid="assessment-float-btn"
           onClick={() => setIsEntranceTestModalOpened(true)}
         >
           {/* Ping circle */}
@@ -252,6 +255,7 @@ export default function StudentHome() {
                   <div className="flex items-center gap-5 ml-[30px]">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button
+                        data-testid={`grade-btn-${n}`}
                         key={n}
                         onClick={() => {
                           setGradeLevel(n.toString());
@@ -327,14 +331,19 @@ export default function StudentHome() {
                     )}
                   >
                     <Image
-                      src={recentTopic?.description || ""}
+                      src={toCloudinaryWebP(recentTopic?.description || "")}
                       alt="rtopic"
                       width={120}
                       height={120}
                     />
                   </div>
                   <div className="flex-1 pl-4">
-                    <h4 className="text-3xl font-bold">{recentTopic?.title}</h4>
+                    <h4
+                      className="text-3xl font-bold"
+                      data-testid="recent-topic-title"
+                    >
+                      {recentTopic?.title}
+                    </h4>
                   </div>
                 </div>
                 <div
@@ -342,6 +351,13 @@ export default function StudentHome() {
                     "h-[70px] w-full rounded-[20px] bg-[#5E1C9A] overflow-hidden cursor-pointer",
                     "hover:opacity-90 group",
                   )}
+                  onClick={() => {
+                    if (recentTopic) {
+                      router.push(
+                        `/student/adventure/${gradeLevel}/${recentTopic._id}`,
+                      );
+                    }
+                  }}
                 >
                   <div
                     className={clsx(
@@ -349,6 +365,7 @@ export default function StudentHome() {
                       "h-full w-full relative bg-[#8A2BE2] text-white text-[22px] font-medium",
                       "rounded-tl-[50px] rounded-br-[60px] relative",
                     )}
+                    data-testid="continue-learning-btn"
                   >
                     Tiếp tục học
                     <span className="absolute top-0 right-0 mt-[7px] mr-[10px] h-[25px] aspect-square bg-[rgba(255,255,255,0.5)] rounded-full" />
@@ -375,29 +392,33 @@ export default function StudentHome() {
         </div>
 
         {/* Review Section */}
-        <aside className="lg:col-span-5 w-fit h-fit">
+        <aside className="lg:col-span-7 h-fit pr-5 ">
           {completedTopic && completedTopic.length > 0 ? (
-            <div>
+            <div className="w-full">
               <h4 className="font-semibold">Ôn lại kiến thức</h4>
               <div className="mt-3 flex flex-col gap-3 h-full w-full overflow-y-auto pr-2">
                 {completedTopic.map((val, idx) => (
                   <div
                     key={`review-${idx}`}
                     className={clsx(
-                      "flex items-center justify-between p-4 rounded-[20px]",
+                      "flex items-center justify-between p-4 rounded-[20px] w-full",
                       "bg-[#FFF6F6] border-2 border-[#FF9292] min-h-[80px] pl-[50px]",
                     )}
                   >
-                    <div className="text-xl text-[#FF9292] font-medium">
+                    <div
+                      className="text-xl text-[#FF9292] font-medium"
+                      data-testid={`complete-topic-title-${idx}`}
+                    >
                       {val.title}
                     </div>
                     <button
                       type="button"
-                      aria-label="refresh"
+                      aria-label={`refresh-${idx}`}
+                      data-testid={`refresh-btn-${idx}`}
                       className={clsx(
                         "w-10 h-10 rounded-full bg-white flex items-center justify-center",
                         "shadow-md border border-gray-200 hover:shadow-lg hover:scale-105",
-                        "transition-all duration-200 group",
+                        "transition-all duration-200 group cursor-pointer",
                       )}
                       onClick={() => {
                         router.push(

@@ -47,10 +47,10 @@ export const googleLogin = async (req: GoogleLoginRequest) => {
 
 export const sendOtp = async (identifier: string) => {
     try {
-        const res = await publicApi.post('/auth/forgot-password', { identifier });
-        return res.data;
+        await publicApi.post('/auth/forgot-password', { identifier });
     } catch (error) {
         handleError(error);
+        throw error;
     }
 }
 

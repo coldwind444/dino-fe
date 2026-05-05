@@ -27,13 +27,6 @@ export class APIError extends Error {
 export const handleError = (error: any): APIError => {
   const err = error as AxiosError<{ error?: string, message?: string }>;
   const status = err.response?.status;
-
-  const errorType = Object.values(ERROR).find((e) => e.status === status);
-
-  if (errorType) {
-    throw new APIError(errorType.message, errorType.status);
-  }
-
   throw new APIError(err.response?.data?.error || err.response?.data?.message || err.message || ERROR.INTERNAL_SERVER_ERROR.message, status || 500);
 };
 

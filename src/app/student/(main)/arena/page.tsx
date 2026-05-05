@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import clsx from "clsx";
-import arena from "../../../../../public/assets/arena/arena.png";
+import arena from "../../../../../public/assets/arena/arena.webp";
 import helmet from "../../../../../public/assets/arena/helmet.png";
-import r1 from "../../../../../public/assets/arena/rule_1.png";
-import r2 from "../../../../../public/assets/arena/rule_2.png";
-import r3 from "../../../../../public/assets/arena/rule_3.png";
-import r4 from "../../../../../public/assets/arena/rule_4.png";
-import r5 from "../../../../../public/assets/arena/rule_5.png";
+import r1 from "../../../../../public/assets/arena/rule_1.webp";
+import r2 from "../../../../../public/assets/arena/rule_2.webp";
+import r3 from "../../../../../public/assets/arena/rule_3.webp";
+import r4 from "../../../../../public/assets/arena/rule_4.webp";
+import r5 from "../../../../../public/assets/arena/rule_5.webp";
 
 import { roboto, baloo, patrick, patrick_sc } from "@/app/fonts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,6 +18,7 @@ import {
   faCaretLeft,
   faCaretRight,
   faCircleQuestion,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -38,9 +39,8 @@ import {
   getMyRank,
 } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
-import { formatNumberAbbreviation } from "@/helpers/utils";
-
-
+import { formatNumberAbbreviation, toCloudinaryWebP } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 export default function Arena() {
   const router = useRouter();
@@ -58,6 +58,7 @@ export default function Arena() {
     null,
   );
   const [myRank, setMyRank] = useState<MyPositionInRankResponse | null>(null);
+  const [rankBadgeLoaded, setRankBadgeLoaded] = useState(false);
 
   // UI states
   const [isLoading, setIsLoading] = useState(false);
@@ -97,12 +98,17 @@ export default function Arena() {
               arenaId: currentArena._id,
             });
             if (!ignore && userParticipation.length === 1) {
-              if (userParticipation[0].status === "submitted") {
+              if (
+                userParticipation[0].status === "submitted" ||
+                userParticipation[0].status === "graded"
+              ) {
                 setArenaDone(true);
               }
             }
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
@@ -134,11 +140,15 @@ export default function Arena() {
                 });
                 setLeaderboard(leaderboard);
               } catch (error) {
-                console.error(error);
+                if (error instanceof APIError) {
+                  console.log(error.message);
+                }
               }
             }
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
@@ -153,7 +163,9 @@ export default function Arena() {
               fetchPreviousArenaAndLeaderboard(currentArena),
             ]);
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
@@ -163,13 +175,17 @@ export default function Arena() {
             const rank = await getRankById(userProfile.rankId);
             if (!ignore) setUserRank(rank);
           } catch (error) {
-            console.error(error);
+            if (error instanceof APIError) {
+              console.log(error.message);
+            }
           }
         };
 
         await Promise.allSettled([fetchArenaData(), fetchRankData()]);
       } catch (error) {
-        console.error(error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -220,6 +236,7 @@ export default function Arena() {
           alt=""
           className="rounded-br-[20px] rounded-bl-[20px] z-10"
           width={324}
+          priority
         />
         <div className="absolute top-0 flex flex-col items-center text-white w-full z-10">
           <h1
@@ -241,6 +258,7 @@ export default function Arena() {
               "hover:shadow-[0_4px_15px_rgba(255,255,255,0.2)] transition-shadow duration-700 ease-in-out",
             )}
             onClick={() => setRulesShow(true)}
+            data-testid="rules-btn"
           >
             <label
               className={clsx(
@@ -261,6 +279,7 @@ export default function Arena() {
               ? "w-[98vw] opacity-100 overflow-x-hidden"
               : "w-0 opacity-0",
           )}
+          data-testid="rules-panel"
         >
           {/* Fade + Slide-in wrapper for all content */}
           <div
@@ -284,6 +303,7 @@ export default function Arena() {
                 onClick={() => {
                   if (rulesPage > 0) setRulesPage((prev) => prev - 1);
                 }}
+                data-testid="prev-rules-btn"
               >
                 <FontAwesomeIcon
                   icon={faArrowLeftLong}
@@ -325,6 +345,7 @@ export default function Arena() {
                 onClick={() => {
                   if (rulesPage < 4) setRulesPage((prev) => prev + 1);
                 }}
+                data-testid="next-rules-btn"
               >
                 <label
                   className={clsx(
@@ -369,7 +390,7 @@ export default function Arena() {
                       "text-[45px] text-[#C03601]",
                     )}
                   >
-                    I. Mục đích
+                    I. Thông tin chung
                   </label>
                   <ul className="list-disc pl-[30px] text-[30px] text-[#5E4630] flex flex-col gap-[20px]">
                     <li className={patrick.className}>
@@ -390,6 +411,7 @@ export default function Arena() {
                   alt=""
                   width={450}
                   className="h-[450px] aspect-square contrast-100"
+                  priority
                 />
               </div>
 
@@ -414,6 +436,7 @@ export default function Arena() {
                     alt=""
                     width={333}
                     className="h-[500px] aspect-square contrast-100 ml-[20px] relative z-[2]"
+                    priority
                   />
                 </div>
                 <div className="flex flex-col gap-[20px]">
@@ -480,6 +503,7 @@ export default function Arena() {
                   alt=""
                   width={450}
                   className="h-[450px] aspect-square contrast-100"
+                  priority
                 />
               </div>
 
@@ -510,6 +534,7 @@ export default function Arena() {
                     alt=""
                     width={450}
                     className="h-[450px] aspect-square contrast-100 ml-[20px] relative z-[2]"
+                    priority
                   />
                 </div>
                 <div className="flex flex-col gap-[10px]">
@@ -592,6 +617,7 @@ export default function Arena() {
                     alt=""
                     width={366}
                     className="h-[550px] aspect-square contrast-100 ml-[20px] -translate-y-16 relative z-[2]"
+                    priority
                   />
                 </div>
               </div>
@@ -609,6 +635,7 @@ export default function Arena() {
               setRulesShow(false);
               setRulesPage(0);
             }}
+            data-testid="close-rules-btn"
           >
             <FontAwesomeIcon
               className="group-hover:scale-125 transition-all duration-150"
@@ -659,12 +686,13 @@ export default function Arena() {
                 <Image
                   src={helmet}
                   alt=""
+                  priority
                   className="h-auto w-[150px] max-h-[160px] flex-shrink-0"
                 />
                 <div className="flex flex-col gap-[20px] min-w-0">
                   <h2
                     className={clsx(
-                      "text-[#F9740B] text-2xl font-bold leading-tight",
+                      "text-[#F9740B] text-2xl font-bold leading-normal",
                       roboto.className,
                     )}
                   >
@@ -685,6 +713,7 @@ export default function Arena() {
                       onClick={() =>
                         router.push(`/student/arena-exam/${currentArena._id}`)
                       }
+                      data-testid="join-arena-btn"
                     >
                       Tham gia ngay
                       <span className="absolute top-0 right-0 mt-[7px] mr-[10px] h-[25px] aspect-square bg-[rgba(255,255,255,0.3)] rounded-full" />
@@ -800,13 +829,27 @@ export default function Arena() {
                 Xếp hạng của bạn
               </h1>
               {userRank && userRank.badge && (
-                <Image
-                  src={userRank?.badge || ""}
-                  alt=""
-                  className="mt-[15px] w-auto h-[50%] aspect-square"
-                  width={200}
-                  height={200}
-                />
+                <div className="relative mt-[15px] h-[50%] aspect-square flex items-center justify-center">
+                  {!rankBadgeLoaded && (
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="animate-spin text-3xl"
+                      style={{ color: userRank?.color }}
+                    />
+                  )}
+                  <Image
+                    src={toCloudinaryWebP(userRank?.badge || "")}
+                    alt=""
+                    priority
+                    className={clsx(
+                      "w-auto h-full aspect-square",
+                      !rankBadgeLoaded && "hidden",
+                    )}
+                    width={200}
+                    height={200}
+                    onLoadingComplete={() => setRankBadgeLoaded(true)}
+                  />
+                </div>
               )}
               {/** Ribbon */}
               <div className="relative flex justify-center items-center w-full">
@@ -925,8 +968,9 @@ export default function Arena() {
                         >
                           <div className="h-[50px] aspect-square overflow-hidden rounded-full flex-shrink-0">
                             <Image
-                              src={record?.user?.avatarUrl}
+                              src={toCloudinaryWebP(record?.user?.avatarUrl)}
                               alt=""
+                              priority
                               height={50}
                               width={50}
                             />

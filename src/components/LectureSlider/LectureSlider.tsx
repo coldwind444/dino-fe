@@ -8,6 +8,7 @@ import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
 import lock from "../../../public/assets/exercises/lock.png";
 import { LectureResponse } from "@/types";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 type LectureSliderProps = {
   lectures: LectureResponse[];
@@ -86,10 +87,11 @@ export default function LectureSlider({
             <div key={index} className="flex flex-row gap-[20px] items-center">
               <div className="flex items-center justify-center relative">
                 <Image
-                  src={milestone}
+                  src={toCloudinaryWebP(milestone)}
                   alt=""
                   width={280}
                   height={280}
+                  priority={index < 3}
                   className={clsx(
                     "aspect-square flex-shrink-0 object-contain",
                     index === idx ? "scale-100" : "scale-75 opacity-60",
@@ -138,6 +140,7 @@ export default function LectureSlider({
         <FontAwesomeIcon
           className="text-white text-2xl sm:text-3xl md:text-[35px] lg:text-[40px] cursor-pointer hover:scale-125 transition-all duration-150"
           icon={faArrowLeft}
+          data-testid="prev-button"
           onClick={backward}
         />
 
@@ -156,6 +159,7 @@ export default function LectureSlider({
               <div
                 className="h-[50px] sm:h-[55px] md:h-[60px] w-[160px] sm:w-[180px] md:w-[200px] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] bg-[#1DA492] cursor-pointer hover:brightness-110 transition-all duration-200"
                 onClick={doExercise}
+                data-testid="do-exercise-button"
               >
                 <div className="h-full w-full flex items-center justify-center gap-[8px] sm:gap-[10px] relative bg-[#23BEAA] rounded-tl-[40px] sm:rounded-tl-[45px] md:rounded-tl-[50px] rounded-br-[40px] sm:rounded-br-[45px] md:rounded-br-[50px] rounded-tr-[15px] sm:rounded-tr-[18px] md:rounded-tr-[20px] rounded-bl-[15px] sm:rounded-bl-[18px] md:rounded-bl-[20px]">
                   <label className="text-white font-semibold text-base sm:text-lg md:text-[20px] select-none cursor-pointer">
@@ -178,6 +182,7 @@ export default function LectureSlider({
           className="text-white text-2xl sm:text-3xl md:text-[35px] lg:text-[40px] cursor-pointer hover:scale-125 transition-all duration-150"
           icon={faArrowRight}
           onClick={forward}
+          data-testid="next-button"
         />
       </div>
     </div>

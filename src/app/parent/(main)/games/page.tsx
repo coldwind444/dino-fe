@@ -12,12 +12,13 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 
-import single from "../../../../../public/assets/games/single.png";
-import pvp from "../../../../../public/assets/games/pvp.png";
+import single from "../../../../../public/assets/games/single.webp";
+import pvp from "../../../../../public/assets/games/pvp.webp";
 import { getMinigames } from "@/apis/minigame";
 import { MiniGameResponse } from "@/types";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { APIError } from "@/apis/config";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 export default function Games() {
   // Data state
@@ -29,7 +30,6 @@ export default function Games() {
 
   // Fetch data
   useEffect(() => {
-    let ignore = false;
     const fetchMinigames = async () => {
       try {
         setLoading(true);
@@ -44,10 +44,6 @@ export default function Games() {
       }
     };
     fetchMinigames();
-
-    return () => {
-      ignore = true;
-    };
   }, []);
 
   if (loading) return <ScreenLoader />;
@@ -117,7 +113,7 @@ export default function Games() {
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className="absolute -top-25 left-20"
               >
-                <Image src={single} alt="" height={280} width={280} />
+                <Image src={single} alt="" height={280} width={280} priority />
               </motion.div>
             ) : (
               <motion.div
@@ -128,7 +124,7 @@ export default function Games() {
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className="absolute -top-35 left-20"
               >
-                <Image src={pvp} alt="" height={340} width={340} />
+                <Image src={pvp} alt="" height={340} width={340} priority />
               </motion.div>
             )}
           </AnimatePresence>
@@ -216,13 +212,14 @@ export default function Games() {
                 )}
               >
                 {/** Thumbnail */}
-                <div className="h-1/2 w-full rounded-xl object-cover overflow-hidden">
+                <div className="h-1/2 w-full rounded-xl overflow-hidden">
                   <Image
-                    src={val.thumbnail}
-                    height={500}
-                    width={200}
+                    src={toCloudinaryWebP(val.thumbnail)}
+                    height={640}
+                    width={349}
+                    priority={idx < 3}
                     alt=""
-                    className="w-auto h-full"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 {/** Label */}

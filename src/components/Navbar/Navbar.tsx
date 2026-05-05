@@ -31,8 +31,8 @@ import ProfilePopup from "../ProfilePopup/ProfilePopup";
 import { getUserProfile } from "@/apis/user";
 import { logout } from "@/apis/auth";
 import { useLessonStore } from "@/stores/lessonStore";
-
-
+import { APIError } from "@/apis/config";
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 const studentLinks: { name: string; icon: IconDefinition; pathname: string }[] =
   [
@@ -82,7 +82,9 @@ export default function Navbar({
       clearLessonStore();
       router.push("/auth");
     } catch (error) {
-      console.error("Logout failed:", error);
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     }
   };
 
@@ -102,7 +104,9 @@ export default function Navbar({
         setUsername(res.name.split(" ").pop() || "");
         setAvatar(res.avatarUrl);
       } catch (error) {
-        console.error("Error fetching user profile:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       }
     };
     fetchUserProfile();
@@ -233,6 +237,7 @@ export default function Navbar({
               "h-[30px] aspect-square rounded-full hover:bg-[#D9D9D9] cursor-pointer",
               "flex items-center justify-center",
             )}
+            data-testid="profile-btn"
             onClick={() => setProfilePopupShow(true)}
           >
             <FontAwesomeIcon icon={faUserOutlined} />
@@ -242,9 +247,10 @@ export default function Navbar({
               {" "}
               {/* Added 'relative' */}
               <Image
-                src={avatar}
+                src={toCloudinaryWebP(avatar)}
                 alt="avatar"
                 fill
+                priority={true}
                 className="object-cover"
                 sizes="60px" // Good practice: tells Next.js this image is small
               />
@@ -265,6 +271,7 @@ export default function Navbar({
           </div>
           <FontAwesomeIcon
             onClick={() => handleLogout()}
+            data-testid="logout-btn"
             className={clsx("cursor-pointer text-rose-500")}
             icon={faSignOut}
           />

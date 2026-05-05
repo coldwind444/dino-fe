@@ -9,8 +9,6 @@ import clsx from "clsx";
 import { getGrades, updateUserProfile, uploadAvatar } from "@/apis";
 import { Toaster, toast } from "react-hot-toast";
 import Loader from "../Loader/Loader";
-// 1. Import useRouter
-import { useRouter } from "next/navigation";
 import { APIError } from "@/apis/config";
 import { useLessonStore } from "@/stores/lessonStore";
 
@@ -94,13 +92,13 @@ export default function ProfileTab({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setAvatarFile(file);
-
     if (!file.type.startsWith("image/")) {
-      alert("Please select a valid image file (PNG, JPG, etc.)");
+      alert("Vui lòng chọn 1 tệp ảnh hợp lệ (PNG, JPG, etc.)");
       e.target.value = "";
       return;
     }
+
+    setAvatarFile(file);
     e.target.value = "";
   };
 
@@ -206,7 +204,7 @@ export default function ProfileTab({
           setAvatarType("user");
         }
       } catch (error) {
-        console.error("Failed to fetch avatars:", error);
+        console.log("Failed to fetch avatars:", error);
       }
     };
 
@@ -284,7 +282,7 @@ export default function ProfileTab({
         </h3>
         <div className="flex items-start gap-8 pl-20">
           <div className="flex-shrink-0">
-            <div className="relative w-40 h-40 rounded-full bg-[#E0F5F1] flex items-center justify-center overflow-hidden">
+            <div className="relative w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
               {previewUrl === "" && (
                 <label className="text-center text-gray-500 font-medium">
                   Chưa có ảnh nào <br /> được tải lên.
@@ -293,7 +291,7 @@ export default function ProfileTab({
               {previewUrl && (
                 <Image
                   src={previewUrl}
-                  alt="Avatar preview"
+                  alt=""
                   fill
                   className="w-full h-full object-cover"
                 />
@@ -311,6 +309,7 @@ export default function ProfileTab({
                     : "border-gray-400",
                 )}
                 onClick={() => setAvatarType("system")}
+                data-testid="system-avatar-radio"
               >
                 <div
                   className={clsx(
@@ -349,6 +348,7 @@ export default function ProfileTab({
                         />
                       )}
                       <button
+                        data-testid={"system-avatar-" + idx}
                         onClick={() => {
                           if (avatarType === "system") {
                             setCurrSysAvatarIndex(idx);
@@ -385,6 +385,7 @@ export default function ProfileTab({
                     ? "border-[#23BEAA]"
                     : "border-gray-400",
                 )}
+                data-testid="user-avatar-radio"
                 onClick={() => setAvatarType("user")}
               >
                 <div
@@ -413,6 +414,7 @@ export default function ProfileTab({
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
+                data-testid="upload-avatar-button"
                 disabled={avatarType !== "user"}
                 className={clsx(
                   "px-6 py-2 rounded-full transition-colors text-sm ml-8 text-white font-medium cursor-pointer",
@@ -436,6 +438,7 @@ export default function ProfileTab({
           </label>
           <div className="relative">
             <input
+              data-testid="name-input"
               type="text"
               value={formData.name}
               onChange={(e) =>
@@ -484,6 +487,7 @@ export default function ProfileTab({
               </label>
               <div className="relative">
                 <select
+                  data-testid="grade-select"
                   value={getGradeLevelById(formData.gradeId!)}
                   onChange={(e) =>
                     setFormData({
@@ -509,13 +513,22 @@ export default function ProfileTab({
       </div>
       {/** Update button */}
       <button
+        data-testid="update-profile-button"
         onClick={handleUpdateProfile}
-        disabled={!isFormDirty || loading}
+        disabled={
+          !isFormDirty ||
+          loading ||
+          !formData.name ||
+          (avatarType === "user" && !!avatarFile && !avatarFile.type.startsWith("image/"))
+        }
         className={clsx(
           "max-w-lg ml-20 py-3 rounded-xl font-semibold text-base transition-colors w-full relative",
-          isFormDirty
-            ? "bg-[#1ABC9C] text-white hover:bg-[#16A085]"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed",
+          !isFormDirty ||
+            loading ||
+            !formData.name ||
+            (avatarType === "user" && !!avatarFile && !avatarFile.type.startsWith("image/"))
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-[#1ABC9C] text-white hover:bg-[#16A085]",
         )}
       >
         {/* Text Label */}

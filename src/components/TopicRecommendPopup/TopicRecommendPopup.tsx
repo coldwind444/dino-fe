@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { baloo } from "@/app/fonts";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import boy from "../../../public/assets/home/boy_riding_pencil.png";
+import boy from "../../../public/assets/home/boy_riding_pencil.webp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faClose } from "@fortawesome/free-solid-svg-icons";
 import { TermResponse, TopicResponse } from "@/types";
@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { getTermById } from "@/apis";
 import { useLessonStore } from "@/stores/lessonStore";
 import { useRouter } from "next/navigation";
-
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 export default function TopicRecommendPopup({
   close,
@@ -84,10 +84,12 @@ export default function TopicRecommendPopup({
             height={550}
             width={550}
             alt=""
+            priority={true}
             className="absolute -translate-x-1/2"
           />
           {/** Close button */}
           <div
+            data-testid="close-topic-recommend-btn"
             className="absolute aspect-square h-20 bg-amber-500 rounded-full top-0 right-0 translate-x-1/3 -translate-y-1/4
                                     hover:brightness-110 cursor-pointer flex items-center justify-center
                                     text-white text-3xl shadow-inner"
@@ -114,10 +116,11 @@ export default function TopicRecommendPopup({
               <>
                 {/** Image placeholder */}
                 <Image
-                  src={topic.description || ""}
+                  src={toCloudinaryWebP(topic.description || "")}
                   height={120}
                   width={120}
                   alt=""
+                  priority={true}
                 />
                 {/** Topic info */}
                 <div
@@ -160,12 +163,17 @@ export default function TopicRecommendPopup({
                                             hover:gap-7"
                   onClick={() => {
                     if (topic && topic._id) {
-                      router.push(`/student/adventure/${gradeLevel}/${topic?._id}`);
+                      router.push(
+                        `/student/adventure/${gradeLevel}/${topic?._id}`,
+                      );
                     }
                   }}
                 >
                   <span
-                    className={clsx("text-center leading-tight", baloo.className)}
+                    className={clsx(
+                      "text-center leading-tight",
+                      baloo.className,
+                    )}
                   >
                     HỌC <br /> NGAY
                   </span>
@@ -178,10 +186,20 @@ export default function TopicRecommendPopup({
               </>
             ) : (
               <div className="flex flex-col items-center justify-center h-full gap-5 pb-10">
-                <p className={clsx(baloo.className, "text-2xl text-amber-500 font-bold text-center leading-relaxed px-5")}>
-                  Hiện tại chưa có chủ đề gợi ý nào mới cho bạn hôm nay!
+                <p
+                  className={clsx(
+                    baloo.className,
+                    "text-2xl text-amber-500 font-bold text-center leading-relaxed px-5",
+                  )}
+                >
+                  Hiện tại chưa có chủ đề gợi ý nào mới <br /> cho bạn hôm nay!
                 </p>
-                <p className={clsx(baloo.className, "text-lg text-gray-500 font-medium text-center")}>
+                <p
+                  className={clsx(
+                    baloo.className,
+                    "text-lg text-gray-500 font-medium text-center",
+                  )}
+                >
                   Hãy quay lại sau hoặc chọn một chủ đề khác để học nhé.
                 </p>
               </div>

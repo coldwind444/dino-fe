@@ -1,16 +1,10 @@
 import { useEffect, useRef } from "react";
-import dynamic from "next/dynamic";
 import clsx from "clsx";
-import type { ILottie } from "@lottielab/lottie-player/react"; // ✅ this is key
-
-const LottiePlayer = dynamic(() => import("@lottielab/lottie-player/react"), {
-  ssr: false,
-});
 
 export const POSES = {
-  IDLE: "https://cdn.lottielab.com/l/2xXzcy2MJtHM3K.json",
-  TALKING: "https://cdn.lottielab.com/l/9idpreX8WXcikU.json",
-  WRITING: "https://cdn.lottielab.com/l/Cs4XKtykzq1XKe.json",
+  IDLE: "https://cdn.lottielab.com/l/2xXzcy2MJtHM3K.html",
+  TALKING: "https://cdn.lottielab.com/l/9idpreX8WXcikU.html",
+  WRITING: "https://cdn.lottielab.com/l/Cs4XKtykzq1XKe.html",
 } as const;
 
 type PoseKey = keyof typeof POSES;
@@ -19,48 +13,54 @@ interface MascotProps {
   pose: PoseKey;
 }
 
-export default function MascotWriting({ pose }: MascotProps) {
-  // ✅ Correct type — matches LottiePlayer's expected ref type
-  const refs: Record<PoseKey, React.RefObject<ILottie | null>> = {
-    IDLE: useRef<ILottie>(null),
-    TALKING: useRef<ILottie>(null),
-    WRITING: useRef<ILottie>(null),
+// Lottielab embed URLs (swap /l/ for /e/ to get the embeddable iframe URL)
+const POSE_EMBED_URLS: Record<PoseKey, string> = {
+  IDLE: "https://cdn.lottielab.com/l/2xXzcy2MJtHM3K.html",
+  TALKING: "https://cdn.lottielab.com/l/9idpreX8WXcikU.html",
+  WRITING: "https://cdn.lottielab.com/l/Cs4XKtykzq1XKe.html",
+};
+
+export default function Mascot({ pose }: MascotProps) {
+  const refs: Record<PoseKey, React.RefObject<HTMLIFrameElement | null>> = {
+    IDLE: useRef<HTMLIFrameElement>(null),
+    TALKING: useRef<HTMLIFrameElement>(null),
+    WRITING: useRef<HTMLIFrameElement>(null),
   };
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    (
+      Object.entries(refs) as [
+        PoseKey,
+        React.RefObject<HTMLIFrameElement | null>,
+      ][]
+    ).forEach(([key, ref]) => {
+      const iframe = ref.current;
+      if (!iframe) return;
 
-    (Object.entries(refs) as [PoseKey, React.RefObject<ILottie | null>][]).forEach(
-      ([key, ref]) => {
-        const instance = ref.current;
-        if (!instance) return;
-
-        if (key === pose) {
-          instance.seek?.(0);
-          instance.play?.();
-        } else {
-          instance.pause?.();
-        }
-      }
-    );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+      // Post messages to the Lottielab iframe to control playback
+      const message = key === pose ? { action: "play" } : { action: "pause" };
+      iframe.contentWindow?.postMessage(message, "*");
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pose]);
 
   return (
     <div className="relative w-[320px] h-[320px] ml-[50px]">
-      {(Object.entries(POSES) as [PoseKey, string][]).map(([key, src]) => (
-        <LottiePlayer
-          key={key}
-          ref={refs[key]} // ✅ fully type-safe now
-          src={src}
-          loop
-          autoplay={key === pose}
-          className={clsx(
-            "absolute inset-0",
-            pose === key ? "opacity-100" : "opacity-0 pointer-events-none"
-          )}
-        />
-      ))}
+      {(Object.entries(POSE_EMBED_URLS) as [PoseKey, string][]).map(
+        ([key, src]) => (
+          <iframe
+            key={key}
+            ref={refs[key]}
+            src={src}
+            className={clsx(
+              "absolute inset-0 w-full h-full border-0",
+              pose === key ? "opacity-100" : "opacity-0 pointer-events-none",
+            )}
+            allow="autoplay"
+            title={`mascot-${key.toLowerCase()}`}
+          />
+        ),
+      )}
     </div>
   );
 }

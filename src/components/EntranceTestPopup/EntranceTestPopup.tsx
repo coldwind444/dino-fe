@@ -8,7 +8,6 @@ import feather from "../../../public/assets/home/feather.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 
-
 type EntranceTestPopupProps = {
   close: () => void;
   start: () => void;
@@ -42,10 +41,12 @@ export default function EntranceTestPopup({
             height={500}
             width={500}
             alt=""
+            priority={true}
             className="absolute -translate-x-1/3"
           />
           {/** Close button */}
           <div
+            data-testid="close-entrance-test-btn"
             className="absolute aspect-square h-20 bg-amber-500 rounded-full top-0 right-0 translate-x-1/3 -translate-y-1/4
                                     hover:brightness-110 cursor-pointer flex items-center justify-center
                                     text-white text-3xl shadow-inner"
@@ -80,6 +81,7 @@ export default function EntranceTestPopup({
                   baloo.className,
                 )}
                 onClick={close}
+                data-testid="cancel-entrance-test-btn"
               >
                 Huỷ
               </div>
@@ -91,6 +93,7 @@ export default function EntranceTestPopup({
                   baloo.className,
                 )}
                 onClick={start}
+                data-testid="start-entrance-test-btn"
               >
                 Làm bài
               </div>

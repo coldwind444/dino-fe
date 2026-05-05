@@ -24,7 +24,8 @@ import {
   getNoCompletedTopics,
   getMyFamilyMembers,
 } from "@/apis";
-import { formatNumberAbbreviation } from "@/helpers/utils";
+import { formatNumberAbbreviation, toCloudinaryWebP } from "@/helpers/utils";
+import { APIError } from "@/apis/config";
 
 const TOPICS_PER_PAGE = 4;
 
@@ -72,7 +73,9 @@ export default function LessonsPage() {
 
   const navigateToLecture = (topicId: string) => {
     setIsRedirecting(true);
-    router.push(`/student/adventure/${gradeLevel}/${topicId}`);
+    const gLevel = grade?.level;
+    if (!gLevel) return;
+    router.push(`/student/adventure/${gLevel}/${topicId}`);
   };
 
   // Init fetch grade and user data
@@ -101,7 +104,9 @@ export default function LessonsPage() {
           setIsPremium(hasPremiumParent);
         }
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setProfileLoading(false);
       }
@@ -143,7 +148,9 @@ export default function LessonsPage() {
           }
         }
       } catch (error) {
-        console.error("Error fetching lesson data:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setDataLoading(false);
       }
@@ -175,7 +182,9 @@ export default function LessonsPage() {
           setTopicsPgRes(topics);
         }
       } catch (error) {
-        console.error("Error fetching topics:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setTopicsLoading(false);
       }
@@ -199,6 +208,7 @@ export default function LessonsPage() {
       <div className="flex gap-6 p-6">
         <aside className="w-64 flex-shrink-0">
           <button
+            data-testid="select-grade-btn"
             onClick={() => setIsSelectGradeOpen(true)}
             className="h-16 w-full bg-amber-500 text-white font-medium text-base cursor-pointer 
           rounded-3xl mb-4 relative hover:scale-105 hover:shadow-xl transition-all duration-150 hover:brightness-110"
@@ -225,7 +235,8 @@ export default function LessonsPage() {
                 ) : (
                   grade && (
                     <Image
-                      src={grade?.description || ""}
+                      src={toCloudinaryWebP(grade?.description || "")}
+                      priority
                       alt="progress"
                       width={80}
                       height={80}
@@ -260,7 +271,8 @@ export default function LessonsPage() {
               <div className="flex items-center justify-center gap-3">
                 <div className="w-15 h-15 flex-shrink-0">
                   <Image
-                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                    priority
+                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/f_auto,q_auto/v1761541691/crystal_x9l493.svg"
                     alt="crystal"
                     width={70}
                     height={70}
@@ -305,7 +317,8 @@ export default function LessonsPage() {
                       <div className="w-32 h-32 bg-gray-200 rounded-3xl animate-pulse" />
                     ) : featuredTopic ? (
                       <Image
-                        src={featuredTopic.description}
+                        priority
+                        src={toCloudinaryWebP(featuredTopic.description)}
                         alt="featured topic"
                         width={120}
                         height={120}
@@ -345,6 +358,7 @@ export default function LessonsPage() {
                     onClick={() =>
                       featuredTopic && navigateToLecture(featuredTopic._id)
                     }
+                    data-testid="continue-learning-btn"
                   >
                     <span className="absolute top-2 right-4 w-2 h-2 rounded-full bg-white/40" />
                     {recentTopic ? "Tiếp tục" : "Bắt đầu"}
@@ -426,6 +440,7 @@ export default function LessonsPage() {
 
                 return (
                   <div
+                    data-testid={`topic-card-${index}`}
                     key={index}
                     className="relative h-[320px] transition-all hover:scale-105"
                     onClick={() =>
@@ -439,7 +454,8 @@ export default function LessonsPage() {
                     >
                       <div className="w-32 h-32 mb-6 flex items-center justify-center">
                         <Image
-                          src={topic.description}
+                          priority={index < 3}
+                          src={toCloudinaryWebP(topic.description)}
                           alt="topic image"
                           width={120}
                           height={120}
@@ -520,6 +536,7 @@ export default function LessonsPage() {
           <div className="flex justify-center gap-6">
             {[1, 2, 3].map((g) => (
               <button
+                data-testid={`grade-btn-${g}`}
                 key={g}
                 onClick={() => {
                   setGradeLevel(g.toString());
@@ -544,6 +561,7 @@ export default function LessonsPage() {
           <div className="flex justify-center gap-6">
             {[4, 5].map((g) => (
               <button
+                data-testid={`grade-btn-${g}`}
                 key={g}
                 onClick={() => {
                   setGradeLevel(g.toString());

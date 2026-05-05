@@ -160,11 +160,10 @@ export default function Home() {
           <Image
             src={dino}
             alt=""
+            priority
             height={400}
             width={400}
             className="rounded-tr-[250px] object-cover"
-            sizes="400px"
-            quality={80}
           />
           <div className="h-[400px] w-full flex flex-col">
             <div className="flex flex-row pt-10 gap-40 flex-wrap">
@@ -231,7 +230,7 @@ export default function Home() {
             <div className="flex flex-col gap-5 mt-auto mb-5">
               <span className="h-[1px] w-[95%] bg-[rgba(255,255,255,0.5)]"></span>
               <span className="text-white font-bold">
-                © 2025 Dino Math. Bảo lưu mọi quyền.
+                © 2026 Dino Math. Bảo lưu mọi quyền.
               </span>
             </div>
           </div>

@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { confirmPayment, getPackages, purchasePremium } from "@/apis/payment";
 import { PackageResponse, UserProfileResponse } from "@/types";
+import { APIError } from "@/apis/config";
 
 const freeFeatures = [
   "Tính năng cơ bản",
@@ -76,8 +77,10 @@ export default function UpgradeTab({
       if (reloadConfirm) {
         window.location.reload();
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
     }
   };
 
@@ -94,7 +97,9 @@ export default function UpgradeTab({
         const res = await getPackages();
         if (!ignore && res.length > 0) setPlan(res[0]);
       } catch (error) {
-        console.error("Error fetching packages:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       }
     };
     fetchPackages();

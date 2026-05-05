@@ -1,14 +1,10 @@
-'use client";';
+"use client";
 
 import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { roboto, sriracha } from "@/app/fonts";
 import LectureSlider from "@/components/LectureSlider/LectureSlider";
 import {
@@ -18,12 +14,11 @@ import {
   LectureResponse,
 } from "@/types";
 import { useState } from "react";
-import bagOpen from "../../../../../../../../public/assets/exercises/bag_open.png";
-import map from "../../../../../../../../public/assets/exercises/map.png";
-import paper from "../../../../../../../../public/assets/exercises/paper.png";
+import bagOpen from "../../../../../../../../public/assets/exercises/bag_open.webp";
+import map from "../../../../../../../../public/assets/exercises/map.webp";
+import paper from "../../../../../../../../public/assets/exercises/paper.webp";
 import DOMPurify from "isomorphic-dompurify";
-
-
+import { toCloudinaryWebP } from "@/helpers/utils";
 
 interface MilestonesViewProps {
   world: WorldResponse;
@@ -57,8 +52,6 @@ export default function MilestonesView({
 
   // UI states
   const [mode, setMode] = useState<"select" | "lesson" | "slider">("slider");
-  const [currentPage, setCurrentPage] = useState(0);
-  const TOTAL_PAGES = 3; // TODO: wire up to real lecture pages
 
   const handleLectureChange = (lecture: LectureResponse) => {
     setCurrentLecture(lecture);
@@ -94,7 +87,7 @@ export default function MilestonesView({
         </div>
         <div className="flex flex-col items-center justify-center mt-7 gap-[20px]">
           <Image
-            src={topic?.description || ""}
+            src={toCloudinaryWebP(topic?.description || "")}
             alt=""
             height={120}
             width={120}
@@ -137,19 +130,20 @@ export default function MilestonesView({
           <div className="h-full w-full overflow-hidden flex flex-col items-center gap-[100px] relative">
             {/* Back button */}
             <button
+              data-testid="back-to-milestones-btn"
               onClick={() => setMode("slider")}
-              className="absolute top-1 left-7 flex items-center cursor-pointer justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all duration-200 hover:scale-110"
+              className="absolute z-10 top-1 left-7 flex items-center cursor-pointer justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all duration-200 hover:scale-110"
             >
               <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />
             </button>
             <h1 className="text-white font-bold text-[25px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
-              {`Bài 10: ${currentLecture?.title}`}
+              {currentLecture?.title}
             </h1>
             <div className="flex flex-row items-end justify-center gap-40 w-full">
               <div
                 className="flex flex-col items-center justify-center gap-8 cursor-pointer group"
+                data-testid="theory-button"
                 onClick={() => {
-                  setCurrentPage(0);
                   setMode("lesson");
                 }}
               >
@@ -171,6 +165,7 @@ export default function MilestonesView({
               </div>
               <div
                 className="flex flex-col items-center justify-center gap-8 cursor-pointer group"
+                data-testid="exercise-button"
                 onClick={onDoExercise}
               >
                 <Image
@@ -197,10 +192,14 @@ export default function MilestonesView({
           <div className="h-full w-full overflow-hidden flex flex-col items-center gap-4 relative">
             {/* Back button */}
             <button
+              data-testid="back-to-select-btn"
               onClick={() => setMode("select")}
-              className="absolute top-1 left-7 flex items-center cursor-pointer justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all duration-200 hover:scale-110"
+              className="absolute z-10 top-1 left-7 flex items-center cursor-pointer justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 text-white transition-all duration-200 hover:scale-110"
             >
-              <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                className="text-sm cursor-pointer"
+              />
             </button>
             {/* Lesson theory — paper as background so content flows naturally */}
             <div
@@ -215,7 +214,7 @@ export default function MilestonesView({
               {/* Text content */}
               <div className="flex flex-col gap-4 overflow-hidden">
                 <h1 className="text-amber-700 font-bold text-2xl text-center">
-                  {`Bài học: ${currentLecture?.title}`}
+                  {currentLecture?.title}
                 </h1>
                 <div
                   className="overflow-auto prose prose-lg prose-headings:text-2xl prose-headings:font-bold prose-li:text-black 

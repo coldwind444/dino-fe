@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Toaster, toast } from "react-hot-toast";
 
-import mascot from "../../../public/assets/auth/dino_3d.svg";
+import mascot from "../../../public/assets/auth/dino_3d.webp";
 import student from "../../../public/assets/auth/student.png";
 import parents from "../../../public/assets/auth/parents.png";
 import leftHand from "../../../public/assets/auth/left.svg";
@@ -28,7 +28,6 @@ import { useRouter } from "next/navigation";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
 import { APIError } from "@/apis/config";
-
 
 const ROLES = {
   STUDENT: "student",
@@ -49,8 +48,8 @@ const AUTHSTEPS = {
 
 export default function Auth() {
   const router = useRouter();
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim() ?? "";
-  const hasGoogleClientId = clientId.length > 0;
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+  const hasGoogleClientId = clientId.trim().length > 0;
 
   // UI states
   const [tabIndex, setTabIndex] = useState(TABS.LOG_IN);
@@ -121,7 +120,7 @@ export default function Auth() {
         toast.error(err.message);
       }
     } finally {
-      resetLogin();
+      // resetLogin();
       setLoginLoading(false);
     }
   };
@@ -321,6 +320,7 @@ export default function Auth() {
                       <Image
                         src={leftHand}
                         alt=""
+                        priority
                         height={60}
                         className={clsx(
                           "absolute -translate-y-[290px] transition-all duration-400 z-[1]",
@@ -333,6 +333,7 @@ export default function Auth() {
                       <Image
                         src={rightHand}
                         alt=""
+                        priority
                         height={60}
                         className={clsx(
                           "absolute -translate-y-[290px] transition-all duration-400 z-[1]",
@@ -463,6 +464,7 @@ export default function Auth() {
                       <Image
                         className="group-hover:scale-150 transition-all duration-200"
                         src={student}
+                        priority
                         height={100}
                         alt=""
                       />
@@ -486,6 +488,7 @@ export default function Auth() {
                       }}
                     >
                       <Image
+                        priority
                         className="group-hover:scale-150 transition-all duration-200"
                         src={parents}
                         height={100}
@@ -643,10 +646,13 @@ export default function Auth() {
           {/** Mascot 3D */}
           <div className="absolute right-10 bottom-10 flex items-end justify-center h-full w-1/2 overflow-hidden pointer-events-none">
             <Image
-              className="max-h-[150%] w-auto object-contain select-none"
+              className="w-auto object-contain select-none"
               src={mascot}
               alt=""
+              height={950}
+              width={950}
               priority
+              style={{ width: "100%", height: "auto" }}
             />
           </div>
         </div>

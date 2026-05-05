@@ -14,15 +14,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { LectureResponse, TopicResponse } from "@/types";
 import { useEffect, useState, useRef } from "react";
- 
+
 import { createProgress, updateUserQuartz } from "@/apis";
 import Loader from "@/components/Loader/Loader";
-import { updateMissionProgress } from "@/apis/mission";
 
 const trophy = "/assets/exercises/trophy.png";
 const flags = "/assets/exercises/flags.png";
-
-
 
 interface FinishViewProps {
   grade: string;
@@ -86,14 +83,6 @@ export default function FinishView({
             completion: 100,
             status: "completed",
           }),
-          updateMissionProgress({
-            unitType: "lecture",
-            amount: 1,
-          }),
-          updateMissionProgress({
-            unitType: "exercise",
-            amount: maxScore,
-          }),
         ]);
       } catch (error) {
         console.log("Failed to update quartz.", error);
@@ -104,7 +93,7 @@ export default function FinishView({
     };
 
     updateResult();
-  }, [reward, score]);
+  }, [reward, score, currentLecture._id, topic._id]);
 
   return (
     <motion.div
@@ -204,7 +193,7 @@ export default function FinishView({
                 </div>
                 <div className="font-medium text-3xl flex flex-row items-center">
                   <Image
-                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/f_auto,q_auto/v1761541691/crystal_x9l493.svg"
                     height={30}
                     width={30}
                     alt=""

@@ -20,7 +20,11 @@ export default function TrueFalse({
   const selectedAnswer = answer?.selectedAnswer ?? null;
 
   const handleSelect = (option: boolean) => {
-    onChange({ selectedAnswer: option });
+    if (selectedAnswer === option) {
+      onChange({});
+    } else {
+      onChange({ selectedAnswer: option });
+    }
   };
 
   return (
@@ -32,6 +36,7 @@ export default function TrueFalse({
             ? "bg-[#D8FFFA] border-[#23BEAA] text-[#23BEAA] scale-105"
             : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#23BEAA]",
         )}
+        data-testid="true-option"
         onClick={() => handleSelect(true)}
       >
         Đúng
@@ -40,9 +45,10 @@ export default function TrueFalse({
         className={clsx(
           "h-fit w-fit py-4 px-14 rounded-4xl border-2 text-balance font-bold cursor-pointer transition-all duration-200 text-xl",
           selectedAnswer === false
-            ? "bg-[#D8FFFA] border-[#FF5964] text-[#FF5964] scale-105"
+            ? "bg-[#f6dada] border-[#FF5964] text-[#FF5964] scale-105"
             : "bg-white border-[#4E5660] text-[#1B2657] hover:border-[#FF5964]",
         )}
+        data-testid="false-option"
         onClick={() => handleSelect(false)}
       >
         Sai

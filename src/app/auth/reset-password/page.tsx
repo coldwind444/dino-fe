@@ -24,6 +24,9 @@ const MESSAGES = {
   INPUT_OTP_PARENT:
     "Vui lòng liên hệ với Phụ huynh của bạn để lấy mã OTP và đặt lại mật khẩu nhé !",
   SUCCESS: "Tuyệt vời ! Mật khẩu mới, khởi đầu mới đúng không nè !",
+  ACCOUNT_NOT_EXIST: "Tài khoản không tồn tại!",
+  RATE_LIMIT:
+    "Hệ thống đang bận! Bạn vui lòng đợi một chút rồi thử lại sau nhé!",
 };
 
 export default function ResetPassword() {
@@ -92,7 +95,11 @@ export default function ResetPassword() {
       }
     } catch (err) {
       if (err instanceof APIError) {
-        showMessage(err.message);
+        if (err.status === 429) {
+          showMessage(MESSAGES.RATE_LIMIT);
+        } else {
+          showMessage(err.message);
+        }
       }
     } finally {
       setSendingOtp(false);
@@ -116,7 +123,14 @@ export default function ResetPassword() {
       }, 3000);
     } catch (err) {
       if (err instanceof APIError) {
-        showMessage(err.message);
+        if (err.status === 200) {
+          showMessage(MESSAGES.ACCOUNT_NOT_EXIST);
+        }
+        if (err.status === 429) {
+          showMessage(MESSAGES.RATE_LIMIT);
+        } else {
+          showMessage(err.message);
+        }
       }
     } finally {
       setResettingPassword(false);

@@ -5,7 +5,7 @@ import { roboto } from "@/app/fonts";
 import top1 from "../../../../../public/assets/leaderboard/top1.png";
 import top2 from "../../../../../public/assets/leaderboard/top2.svg";
 import top3 from "../../../../../public/assets/leaderboard/top3.svg";
-import dino from "../../../../../public/assets/leaderboard/dino_trophy.png";
+import dino from "../../../../../public/assets/leaderboard/dino_trophy.webp";
 import {
   MyPositionInRankResponse,
   QuartzLeaderboardItemResponse,
@@ -14,10 +14,14 @@ import {
 import { useEffect, useState } from "react";
 import { getMyRank, getQuartzLeaderboard, getUserProfile } from "@/apis/user";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
-import { formatNumberAbbreviation, isValidUrl } from "@/helpers/utils";
+import {
+  formatNumberAbbreviation,
+  isValidUrl,
+  toCloudinaryWebP,
+} from "@/helpers/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserAlt } from "@fortawesome/free-solid-svg-icons";
-
+import { APIError } from "@/apis/config";
 
 const gradientColors = [
   "from-yellow-400 to-orange-400",
@@ -60,7 +64,9 @@ export default function LeaderboardContent() {
           setLeaderboardMyRank(myRank);
         }
       } catch (error) {
-        console.error("Error fetching leaderboard data:", error);
+        if (error instanceof APIError) {
+          console.log(error.message);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -100,7 +106,7 @@ export default function LeaderboardContent() {
               <div className="flex justify-center mb-4 mt-6">
                 <div className="relative w-20 h-30 flex items-center justify-center">
                   <Image
-                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/v1761541691/crystal_x9l493.svg"
+                    src="https://res.cloudinary.com/dirr7ovdh/image/upload/f_auto,q_auto/v1761541691/crystal_x9l493.svg"
                     alt="crown"
                     width={80}
                     height={64}
@@ -147,6 +153,7 @@ export default function LeaderboardContent() {
               alt="dino mascot"
               width={1536}
               height={1024}
+              priority
               className="h-full w-auto object-contain"
             />
           </div>
@@ -158,7 +165,7 @@ export default function LeaderboardContent() {
                 {isValidUrl(leaderboardData[1]?.avatarUrl) &&
                 !leaderboardData[1]?.avatarUrl.endsWith(".svg") ? (
                   <Image
-                    src={leaderboardData[1].avatarUrl}
+                    src={toCloudinaryWebP(leaderboardData[1].avatarUrl)}
                     alt="avatar"
                     width={96}
                     height={96}
@@ -194,7 +201,7 @@ export default function LeaderboardContent() {
                 {isValidUrl(leaderboardData[0]?.avatarUrl) &&
                 !leaderboardData[0]?.avatarUrl.endsWith(".svg") ? (
                   <Image
-                    src={leaderboardData[0].avatarUrl}
+                    src={toCloudinaryWebP(leaderboardData[0].avatarUrl)}
                     alt="avatar"
                     width={112}
                     height={112}
@@ -230,7 +237,7 @@ export default function LeaderboardContent() {
                 {isValidUrl(leaderboardData[2]?.avatarUrl) &&
                 !leaderboardData[2]?.avatarUrl.endsWith(".svg") ? (
                   <Image
-                    src={leaderboardData[2].avatarUrl}
+                    src={toCloudinaryWebP(leaderboardData[2].avatarUrl)}
                     alt="avatar"
                     width={96}
                     height={96}
@@ -281,7 +288,7 @@ export default function LeaderboardContent() {
                     {isValidUrl(user?.avatarUrl) &&
                     !user?.avatarUrl.endsWith(".svg") ? (
                       <Image
-                        src={user.avatarUrl}
+                        src={toCloudinaryWebP(user?.avatarUrl)}
                         alt="avatar"
                         width={48}
                         height={48}

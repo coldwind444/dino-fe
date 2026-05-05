@@ -4,7 +4,7 @@ export const isValidUrl = (url: string) => {
     try {
         new URL(url);
         return true;
-    } catch (error) {
+    } catch {
         return false;
     }
 };
@@ -98,4 +98,8 @@ export function formatNumberAbbreviation(num: number): string {
     return num.toString();
 }
 
-
+export function toCloudinaryWebP(url: string): string {
+    if (!url.includes("res.cloudinary.com")) return url;
+    if (url.includes("f_webp")) return url;
+    return url.replace("/upload/", "/upload/f_webp,q_auto/");
+}

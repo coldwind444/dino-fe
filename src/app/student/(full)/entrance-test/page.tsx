@@ -35,8 +35,6 @@ import {
 import { Toaster } from "react-hot-toast";
 import { APIError } from "@/apis/config";
 
-
-
 export default function EntranceTest() {
   const router = useRouter();
 
@@ -52,6 +50,7 @@ export default function EntranceTest() {
   );
   const [currExIdx, setCurrExIdx] = useState(0);
   const [currSection, setCurrSection] = useState(0);
+  const [notFound, setNotFound] = useState(false);
 
   // UI state
   const [modalClose, setModalClose] = useState(true);
@@ -76,6 +75,7 @@ export default function EntranceTest() {
           currentProfile.gradeId,
         );
         if (!assessmentData) {
+          setNotFound(true);
           return;
         }
 
@@ -235,7 +235,7 @@ export default function EntranceTest() {
     return <ScreenLoader />;
   }
 
-  if (!assessment) {
+  if (notFound) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-[#F3F4F6] p-6 z-10">
         <div className="bg-white/95 backdrop-blur-sm p-10 rounded-3xl border-[4px] border-[#1ABC9C] shadow-2xl flex flex-col items-center max-w-lg text-center gap-6">
@@ -268,9 +268,7 @@ export default function EntranceTest() {
   }
 
   const currentExercise = exercises[currExIdx];
-  const answeredCount = Array.from(answers.keys()).filter((id) =>
-    isAnswered(id),
-  ).length;
+  const answeredCount = exercises.filter((ex) => isAnswered(ex._id)).length;
 
   return (
     <div className="h-screen w-screen flex relative">
@@ -336,6 +334,7 @@ export default function EntranceTest() {
                           "hover:brightness-110",
                         )}
                         onClick={() => setCurrExIdx(exerciseIdx)}
+                        data-testid={`question-${val.order}`}
                       >
                         <label
                           className={clsx(
@@ -434,7 +433,10 @@ export default function EntranceTest() {
         {/** Main area */}
         <div className="h-full flex flex-1 flex-col gap-3 justify-around">
           {/** Exercise card */}
-          <div data-testid="exercise-card" className="bg-white max-h-full w-full rounded-[20px] border border-[#E5E7EB] pt-10 flex flex-col gap-10 relative">
+          <div
+            data-testid="exercise-card"
+            className="bg-white max-h-full w-full rounded-[20px] border border-[#E5E7EB] pt-10 flex flex-col gap-10 relative"
+          >
             {/** Question number */}
             <div
               className="h-[40px] w-fit px-[30px] bg-[#23BEAA] text-white font-semibold

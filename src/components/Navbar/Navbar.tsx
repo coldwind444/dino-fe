@@ -237,6 +237,7 @@ export default function Navbar({
               "h-[30px] aspect-square rounded-full hover:bg-[#D9D9D9] cursor-pointer",
               "flex items-center justify-center",
             )}
+            data-testid="profile-btn"
             onClick={() => setProfilePopupShow(true)}
           >
             <FontAwesomeIcon icon={faUserOutlined} />
@@ -270,6 +271,7 @@ export default function Navbar({
           </div>
           <FontAwesomeIcon
             onClick={() => handleLogout()}
+            data-testid="logout-btn"
             className={clsx("cursor-pointer text-rose-500")}
             icon={faSignOut}
           />

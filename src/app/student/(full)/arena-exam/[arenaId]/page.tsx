@@ -340,9 +340,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
   }
 
   const currentExercise = exercises[currExIdx];
-  const answeredCount = Array.from(answers.keys()).filter((id) =>
-    isAnswered(id),
-  ).length;
+  const answeredCount = exercises.filter((ex) => isAnswered(ex._id)).length;
 
   return (
     <div className="h-screen w-screen flex relative">
@@ -408,6 +406,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
                           "hover:brightness-110",
                         )}
                         onClick={() => setCurrExIdx(exerciseIdx)}
+                        data-testid={`question-${val.order}`}
                       >
                         <label
                           className={clsx(
@@ -498,7 +497,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
                                     rounded-tr-2xl rounded-br-2xl text-[#8A2BE2] items-center justify-around font-medium"
           >
             <span className="text-xl">Đã làm:</span>
-            <span className="text-2xl font-bold">
+            <span className="text-2xl font-bold" data-testid="answered-count">
               {answeredCount}/{exercises.length}
             </span>
           </div>

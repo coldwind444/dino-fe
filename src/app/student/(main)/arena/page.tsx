@@ -98,7 +98,10 @@ export default function Arena() {
               arenaId: currentArena._id,
             });
             if (!ignore && userParticipation.length === 1) {
-              if (userParticipation[0].status === "submitted") {
+              if (
+                userParticipation[0].status === "submitted" ||
+                userParticipation[0].status === "graded"
+              ) {
                 setArenaDone(true);
               }
             }
@@ -255,6 +258,7 @@ export default function Arena() {
               "hover:shadow-[0_4px_15px_rgba(255,255,255,0.2)] transition-shadow duration-700 ease-in-out",
             )}
             onClick={() => setRulesShow(true)}
+            data-testid="rules-btn"
           >
             <label
               className={clsx(
@@ -275,6 +279,7 @@ export default function Arena() {
               ? "w-[98vw] opacity-100 overflow-x-hidden"
               : "w-0 opacity-0",
           )}
+          data-testid="rules-panel"
         >
           {/* Fade + Slide-in wrapper for all content */}
           <div
@@ -298,6 +303,7 @@ export default function Arena() {
                 onClick={() => {
                   if (rulesPage > 0) setRulesPage((prev) => prev - 1);
                 }}
+                data-testid="prev-rules-btn"
               >
                 <FontAwesomeIcon
                   icon={faArrowLeftLong}
@@ -339,6 +345,7 @@ export default function Arena() {
                 onClick={() => {
                   if (rulesPage < 4) setRulesPage((prev) => prev + 1);
                 }}
+                data-testid="next-rules-btn"
               >
                 <label
                   className={clsx(
@@ -383,7 +390,7 @@ export default function Arena() {
                       "text-[45px] text-[#C03601]",
                     )}
                   >
-                    I. Mục đích
+                    I. Thông tin chung
                   </label>
                   <ul className="list-disc pl-[30px] text-[30px] text-[#5E4630] flex flex-col gap-[20px]">
                     <li className={patrick.className}>
@@ -628,6 +635,7 @@ export default function Arena() {
               setRulesShow(false);
               setRulesPage(0);
             }}
+            data-testid="close-rules-btn"
           >
             <FontAwesomeIcon
               className="group-hover:scale-125 transition-all duration-150"
@@ -684,7 +692,7 @@ export default function Arena() {
                 <div className="flex flex-col gap-[20px] min-w-0">
                   <h2
                     className={clsx(
-                      "text-[#F9740B] text-2xl font-bold leading-tight",
+                      "text-[#F9740B] text-2xl font-bold leading-normal",
                       roboto.className,
                     )}
                   >
@@ -705,6 +713,7 @@ export default function Arena() {
                       onClick={() =>
                         router.push(`/student/arena-exam/${currentArena._id}`)
                       }
+                      data-testid="join-arena-btn"
                     >
                       Tham gia ngay
                       <span className="absolute top-0 right-0 mt-[7px] mr-[10px] h-[25px] aspect-square bg-[rgba(255,255,255,0.3)] rounded-full" />

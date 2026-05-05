@@ -11,7 +11,7 @@ import {
 import { UserProfileResponse } from "@/types";
 import OTPInput from "@/components/OTPInput/OTPInput";
 import { sendOtp, resetPassword } from "@/apis/auth";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { APIError } from "@/apis/config";
 
 export default function PasswordTab({
@@ -87,12 +87,14 @@ export default function PasswordTab({
         otp: passwordData.otp,
         newPassword: passwordData.newPassword,
       });
-      toast.success("Đổi mật khẩu thành công!");
+      toast.success("Đổi mật khẩu thành công!", {
+        toasterId: "password-toast",
+      });
       setPasswordData({ otp: "", newPassword: "", confirmPassword: "" });
       setCountdown(0);
     } catch (err) {
       if (err instanceof APIError) {
-        toast.error(err.message);
+        toast.error(err.message, { toasterId: "password-toast" });
       }
     } finally {
       setResettingPassword(false);
@@ -109,6 +111,7 @@ export default function PasswordTab({
 
   return (
     <>
+      <Toaster toasterId="password-toast" />
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Đổi mật khẩu</h2>
 
       <div className="space-y-6 mb-6">
@@ -126,9 +129,10 @@ export default function PasswordTab({
             />
             <div className="flex items-center gap-10">
               <button
+                data-testid="send-otp-button"
                 onClick={handleSendOtp}
                 disabled={sendingOtp || countdown > 0}
-                className="w-fit px-4 py-2 text-sm font-medium rounded-lg transition-colors border border-[#1ABC9C] text-[#1ABC9C] hover:bg-[#E8F8F5] disabled:border-gray-300 disabled:text-gray-500 disabled:bg-gray-100 disabled:cursor-not-allowed flex items-center gap-2"
+                className="cursor-pointer w-fit px-4 py-2 text-sm font-medium rounded-lg transition-colors border border-[#1ABC9C] text-[#1ABC9C] hover:bg-[#E8F8F5] disabled:border-gray-300 disabled:text-gray-500 disabled:bg-gray-100 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {sendingOtp && (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
@@ -163,6 +167,8 @@ export default function PasswordTab({
           </label>
           <div className="relative">
             <input
+              disabled={countdown === 0 || resettingPassword}
+              data-testid="new-password-input"
               type={showPasswords.new ? "text" : "password"}
               value={passwordData.newPassword}
               onChange={(e) =>
@@ -172,13 +178,14 @@ export default function PasswordTab({
                 })
               }
               placeholder="Nhập mật khẩu mới"
-              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:border-[#1ABC9C] focus:outline-none text-gray-800 placeholder:text-gray-400"
+              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:border-[#1ABC9C] focus:outline-none text-gray-800 placeholder:text-gray-400 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
             />
             <button
+              disabled={countdown === 0 || resettingPassword}
               onClick={() =>
                 setShowPasswords({ ...showPasswords, new: !showPasswords.new })
               }
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FontAwesomeIcon
                 icon={showPasswords.new ? faEyeSlash : faEye}
@@ -194,6 +201,8 @@ export default function PasswordTab({
           </label>
           <div className="relative">
             <input
+              disabled={countdown === 0 || resettingPassword}
+              data-testid="confirm-password-input"
               type={showPasswords.confirm ? "text" : "password"}
               value={passwordData.confirmPassword}
               onChange={(e) =>
@@ -203,16 +212,17 @@ export default function PasswordTab({
                 })
               }
               placeholder="Nhập lại mật khẩu mới"
-              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:border-[#1ABC9C] focus:outline-none text-gray-800 placeholder:text-gray-400"
+              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:border-[#1ABC9C] focus:outline-none text-gray-800 placeholder:text-gray-400 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
             />
             <button
+              disabled={countdown === 0 || resettingPassword}
               onClick={() =>
                 setShowPasswords({
                   ...showPasswords,
                   confirm: !showPasswords.confirm,
                 })
               }
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FontAwesomeIcon
                 icon={showPasswords.confirm ? faEyeSlash : faEye}
@@ -321,10 +331,11 @@ export default function PasswordTab({
       </div>
 
       <button
+        data-testid="submit-password-button"
         onClick={handleResetPassword}
-        disabled={!isValid || resettingPassword}
+        disabled={!isValid || resettingPassword || countdown === 0}
         className={`w-full py-3 rounded-xl font-semibold text-base transition-colors flex items-center justify-center gap-2 ${
-          isValid
+          isValid && countdown !== 0
             ? "bg-[#1ABC9C] text-white hover:bg-[#16A085]"
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
         }`}

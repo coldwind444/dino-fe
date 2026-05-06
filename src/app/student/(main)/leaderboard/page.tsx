@@ -48,6 +48,7 @@ export default function LeaderboardContent() {
     useState<MyPositionInRankResponse | null>(null);
 
   // Loading
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -79,7 +80,24 @@ export default function LeaderboardContent() {
     };
   }, []);
 
-  if (isLoading || !myProfile || !leaderboardData) return <ScreenLoader />;
+  useEffect(() => {
+    const images = [top1, top2, top3, dino];
+    let loadedCount = 0;
+    images.forEach((img) => {
+      const image = new window.Image();
+      image.src = img.src;
+      image.onload = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+      image.onerror = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+    });
+  }, []);
+
+  if (isLoading || !myProfile || !leaderboardData || !imagesLoaded) return <ScreenLoader />;
 
   return (
     <div

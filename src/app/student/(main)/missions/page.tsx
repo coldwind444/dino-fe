@@ -16,6 +16,7 @@ export default function MissionPage() {
   const [achievements, setAchievements] = useState<AchievementResponse[]>();
 
   // UI state
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"incomplete" | "complete">(
@@ -96,7 +97,24 @@ export default function MissionPage() {
     activeTab === "complete" ? m.claimed : !m.claimed,
   );
 
-  if (loading) {
+  useEffect(() => {
+    const images = [mission];
+    let loadedCount = 0;
+    images.forEach((img) => {
+      const image = new window.Image();
+      image.src = img.src;
+      image.onload = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+      image.onerror = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+    });
+  }, []);
+
+  if (loading || !imagesLoaded) {
     return <ScreenLoader />;
   }
 
@@ -158,7 +176,7 @@ export default function MissionPage() {
 
           <div className="space-y-3 h-[550px] overflow-y-auto pr-2 custom-scrollbar">
             {filteredAchievements && filteredAchievements.length > 0 ? (
-              filteredAchievements.map((m, idx) => (
+              filteredAchievements.map((m) => (
                 <div
                   key={m._id}
                   className="relative bg-[#A8EDEA] rounded-[30px] flex items-center justify-between pl-8 pr-4 py-6 shadow-sm overflow-hidden h-[110px] flex-shrink-0"

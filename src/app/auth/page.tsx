@@ -24,6 +24,7 @@ import RoundedPasswordBox from "@/components/RoundedPasswordBox/RoundedPasswordB
 import Link from "next/link";
 import { googleLogin, login, register } from "@/apis";
 import Loader from "@/components/Loader/Loader";
+import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { useRouter } from "next/navigation";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import React from "react";
@@ -52,6 +53,7 @@ export default function Auth() {
   const hasGoogleClientId = clientId.trim().length > 0;
 
   // UI states
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [tabIndex, setTabIndex] = useState(TABS.LOG_IN);
   const [registerStep, setRegisterStep] = useState(AUTHSTEPS.SELECT_ROLE);
   const [role, setRole] = useState<string>(ROLES.STUDENT);
@@ -173,6 +175,23 @@ export default function Auth() {
     resetRegister();
   }, [tabIndex]);
 
+  useEffect(() => {
+    const images = [mascot, student, parents, leftHand, rightHand, logo];
+    let loadedCount = 0;
+    images.forEach((img) => {
+      const image = new window.Image();
+      image.src = img.src;
+      image.onload = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+      image.onerror = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+    });
+  }, []);
+
   // handle google login
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSuccess = async (credentialResponse: any) => {
@@ -195,6 +214,8 @@ export default function Auth() {
   const handleError = () => {
     toast.error("Thất bại khi xác minh tài khoản Google.");
   };
+
+  if (!imagesLoaded) return <ScreenLoader />;
 
   return (
     <div className="w-screen h-screen bg-[#F6F6F6] flex items-center justify-center">

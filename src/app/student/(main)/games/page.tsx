@@ -10,7 +10,7 @@ import {
   faBoxOpen,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import single from "../../../../../public/assets/games/single.webp";
 import pvp from "../../../../../public/assets/games/pvp.webp";
@@ -27,6 +27,7 @@ export default function Games() {
   const [search, setSearch] = useState("");
 
   // Loading
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Fetch data
@@ -51,7 +52,24 @@ export default function Games() {
     };
   }, []);
 
-  if (loading) return <ScreenLoader />;
+  useEffect(() => {
+    const images = [single, pvp];
+    let loadedCount = 0;
+    images.forEach((img) => {
+      const image = new window.Image();
+      image.src = img.src;
+      image.onload = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+      image.onerror = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+    });
+  }, []);
+
+  if (loading || !imagesLoaded) return <ScreenLoader />;
 
   return (
     <div className="h-full w-full p-5 flex flex-col gap-5">
@@ -110,31 +128,34 @@ export default function Games() {
       <div className="flex flex-row gap-10 w-full">
         {/** Illustration */}
         <div className="w-1/3 h-full block relative">
-          <AnimatePresence mode="wait">
-            {mode === "single" ? (
-              <motion.div
-                key="single"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute -top-25 left-20"
-              >
-                <Image src={single} alt="" height={280} width={280} priority />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="pvp"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute -top-35 left-20"
-              >
-                <Image src={pvp} alt="" height={340} width={340} priority />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <motion.div
+            initial={{
+              opacity: mode === "single" ? 1 : 0,
+              scale: mode === "single" ? 1 : 0.9,
+            }}
+            animate={{
+              opacity: mode === "single" ? 1 : 0,
+              scale: mode === "single" ? 1 : 0.9,
+            }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute -top-25 left-20 pointer-events-none"
+          >
+            <Image src={single} alt="" height={280} width={280} priority />
+          </motion.div>
+          <motion.div
+            initial={{
+              opacity: mode === "pvp" ? 1 : 0,
+              scale: mode === "pvp" ? 1 : 0.9,
+            }}
+            animate={{
+              opacity: mode === "pvp" ? 1 : 0,
+              scale: mode === "pvp" ? 1 : 0.9,
+            }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute -top-35 left-20 pointer-events-none"
+          >
+            <Image src={pvp} alt="" height={340} width={340} priority />
+          </motion.div>
           {mode === "single" ? (
             <label className="text-5xl text-[#006E69] font-bold z-10 absolute bottom-45 right-10">
               Chơi Đơn

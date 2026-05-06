@@ -61,6 +61,7 @@ export default function Arena() {
   const [rankBadgeLoaded, setRankBadgeLoaded] = useState(false);
 
   // UI states
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [pageIdx, setPageIdx] = useState(0);
   const [rulesShow, setRulesShow] = useState(false);
@@ -224,7 +225,24 @@ export default function Arena() {
     return () => clearInterval(timer);
   }, [currentArena]);
 
-  if (isLoading) return <ScreenLoader />;
+  useEffect(() => {
+    const images = [arena, helmet, r1, r2, r3, r4, r5];
+    let loadedCount = 0;
+    images.forEach((img) => {
+      const image = new window.Image();
+      image.src = img.src;
+      image.onload = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+      image.onerror = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+    });
+  }, []);
+
+  if (isLoading || !imagesLoaded) return <ScreenLoader />;
 
   return (
     <div className="w-full h-full flex flex-row gap-[15px] p-[15px]">

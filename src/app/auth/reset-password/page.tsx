@@ -6,7 +6,7 @@ import Link from "next/link";
 import { faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import brand from "../../../../public/assets/brand.svg";
 import RoundedTextBox from "@/components/RoundedTextBox/RoundedTextBox";
@@ -14,6 +14,7 @@ import RoundedPasswordBox from "@/components/RoundedPasswordBox/RoundedPasswordB
 import OTPInput from "@/components/OTPInput/OTPInput";
 import { sendOtp, resetPassword } from "@/apis/auth";
 import { APIError } from "@/apis/config";
+import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 
 const STEPS = ["Gửi OTP về Email", "Xác thực & Đặt lại mật khẩu"];
 
@@ -33,6 +34,7 @@ export default function ResetPassword() {
   const router = useRouter();
 
   // UI states
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [currStep, setCurrStep] = useState(0);
   const [pose, setPose] = useState<"IDLE" | "TALKING" | "WRITING">("IDLE");
   const [msg, setMsg] = useState(MESSAGES.INPUT_IDENTIFIER);
@@ -136,6 +138,25 @@ export default function ResetPassword() {
       setResettingPassword(false);
     }
   };
+
+  useEffect(() => {
+    const images = [brand];
+    let loadedCount = 0;
+    images.forEach((img) => {
+      const image = new window.Image();
+      image.src = img.src;
+      image.onload = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+      image.onerror = () => {
+        loadedCount++;
+        if (loadedCount === images.length) setImagesLoaded(true);
+      };
+    });
+  }, []);
+
+  if (!imagesLoaded) return <ScreenLoader />;
 
   return (
     <div className="h-screen w-screen flex flex-row p-[20px]">

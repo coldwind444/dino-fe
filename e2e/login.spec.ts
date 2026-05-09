@@ -4,11 +4,13 @@ async function fillLoginForm(page: Page, identifier: string, password: string) {
   const identifierInput = page.getByPlaceholder('Email hoặc tên đăng nhập');
   const passwordInput = page.getByPlaceholder('Mật khẩu');
 
-  await identifierInput.fill(identifier);
-  await expect(identifierInput).toHaveValue(identifier); // verify value stuck
+  await identifierInput.click();
+  await identifierInput.pressSequentially(identifier, { delay: 50 });
+  await expect(identifierInput).toHaveValue(identifier);
 
-  await passwordInput.fill(password);
-  await expect(passwordInput).toHaveValue(password); // verify value stuck
+  await passwordInput.click();
+  await passwordInput.pressSequentially(password, { delay: 50 });
+  await expect(passwordInput).toHaveValue(password);
 }
 
 test.describe('Login', () => {

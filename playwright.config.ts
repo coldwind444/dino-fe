@@ -18,18 +18,17 @@ export default defineConfig({
     //   testMatch: /.*\.setup\.ts/,
     //   use: { ...devices['Desktop Chrome'] },
     // },
-    {
-      name: 'auth',
-      testMatch: /.*(login|register|reset-password|onboarding)\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
-    },
+    // {
+    //   name: 'auth',
+    //   testMatch: /.*(login|register|reset-password|onboarding)\.spec\.ts/,
+    //   use: { ...devices['Desktop Chrome'] },
+    // },
     {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
       },
       //  dependencies: ['setup'],
-      testIgnore: /.*(login|register|reset-password|onboarding)\.spec\.ts/,
     },
     {
       name: 'firefox',
@@ -37,7 +36,6 @@ export default defineConfig({
         ...devices['Desktop Firefox'],
       },
       //  dependencies: ['setup'],
-      testIgnore: /.*(login|register|reset-password|onboarding)\.spec\.ts/,
     },
     // {
     //   name: 'webkit',
@@ -54,7 +52,6 @@ export default defineConfig({
         channel: 'msedge',
       },
       //  dependencies: ['setup'],
-      testIgnore: /.*(login|register|reset-password|onboarding)\.spec\.ts/,
     },
   ],
 

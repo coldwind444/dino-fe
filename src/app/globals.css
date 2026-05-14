@@ -44,7 +44,7 @@ iframe {
 
 /* Handle (thumb) */
 ::-webkit-scrollbar-thumb {
-  background: orange;
+  background: rgb(127, 85, 6);
   border-radius: 10px;
 }
 

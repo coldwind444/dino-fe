@@ -213,13 +213,13 @@ export default function MilestonesView({
             >
               {/* Text content */}
               <div className="flex flex-col gap-4 overflow-hidden">
-                <h1 className="text-amber-700 font-bold text-2xl text-center">
+                <h1 className="text-white font-bold text-3xl text-center bg-amber-900 p-3 rounded-2xl">
                   {currentLecture?.title}
                 </h1>
                 <div
                   className="overflow-auto prose prose-lg prose-headings:text-2xl prose-headings:font-bold prose-li:text-black 
                   prose-p:text-black prose-ul:text-black prose-ol:text-black max-w-none
-                  prose-label:text-black px-5 mt-7"
+                  prose-label:text-black px-5"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(
                       currentLecture?.theory?.content || "",

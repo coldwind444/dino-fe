@@ -64,6 +64,8 @@ export default function ArenaExam({ params }: ArenaExamProps) {
   const [modalType, setModalType] = useState<MODAL_TYPE_KEY>("SEND");
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [notFound, setNotFound] = useState(false);
+  const [hasTakenArena, setHasTakenArena] = useState(false);
 
   //Effects
   useEffect(() => {
@@ -76,6 +78,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         const arenas = await getArena({ _id: arenaId });
         const currentArena = arenas[0];
         if (!currentArena) {
+          setNotFound(true);
           return;
         }
         setArena(currentArena);
@@ -86,6 +89,10 @@ export default function ArenaExam({ params }: ArenaExamProps) {
           const participations = await getParticipations({ arenaId: arenaId });
           if (participations.length > 0) {
             currParticipation = participations[0];
+            if (currParticipation.status === "finished") {
+              setHasTakenArena(true);
+              return;
+            }
             setParticipation(currParticipation);
           }
         } catch (error) {
@@ -112,6 +119,10 @@ export default function ArenaExam({ params }: ArenaExamProps) {
           page: 1,
           limit: 100,
         });
+        if (exercisesData.length === 0) {
+          setNotFound(true);
+          return;
+        }
         setExercises(exercisesData.sort((a, b) => a.order - b.order));
 
         // 4. Fetch Answers
@@ -158,7 +169,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
 
   // Clock Countdown logic
   useEffect(() => {
-    if (!arena) return;
+    if (!arena || notFound || hasTakenArena) return;
 
     const calculateTimeLeft = () => {
       const now = Date.now();
@@ -176,7 +187,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     const interval = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arena]);
+  }, [arena, hasTakenArena, notFound]);
 
   const triggerAutoSubmit = async () => {
     toast.loading("Đang tự động nộp bài...", { id: "arena-submit" });
@@ -307,7 +318,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
     return <ScreenLoader />;
   }
 
-  if (!arena) {
+  if (notFound || hasTakenArena) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-[#F3F4F6] p-6 z-10">
         <div className="bg-white/95 backdrop-blur-sm p-10 rounded-3xl border-[4px] border-[#1ABC9C] shadow-2xl flex flex-col items-center max-w-lg text-center gap-6">
@@ -322,11 +333,18 @@ export default function ArenaExam({ params }: ArenaExamProps) {
             </svg>
           </div>
           <h2 className="text-3xl font-bold text-[#1ABC9C]">
-            Đấu trường không tồn tại
+            {notFound
+              ? "Đấu trường này đã đóng cửa"
+              : hasTakenArena
+                ? "Bạn đã hoàn thành kỳ đấu trường này."
+                : ""}
           </h2>
           <p className="text-gray-600 font-medium text-lg">
-            Đấu trường này không tồn tại hoặc đã kết thúc. Vui lòng quay lại
-            sau!
+            {notFound
+              ? "Đấu trường này hiện không khả dụng. Vui lòng quay lại sau."
+              : hasTakenArena
+                ? "Bạn đã hoàn thành kỳ đấu trường này. Vui lòng quay lại ở kỳ đấu trường tiếp theo."
+                : ""}
           </p>
           <button
             onClick={() => router.push("/student/arena")}

@@ -469,6 +469,7 @@ export interface TransactionResponse {
   status: "pending" | "completed" | "failed";
   transactionId: string;
   processedAt: string;
+  paymentUrl?: string;
 }
 
 export interface PackageResponse {
@@ -505,4 +506,14 @@ export interface MyPositionInRankResponse {
       finishedAt: string;
     }[];
   };
+}
+
+export interface VnPayReturnResponse {
+  status: "success" | "failed";
+  transactionId: string;
+  amount: number;
+  paymentMethod: "momo" | "zalopay" | "vnpay" | "bank_transfer" | "internal";
+  processedAt: string;
+  message: string;
+  data: TransactionResponse;
 }

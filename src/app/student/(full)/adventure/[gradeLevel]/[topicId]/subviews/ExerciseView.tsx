@@ -466,12 +466,12 @@ export default function ExerciseView({
         </div>
 
         {/* Preload theme background */}
-        <div className="hidden">
+        <div className="opacity-0 absolute">
           <Image
             src={themeBackgrounds[THEME_ARRAY[Number(gradeLevel) - 1]]}
             alt="preload"
-            width={0}
-            height={0}
+            width={800}
+            height={800}
             priority
           />
         </div>

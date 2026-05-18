@@ -32,6 +32,8 @@ import {
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { APIError } from "@/apis/config";
 import { toCloudinaryWebP } from "@/helpers/utils";
+import { useLessonStore } from "@/stores/lessonStore";
+import { getLectureIndexFromLocalStorage } from "@/helpers/localStorage";
 
 const MODE = {
   LECTURE: 0,
@@ -99,13 +101,16 @@ export default function LessonsPage({ params }: LessonsPageProps) {
         setUser(user);
 
         // Init state dependent on fetched data
+        const data = getLectureIndexFromLocalStorage(gradeLevel, topicId);
         if (lands.length > 0) {
-          setCurrLand(
-            lands.find((land) => land.difficulty === "easy") || lands[0],
-          );
+          const land =
+            lands.find((land) => land.difficulty === data?.diff) || lands[0];
+          setCurrLand(land);
         }
         if (lectures.length > 0) {
-          setCurrentLecture(lectures[0]);
+          const safeIndex =
+            data?.index >= 0 && data?.index < lectures.length ? data.index : 0;
+          setCurrentLecture(lectures[safeIndex]);
         }
       } catch (error) {
         if (error instanceof APIError) {
@@ -147,11 +152,13 @@ export default function LessonsPage({ params }: LessonsPageProps) {
   };
 
   const handleLectureChange = (lecture: LectureResponse) => {
-    const newLand = lands.find(
-      (land) => land.difficulty === lecture.difficulty,
-    );
-    if (newLand) {
-      setCurrLand(newLand);
+    if (currentLecture?.difficulty !== lecture.difficulty) {
+      const newLand = lands.find(
+        (land) => land.difficulty === lecture.difficulty,
+      );
+      if (newLand) {
+        setCurrLand(newLand);
+      }
     }
     setCurrentLecture(lecture);
   };

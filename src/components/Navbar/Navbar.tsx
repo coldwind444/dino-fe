@@ -80,6 +80,7 @@ export default function Navbar({
     try {
       await logout();
       clearLessonStore();
+      localStorage.clear();
       router.push("/auth");
     } catch (error) {
       if (error instanceof APIError) {

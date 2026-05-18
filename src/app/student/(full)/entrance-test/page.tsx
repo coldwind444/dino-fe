@@ -17,6 +17,7 @@ import {
   submitAssessment,
   getPublishedAssessmentByGradeId,
   startAssessment,
+  getAssessmentResult,
 } from "@/apis";
 import { getUserProfile } from "@/apis/user";
 import {
@@ -51,6 +52,7 @@ export default function EntranceTest() {
   const [currExIdx, setCurrExIdx] = useState(0);
   const [currSection, setCurrSection] = useState(0);
   const [notFound, setNotFound] = useState(false);
+  const [hasTakenTest, setHasTakenTest] = useState(false);
 
   // UI state
   const [modalClose, setModalClose] = useState(true);
@@ -74,8 +76,19 @@ export default function EntranceTest() {
         const assessmentData = await getPublishedAssessmentByGradeId(
           currentProfile.gradeId,
         );
+        if (ignore) return;
         if (!assessmentData) {
           setNotFound(true);
+          return;
+        }
+
+        const result = await getAssessmentResult(
+          assessmentData._id,
+          currentProfile?._id || "",
+        );
+        if (ignore) return;
+        if (result && result.status !== "in_progress") {
+          setHasTakenTest(true);
           return;
         }
 
@@ -85,10 +98,16 @@ export default function EntranceTest() {
           page: 1,
           limit: 100,
         });
+        if (ignore) return;
+        if (exercisesData.length === 0) {
+          setNotFound(true);
+          return;
+        }
         setExercises(exercisesData.sort((a, b) => a.order - b.order));
 
         // Start assessment
         const assessmentResult = await startAssessment(assessmentData._id);
+        if (ignore) return;
         setArId(assessmentResult._id);
         setAssessment(assessmentData);
 
@@ -109,11 +128,13 @@ export default function EntranceTest() {
         });
         setAnswers(answerMap);
       } catch (error) {
-        if (error instanceof APIError) {
+        if (!ignore && error instanceof APIError) {
           toast.error(error.message);
         }
       } finally {
-        setLoading(false);
+        if (!ignore) {
+          setLoading(false);
+        }
       }
     };
 
@@ -235,7 +256,7 @@ export default function EntranceTest() {
     return <ScreenLoader />;
   }
 
-  if (notFound) {
+  if (notFound || hasTakenTest) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-[#F3F4F6] p-6 z-10">
         <div className="bg-white/95 backdrop-blur-sm p-10 rounded-3xl border-[4px] border-[#1ABC9C] shadow-2xl flex flex-col items-center max-w-lg text-center gap-6">
@@ -250,11 +271,12 @@ export default function EntranceTest() {
             </svg>
           </div>
           <h2 className="text-3xl font-bold text-[#1ABC9C]">
-            Không có bài kiểm tra
+            {hasTakenTest ? "Đã làm bài" : "Không có bài kiểm tra"}
           </h2>
           <p className="text-gray-600 font-medium text-lg">
-            Hiện tại chưa có bài kiểm tra đầu vào cho lớp này. Vui lòng quay lại
-            sau!
+            {hasTakenTest
+              ? "Bạn đã hoàn thành bài kiểm tra đầu vào cho lớp này."
+              : "Hiện tại chưa có bài kiểm tra đầu vào cho lớp này. Vui lòng quay lại sau!"}
           </p>
           <button
             onClick={() => router.back()}

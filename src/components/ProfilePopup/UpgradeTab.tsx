@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   faCheck,
   faCrown,
@@ -14,9 +14,20 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import { confirmPayment, getPackages, purchasePremium } from "@/apis/payment";
-import { PackageResponse, UserProfileResponse } from "@/types";
+import {
+  getPackages,
+  getMyTransactions,
+  purchasePremium,
+} from "@/apis/payment";
+import {
+  PackageResponse,
+  TransactionResponse,
+  UserProfileResponse,
+} from "@/types";
 import { APIError } from "@/apis/config";
+
+const POLL_INTERVAL_MS = 3000;
+//const POLL_TIMEOUT_MS = 15 * 60 * 1000;
 
 const freeFeatures = [
   "Tính năng cơ bản",
@@ -24,68 +35,70 @@ const freeFeatures = [
   "Giới hạn Minigames",
 ];
 
-type PaymentSession = {
-  orderCode: string;
-  amountLabel: string;
-  expiresIn: string;
+const statusDisplay: Record<PaymentStatus, { label: string; color: string }> = {
+  pending: { label: "Chờ thanh toán", color: "text-[#F59E0B]" },
+  completed: { label: "Thanh toán thành công", color: "text-green-500" },
+  failed: { label: "Thanh toán thất bại", color: "text-red-500" },
 };
 
-function PaymentImagePlaceholder({
-  label,
-  className,
-}: {
-  label: string;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 text-center text-sm font-medium text-gray-400 ${className ?? ""}`}
-    >
-      <span className="max-w-[80%] leading-snug">{label}</span>
-    </div>
-  );
-}
+type PaymentStatus = "pending" | "completed" | "failed";
 
 export default function UpgradeTab({
   profile,
 }: {
   profile: UserProfileResponse;
 }) {
-  const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(
-    null,
-  );
   const [plan, setPlan] = useState<PackageResponse>();
+  const [transaction, setTransaction] = useState<TransactionResponse>();
+  const [creatingOrder, setCreatingOrder] = useState(false);
+
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("pending");
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  //const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const fetchTransactionStatus = async (
+    transactionId: string,
+  ): Promise<PaymentStatus> => {
+    try {
+      const res = await getMyTransactions();
+      const transaction = res.find((t) => t.transactionId === transactionId);
+      if (transaction?.status === "completed") return "completed";
+      if (transaction?.status === "failed") return "failed";
+      return "pending";
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
+      return "failed";
+    }
+  };
 
   const startPayment = async () => {
-    const generatedOrderCode = `WH${Date.now().toString().slice(-10)}`;
-    setPaymentSession({
-      orderCode: generatedOrderCode,
-      amountLabel:
-        plan?.price.toLocaleString("vi-VN", { currency: "VND" }) || "--",
-      expiresIn: "14:30",
-    });
-
     try {
+      setCreatingOrder(true);
       const res = await purchasePremium({
         packageId: plan?._id as string,
         paymentMethod: "vnpay",
       });
-      await confirmPayment(res.transactionId);
-      const reloadConfirm = confirm(
-        "Thanh toán thành công! Bạn cần tải lại trang để cập nhật trạng thái.",
-      );
-      if (reloadConfirm) {
-        window.location.reload();
+      if (res.paymentUrl) {
+        setTransaction(res);
+        window.open(res.paymentUrl, "_blank");
+        setPaymentStatus("pending");
+        startPolling(res.transactionId);
       }
     } catch (error) {
       if (error instanceof APIError) {
         console.log(error.message);
       }
+    } finally {
+      setCreatingOrder(false);
     }
   };
 
   const cancelPayment = () => {
-    setPaymentSession(null);
+    setTransaction(undefined);
+    stopPolling();
+    setPaymentStatus("pending");
   };
 
   // Effects
@@ -109,11 +122,38 @@ export default function UpgradeTab({
     };
   }, []);
 
+  const stopPolling = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    //if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  };
+
+  const startPolling = (transactionId: string) => {
+    stopPolling();
+    intervalRef.current = setInterval(async () => {
+      try {
+        const status = await fetchTransactionStatus(transactionId);
+        if (status !== "pending") {
+          setPaymentStatus(status);
+          stopPolling();
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+      }
+    }, POLL_INTERVAL_MS);
+
+    // timeoutRef.current = setTimeout(() => {
+    //   stopPolling();
+    //   setPaymentStatus("failed");
+    // }, POLL_TIMEOUT_MS);
+  };
+
+  useEffect(() => () => stopPolling(), []);
+
   return (
     <>
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Nâng cấp</h2>
 
-      {profile?.premium?.isPremium ? (
+      {profile?.premium?.isPremium || paymentStatus === "completed" ? (
         <div className="flex flex-col items-center justify-center pt-6 pb-10 w-full max-w-5xl bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 mt-4 px-6">
           <div className="relative mb-6">
             <div className="absolute inset-0 bg-orange-200 blur-xl opacity-50 rounded-full animate-pulse"></div>
@@ -185,11 +225,11 @@ export default function UpgradeTab({
             })}
           </div>
         </div>
-      ) : paymentSession ? (
+      ) : transaction ? (
         <div className="mt-4 w-full max-w-5xl">
           <div className="mb-4 flex items-center justify-between border-b border-gray-200 pb-3">
             <div className="text-[24px] font-medium text-gray-500">
-              Thanh toán qua VNPAY - QR Code
+              Đang chờ thanh toán qua VNPAY
             </div>
             <div className="flex h-14 w-44 items-center justify-center rounded-xl bg-white">
               <Image
@@ -203,46 +243,47 @@ export default function UpgradeTab({
           </div>
 
           <div className="rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
-            <div className="flex items-start gap-6">
-              <div className="w-[220px] shrink-0">
-                <PaymentImagePlaceholder
-                  label="Vùng ảnh QR / mã thanh toán"
-                  className="h-[220px] w-[220px]"
-                />
-              </div>
-
-              <div className="flex flex-1 flex-col pt-1">
-                <h3 className="max-w-xl text-[21px] font-bold leading-tight text-[#23BEAA]">
+            <div className="flex items-center justify-center gap-6">
+              <div className="flex flex-col items-center pt-1">
+                <h3 className="max-w-xl text-[21px] font-bold leading-tight text-[#23BEAA] text-center mb-6">
                   NÂNG CẤP TÀI KHOẢN PREMIUM - DINO MATH
                 </h3>
 
-                <div className="mt-6 space-y-4 text-[16px] text-gray-800">
+                <div className="space-y-4 text-[16px] text-gray-800">
                   <div className="flex items-center gap-3">
-                    <span className="min-w-28 font-semibold">Mã đơn hàng:</span>
+                    <span className="min-w-32 font-semibold">
+                      Mã giao dịch:
+                    </span>
                     <span className="font-semibold">
-                      {paymentSession.orderCode}
+                      {transaction.transactionId}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="min-w-28 font-semibold">Số tiền:</span>
-                    <span className="font-semibold">
-                      {paymentSession.amountLabel}
+                    <span className="min-w-32 font-semibold">Số tiền:</span>
+                    <span className="font-semibold text-[#FF5964]">
+                      {transaction.amount.toLocaleString("vi-VN", {
+                        currency: "VND",
+                      })}{" "}
+                      đ
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="min-w-28 font-semibold">Trạng thái:</span>
-                    <span className="font-medium text-[#F59E0B]">
-                      Chờ thanh toán
+                    <span className="min-w-32 font-semibold">Trạng thái:</span>
+                    <span
+                      className={`font-medium ${statusDisplay[paymentStatus].color}`}
+                    >
+                      {statusDisplay[paymentStatus].label}
                     </span>
-                    <FontAwesomeIcon
-                      icon={faSpinner}
-                      className="text-[#F59E0B] animate-spin"
-                    />
+                    {paymentStatus === "pending" && (
+                      <FontAwesomeIcon
+                        icon={faSpinner}
+                        className="text-[#F59E0B] animate-spin"
+                      />
+                    )}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="min-w-28 font-semibold">Hết hạn sau:</span>
-                    <span className="font-medium italic text-[#FF5964]">
-                      {paymentSession.expiresIn}
+                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
+                    <span className="font-medium italic text-gray-500 text-center w-full">
+                      Vui lòng hoàn tất thanh toán ở tab mới (VNPAY).
                     </span>
                   </div>
                 </div>
@@ -256,7 +297,7 @@ export default function UpgradeTab({
               onClick={cancelPayment}
               className="min-w-52 rounded-2xl border border-[#FF5964] px-8 py-3 text-base font-medium text-[#FF5964] hover:bg-red-50"
             >
-              Hủy thanh toán
+              Hủy / Chọn phương thức khác
             </button>
           </div>
         </div>
@@ -339,9 +380,14 @@ export default function UpgradeTab({
               <button
                 type="button"
                 onClick={startPayment}
-                className="mt-auto w-full rounded-xl bg-gradient-to-r from-[#23BEAA] to-[#3B84F2] py-3 text-sm font-semibold text-white hover:opacity-90"
+                disabled={creatingOrder}
+                className="bg-gradient-to-r from-[#23BEAA] to-[#3B84F2] py-3 text-sm 
+                           hover:opacity-90
+                           disabled:opacity-50 disabled:cursor-not-allowed
+                           font-semibold text-white mt-auto w-full rounded-xl
+                           cursor-pointer"
               >
-                Nâng cấp ngay
+                {creatingOrder ? "Đang tạo giao dịch mới ..." : "Nâng cấp ngay"}
               </button>
             </div>
           </div>

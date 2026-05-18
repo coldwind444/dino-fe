@@ -9,6 +9,12 @@ import clsx from "clsx";
 import lock from "../../../public/assets/exercises/lock.png";
 import { LectureResponse } from "@/types";
 import { toCloudinaryWebP } from "@/helpers/utils";
+import { useLessonStore } from "@/stores/lessonStore";
+import {
+  getLectureIndexFromLocalStorage,
+  saveLectureIndexToLocalStorage,
+} from "@/helpers/localStorage";
+import { getLectureResults, getUserProfile } from "@/apis";
 
 type LectureSliderProps = {
   lectures: LectureResponse[];
@@ -23,13 +29,74 @@ export default function LectureSlider({
   milestone,
   onLectureChange,
 }: LectureSliderProps) {
+  const { gradeLevel, storedTopicId } = useLessonStore();
   const [translate, setTranslate] = useState(0);
-  const [idx, setIdx] = useState(0);
-
-  const unlockedDifficulty = ["easy"];
+  const [idx, setIdx] = useState(() => {
+    const data = getLectureIndexFromLocalStorage(gradeLevel, storedTopicId);
+    return data?.index || 0;
+  });
+  const [unlockedDiffs, setUnlockedDiffs] = useState<string[]>(["easy"]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const ITEM_WIDTH = 520; // roughly 280px image + 200px svg + 20px gap
+
+  useEffect(() => {
+    if (!lectures || lectures.length === 0) return;
+
+    const checkUnlockedDiff = async () => {
+      try {
+        // Get profile
+        const user = await getUserProfile();
+
+        // Check if medium and hard difficulties are completed
+        let diffsArr = ["easy"];
+        const mediumLectures = lectures.filter(
+          (l) => l.difficulty === "medium",
+        );
+        const hardLectures = lectures.filter((l) => l.difficulty === "hard");
+
+        const mediumLecturesCompleted = await Promise.all(
+          mediumLectures.map(async (lecture) => {
+            const res = await getLectureResults({
+              lectureId: lecture._id,
+              userId: user._id,
+            });
+            return res.items.every(
+              (result) =>
+                result.status === "completed" || result.status === "pass",
+            );
+          }),
+        );
+
+        if (mediumLecturesCompleted.every((result) => result === false)) {
+          diffsArr.push("medium");
+        }
+
+        const hardLecturesCompleted = await Promise.all(
+          hardLectures.map(async (lecture) => {
+            const res = await getLectureResults({
+              lectureId: lecture._id,
+              userId: user._id,
+            });
+            return res.items.every(
+              (result) =>
+                result.status === "completed" || result.status === "pass",
+            );
+          }),
+        );
+
+        if (hardLecturesCompleted.every((result) => result === false)) {
+          diffsArr.push("hard");
+        }
+
+        setUnlockedDiffs(diffsArr);
+      } catch (error) {
+        console.error("Error checking unlocked difficulties:", error);
+      }
+    };
+
+    checkUnlockedDiff();
+  }, [lectures]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -46,6 +113,12 @@ export default function LectureSlider({
       const newIdx = idx + 1;
       setIdx(newIdx);
       onLectureChange(lectures[newIdx]);
+      saveLectureIndexToLocalStorage(
+        gradeLevel,
+        storedTopicId,
+        newIdx,
+        lectures[newIdx].difficulty,
+      );
     }
   };
 
@@ -54,15 +127,21 @@ export default function LectureSlider({
       const newIdx = idx - 1;
       setIdx(newIdx);
       onLectureChange(lectures[newIdx]);
+      saveLectureIndexToLocalStorage(
+        gradeLevel,
+        storedTopicId,
+        newIdx,
+        lectures[newIdx].difficulty,
+      );
     }
   };
 
   return (
     <div className="h-full w-full overflow-hidden flex flex-col items-center gap-[100px]">
       {/* Header */}
-      {unlockedDifficulty.includes(lectures[idx].difficulty) ? (
+      {unlockedDiffs.includes(lectures[idx].difficulty) ? (
         <h1 className="text-white font-bold text-[25px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
-          {lectures[idx]?.title}
+          {`Bài ${lectures[idx]?.order ?? "#"}: ${lectures[idx]?.title}`}
         </h1>
       ) : (
         <h1 className="text-2xl font-bold text-[#FFAE5F] min-h-[70px]">
@@ -96,12 +175,12 @@ export default function LectureSlider({
                     "aspect-square flex-shrink-0 object-contain",
                     index === idx ? "scale-100" : "scale-75 opacity-60",
                     "transition-all duration-500",
-                    !unlockedDifficulty.includes(lecture.difficulty)
+                    !unlockedDiffs.includes(lecture.difficulty)
                       ? "grayscale-100"
                       : "",
                   )}
                 />
-                {!unlockedDifficulty.includes(lecture.difficulty) && (
+                {!unlockedDiffs.includes(lecture.difficulty) && (
                   <Image
                     src={lock}
                     alt="X"
@@ -146,7 +225,7 @@ export default function LectureSlider({
 
         {/* Fixed height container to maintain footer position */}
         <div className="h-[50px] sm:h-[55px] md:h-[60px] flex items-center justify-center">
-          {unlockedDifficulty.includes(lectures[idx].difficulty) ? (
+          {unlockedDiffs.includes(lectures[idx].difficulty) ? (
             <div className="overflow-hidden h-[50px] sm:h-[55px] md:h-[60px]">
               <iframe
                 title="idle-dino"

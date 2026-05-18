@@ -26,12 +26,13 @@ import {
 } from "@/apis";
 import { formatNumberAbbreviation, toCloudinaryWebP } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
+import clsx from "clsx";
 
 const TOPICS_PER_PAGE = 4;
 
 export default function LessonsPage() {
   const router = useRouter();
-  const { gradeLevel, setGradeLevel } = useLessonStore();
+  const { gradeLevel, setGradeLevel, setStoredTopicId } = useLessonStore();
 
   // Data state
   const [grade, setGrade] = useState<GradeResponse | null>(null);
@@ -73,6 +74,7 @@ export default function LessonsPage() {
 
   const navigateToLecture = (topicId: string) => {
     setIsRedirecting(true);
+    setStoredTopicId(topicId);
     const gLevel = grade?.level;
     if (!gLevel) return;
     router.push(`/student/adventure/${gLevel}/${topicId}`);
@@ -442,7 +444,12 @@ export default function LessonsPage() {
                   <div
                     data-testid={`topic-card-${index}`}
                     key={index}
-                    className="relative h-[320px] transition-all hover:scale-105"
+                    className={clsx(
+                      "relative h-[320px] transition-all",
+                      isRedirecting
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:scale-105 cursor-pointer",
+                    )}
                     onClick={() =>
                       !isRedirecting && navigateToLecture(topic._id)
                     }

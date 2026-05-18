@@ -9,6 +9,11 @@ import clsx from "clsx";
 import lock from "../../../public/assets/exercises/lock.png";
 import { LectureResponse } from "@/types";
 import { toCloudinaryWebP } from "@/helpers/utils";
+import { useLessonStore } from "@/stores/lessonStore";
+import {
+  getLectureIndexFromLocalStorage,
+  saveLectureIndexToLocalStorage,
+} from "@/helpers/localStorage";
 
 type LectureSliderProps = {
   lectures: LectureResponse[];
@@ -23,8 +28,12 @@ export default function LectureSlider({
   milestone,
   onLectureChange,
 }: LectureSliderProps) {
+  const { gradeLevel, storedTopicId } = useLessonStore();
   const [translate, setTranslate] = useState(0);
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(() => {
+    const data = getLectureIndexFromLocalStorage(gradeLevel, storedTopicId);
+    return data?.index || 0;
+  });
 
   const unlockedDifficulty = ["easy"];
 
@@ -46,6 +55,12 @@ export default function LectureSlider({
       const newIdx = idx + 1;
       setIdx(newIdx);
       onLectureChange(lectures[newIdx]);
+      saveLectureIndexToLocalStorage(
+        gradeLevel,
+        storedTopicId,
+        newIdx,
+        lectures[newIdx].difficulty,
+      );
     }
   };
 
@@ -54,6 +69,12 @@ export default function LectureSlider({
       const newIdx = idx - 1;
       setIdx(newIdx);
       onLectureChange(lectures[newIdx]);
+      saveLectureIndexToLocalStorage(
+        gradeLevel,
+        storedTopicId,
+        newIdx,
+        lectures[newIdx].difficulty,
+      );
     }
   };
 
@@ -62,7 +83,7 @@ export default function LectureSlider({
       {/* Header */}
       {unlockedDifficulty.includes(lectures[idx].difficulty) ? (
         <h1 className="text-white font-bold text-[25px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
-          {lectures[idx]?.title}
+          {`Bài ${lectures[idx]?.order ?? "#"}: ${lectures[idx]?.title}`}
         </h1>
       ) : (
         <h1 className="text-2xl font-bold text-[#FFAE5F] min-h-[70px]">

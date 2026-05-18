@@ -174,39 +174,18 @@ export const createProgress = async (req: CreateProgressRequest) => {
 };
 
 // Lecture APIs
-export type PaginationLectureResponse = {
-  items: LectureResponse[];
-  pagination: Pagination;
-};
-
-const DIFFICULTY_ORDER = new Map<string, number>([
-  ["easy", 1],
-  ["medium", 2],
-  ["hard", 3],
-]);
-
 export const getLecturesByTopicId = async (
   topicId: string,
 ): Promise<LectureResponse[]> => {
   try {
-    const res = await api.get(
-      `/lectures?topicId=${topicId}&page=1&limit=100000&status=active`,
-    );
-    const pgData = res.data as PaginationLectureResponse;
-    const lectures = pgData.items as LectureResponse[];
-    const sortedLectures = lectures.sort((a, b) => {
-      const diff =
-        DIFFICULTY_ORDER.get(a.difficulty)! -
-        DIFFICULTY_ORDER.get(b.difficulty)!;
-
-      if (diff !== 0) {
-        return diff;
-      }
-
-      return a.title.localeCompare(b.title);
-    });
-
-    return sortedLectures;
+    const params = {
+      topicId: topicId,
+      page: 1,
+      limit: 100000,
+      status: "active",
+    };
+    const res = await api.get(`/lectures`, { params });
+    return res.data.items as LectureResponse[];
   } catch (error) {
     handleError(error);
     throw error; // Never reached

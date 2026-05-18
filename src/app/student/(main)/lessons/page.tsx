@@ -31,7 +31,7 @@ const TOPICS_PER_PAGE = 4;
 
 export default function LessonsPage() {
   const router = useRouter();
-  const { gradeLevel, setGradeLevel } = useLessonStore();
+  const { gradeLevel, setGradeLevel, setStoredTopicId } = useLessonStore();
 
   // Data state
   const [grade, setGrade] = useState<GradeResponse | null>(null);
@@ -73,6 +73,7 @@ export default function LessonsPage() {
 
   const navigateToLecture = (topicId: string) => {
     setIsRedirecting(true);
+    setStoredTopicId(topicId);
     const gLevel = grade?.level;
     if (!gLevel) return;
     router.push(`/student/adventure/${gLevel}/${topicId}`);

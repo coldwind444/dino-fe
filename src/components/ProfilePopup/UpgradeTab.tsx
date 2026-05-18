@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   faCheck,
   faCrown,
@@ -14,7 +14,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import { getPackages, purchasePremium } from "@/apis/payment";
+import {
+  getPackages,
+  getMyTransactions,
+  purchasePremium,
+} from "@/apis/payment";
 import {
   PackageResponse,
   TransactionResponse,
@@ -22,11 +26,22 @@ import {
 } from "@/types";
 import { APIError } from "@/apis/config";
 
+const POLL_INTERVAL_MS = 3000;
+//const POLL_TIMEOUT_MS = 15 * 60 * 1000;
+
 const freeFeatures = [
   "Tính năng cơ bản",
   "Giới hạn chủ đề học tập",
   "Giới hạn Minigames",
 ];
+
+const statusDisplay: Record<PaymentStatus, { label: string; color: string }> = {
+  pending: { label: "Chờ thanh toán", color: "text-[#F59E0B]" },
+  completed: { label: "Thanh toán thành công", color: "text-green-500" },
+  failed: { label: "Thanh toán thất bại", color: "text-red-500" },
+};
+
+type PaymentStatus = "pending" | "completed" | "failed";
 
 export default function UpgradeTab({
   profile,
@@ -36,6 +51,27 @@ export default function UpgradeTab({
   const [plan, setPlan] = useState<PackageResponse>();
   const [transaction, setTransaction] = useState<TransactionResponse>();
   const [creatingOrder, setCreatingOrder] = useState(false);
+
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("pending");
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  //const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const fetchTransactionStatus = async (
+    transactionId: string,
+  ): Promise<PaymentStatus> => {
+    try {
+      const res = await getMyTransactions();
+      const transaction = res.find((t) => t.transactionId === transactionId);
+      if (transaction?.status === "completed") return "completed";
+      if (transaction?.status === "failed") return "failed";
+      return "pending";
+    } catch (error) {
+      if (error instanceof APIError) {
+        console.log(error.message);
+      }
+      return "failed";
+    }
+  };
 
   const startPayment = async () => {
     try {
@@ -47,6 +83,8 @@ export default function UpgradeTab({
       if (res.paymentUrl) {
         setTransaction(res);
         window.open(res.paymentUrl, "_blank");
+        setPaymentStatus("pending");
+        startPolling(res.transactionId);
       }
     } catch (error) {
       if (error instanceof APIError) {
@@ -59,6 +97,8 @@ export default function UpgradeTab({
 
   const cancelPayment = () => {
     setTransaction(undefined);
+    stopPolling();
+    setPaymentStatus("pending");
   };
 
   // Effects
@@ -82,11 +122,38 @@ export default function UpgradeTab({
     };
   }, []);
 
+  const stopPolling = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    //if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  };
+
+  const startPolling = (transactionId: string) => {
+    stopPolling();
+    intervalRef.current = setInterval(async () => {
+      try {
+        const status = await fetchTransactionStatus(transactionId);
+        if (status !== "pending") {
+          setPaymentStatus(status);
+          stopPolling();
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+      }
+    }, POLL_INTERVAL_MS);
+
+    // timeoutRef.current = setTimeout(() => {
+    //   stopPolling();
+    //   setPaymentStatus("failed");
+    // }, POLL_TIMEOUT_MS);
+  };
+
+  useEffect(() => () => stopPolling(), []);
+
   return (
     <>
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Nâng cấp</h2>
 
-      {profile?.premium?.isPremium ? (
+      {profile?.premium?.isPremium || paymentStatus === "completed" ? (
         <div className="flex flex-col items-center justify-center pt-6 pb-10 w-full max-w-5xl bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 mt-4 px-6">
           <div className="relative mb-6">
             <div className="absolute inset-0 bg-orange-200 blur-xl opacity-50 rounded-full animate-pulse"></div>
@@ -202,13 +269,17 @@ export default function UpgradeTab({
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="min-w-32 font-semibold">Trạng thái:</span>
-                    <span className="font-medium text-[#F59E0B]">
-                      Chờ thanh toán
+                    <span
+                      className={`font-medium ${statusDisplay[paymentStatus].color}`}
+                    >
+                      {statusDisplay[paymentStatus].label}
                     </span>
-                    <FontAwesomeIcon
-                      icon={faSpinner}
-                      className="text-[#F59E0B] animate-spin"
-                    />
+                    {paymentStatus === "pending" && (
+                      <FontAwesomeIcon
+                        icon={faSpinner}
+                        className="text-[#F59E0B] animate-spin"
+                      />
+                    )}
                   </div>
                   <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                     <span className="font-medium italic text-gray-500 text-center w-full">

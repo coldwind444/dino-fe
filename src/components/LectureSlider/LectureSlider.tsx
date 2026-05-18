@@ -49,7 +49,7 @@ export default function LectureSlider({
         const user = await getUserProfile();
 
         // Check if medium and hard difficulties are completed
-        let diffsArr = ["easy"];
+        const diffsArr = ["easy"];
         const mediumLectures = lectures.filter(
           (l) => l.difficulty === "medium",
         );

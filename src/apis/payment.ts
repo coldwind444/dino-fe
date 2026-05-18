@@ -29,3 +29,17 @@ export const getPackages = async (): Promise<PackageResponse[]> => {
         throw error
     }
 }
+
+export const getMyTransactions = async (): Promise<TransactionResponse[]> => {
+    try {
+        const params = {
+            page: 1,
+            limit: 10,
+        }
+        const res = await api.get('/payments/history', { params })
+        return res.data.data as TransactionResponse[]
+    } catch (error) {
+        handleError(error)
+        throw error
+    }
+}

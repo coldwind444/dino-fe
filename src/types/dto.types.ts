@@ -398,6 +398,7 @@ export interface LectureResultDetailedResponse {
   score?: number;
   createdAt: string;
   updatedAt?: string;
+  status: string;
 }
 
 export interface AssessmentResultDetailedResponse {

@@ -17,7 +17,7 @@ const EXERCISE_TYPE_TO_GAME_INDEX: Record<string, number> = {
   matching: 0,
   choice: 1,
   interactive: 2,
-  tutorial: 3,
+  fill_even_odd: 3,
   true_false: 4,
   fill_in: 5,
   releasebird: 6,

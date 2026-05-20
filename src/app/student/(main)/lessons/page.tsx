@@ -27,6 +27,7 @@ import {
 import { formatNumberAbbreviation, toCloudinaryWebP } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
 import clsx from "clsx";
+import { getTopicCurrentPageFromLocalStorage, saveTopicCurrentPageToLocalStorage } from "@/helpers/localStorage";
 
 const TOPICS_PER_PAGE = 4;
 
@@ -57,19 +58,25 @@ export default function LessonsPage() {
   const [topicsLoading, setTopicsLoading] = useState(false);
 
   // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => {
+    const storedPage = getTopicCurrentPageFromLocalStorage(gradeLevel);
+    return storedPage;
+  });
 
   // Handle
   const handleChangePage = (isNext: boolean) => {
+    let newPage = currentPage;
     if (isNext) {
       if (currentPage < (topicsPgRes?.pagination.totalPages || 1)) {
-        setCurrentPage(currentPage + 1);
+        newPage++;
       }
     } else {
       if (currentPage > 1) {
-        setCurrentPage(currentPage - 1);
+        newPage--;
       }
     }
+    setCurrentPage(newPage);
+    saveTopicCurrentPageToLocalStorage(gradeLevel, newPage);
   };
 
   const navigateToLecture = (topicId: string) => {
@@ -531,9 +538,8 @@ export default function LessonsPage() {
 
       {/* Modal */}
       <div
-        className={`fixed inset-0 z-50 flex items-center justify-center ${
-          isSelectGradeOpen ? "block" : "hidden"
-        }`}
+        className={`fixed inset-0 z-50 flex items-center justify-center ${isSelectGradeOpen ? "block" : "hidden"
+          }`}
       >
         <div
           className="fixed inset-0 bg-black/70"
@@ -551,10 +557,9 @@ export default function LessonsPage() {
                   setIsSelectGradeOpen(false);
                 }}
                 className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 active:scale-90 shadow-xl overflow-hidden cursor-pointer
-                  ${
-                    gradeLevel === g.toString()
-                      ? "bg-orange-400 text-white shadow-orange-200/30"
-                      : "bg-[#b3f9ef] text-[#1ABC9C] hover:bg-[#92f3e8]"
+                  ${gradeLevel === g.toString()
+                    ? "bg-orange-400 text-white shadow-orange-200/30"
+                    : "bg-[#b3f9ef] text-[#1ABC9C] hover:bg-[#92f3e8]"
                   }
                 `}
               >
@@ -576,10 +581,9 @@ export default function LessonsPage() {
                   setIsSelectGradeOpen(false);
                 }}
                 className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 active:scale-90 shadow-xl overflow-hidden cursor-pointer
-                  ${
-                    gradeLevel === g.toString()
-                      ? "bg-orange-400 text-white shadow-orange-200/30"
-                      : "bg-[#b3f9ef] text-[#1ABC9C] hover:bg-[#92f3e8]"
+                  ${gradeLevel === g.toString()
+                    ? "bg-orange-400 text-white shadow-orange-200/30"
+                    : "bg-[#b3f9ef] text-[#1ABC9C] hover:bg-[#92f3e8]"
                   }
                 `}
               >

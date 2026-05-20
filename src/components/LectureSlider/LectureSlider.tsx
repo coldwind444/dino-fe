@@ -5,13 +5,12 @@ import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from "next/navigation";
 import clsx from "clsx";
 import lock from "../../../public/assets/exercises/lock.png";
 import { LectureResponse } from "@/types";
 import { toCloudinaryWebP } from "@/helpers/utils";
-import { useLessonStore } from "@/stores/lessonStore";
 import {
-  getLectureIndexFromLocalStorage,
   saveLectureIndexToLocalStorage,
 } from "@/helpers/localStorage";
 import { getLectureResults, getUserProfile } from "@/apis";
@@ -20,6 +19,7 @@ type LectureSliderProps = {
   lectures: LectureResponse[];
   doExercise: () => void;
   milestone: string;
+  initialIndex: number;
   onLectureChange: (lecture: LectureResponse) => void;
 };
 
@@ -27,14 +27,15 @@ export default function LectureSlider({
   lectures,
   doExercise,
   milestone,
+  initialIndex,
   onLectureChange,
 }: LectureSliderProps) {
-  const { gradeLevel, storedTopicId } = useLessonStore();
+  const params = useParams();
+  const gradeLevel = params.gradeLevel as string;
+  const topicId = params.topicId as string;
+
   const [translate, setTranslate] = useState(0);
-  const [idx, setIdx] = useState(() => {
-    const data = getLectureIndexFromLocalStorage(gradeLevel, storedTopicId);
-    return data?.index || 0;
-  });
+  const [idx, setIdx] = useState(initialIndex);
   const [unlockedDiffs, setUnlockedDiffs] = useState<string[]>(["easy"]);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -115,7 +116,7 @@ export default function LectureSlider({
       onLectureChange(lectures[newIdx]);
       saveLectureIndexToLocalStorage(
         gradeLevel,
-        storedTopicId,
+        topicId,
         newIdx,
         lectures[newIdx].difficulty,
       );
@@ -129,7 +130,7 @@ export default function LectureSlider({
       onLectureChange(lectures[newIdx]);
       saveLectureIndexToLocalStorage(
         gradeLevel,
-        storedTopicId,
+        topicId,
         newIdx,
         lectures[newIdx].difficulty,
       );

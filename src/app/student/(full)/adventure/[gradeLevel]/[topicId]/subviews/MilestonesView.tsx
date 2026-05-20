@@ -25,6 +25,7 @@ interface MilestonesViewProps {
   land: LandResponse;
   topic: TopicResponse;
   lectures: LectureResponse[];
+  initialLecture: LectureResponse;
   onBack: () => void;
   onDoExercise: () => void;
   onLectureChange: (lecture: LectureResponse) => void;
@@ -41,13 +42,14 @@ export default function MilestonesView({
   land,
   topic,
   lectures,
+  initialLecture,
   onBack,
   onDoExercise,
   onLectureChange,
 }: MilestonesViewProps) {
   // Data states
   const [currentLecture, setCurrentLecture] = useState<LectureResponse>(
-    lectures[0],
+    initialLecture || lectures[0],
   );
 
   // UI states
@@ -122,6 +124,7 @@ export default function MilestonesView({
             lectures={lectures}
             doExercise={() => setMode("select")}
             milestone={world.milestoneUrl || ""}
+            initialIndex={Math.max(0, lectures.findIndex(l => l._id === currentLecture._id))}
             onLectureChange={handleLectureChange}
           />
         )}

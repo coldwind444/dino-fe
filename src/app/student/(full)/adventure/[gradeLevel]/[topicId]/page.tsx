@@ -32,7 +32,6 @@ import {
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { APIError } from "@/apis/config";
 import { toCloudinaryWebP } from "@/helpers/utils";
-import { useLessonStore } from "@/stores/lessonStore";
 import { getLectureIndexFromLocalStorage } from "@/helpers/localStorage";
 
 const MODE = {
@@ -309,6 +308,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
                     land={currLand!}
                     topic={currTopic}
                     lectures={lectures}
+                    initialLecture={currentLecture!}
                     onBack={() => router.back()}
                     onDoExercise={doExercise}
                     onLectureChange={handleLectureChange}

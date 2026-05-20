@@ -99,12 +99,7 @@ export default function Arena() {
               arenaId: currentArena._id,
             });
             if (!ignore && userParticipation.length === 1) {
-              if (
-                userParticipation[0].status === "submitted" ||
-                userParticipation[0].status === "graded"
-              ) {
-                setArenaDone(true);
-              }
+              if (userParticipation[0].status === "finished") setArenaDone(true);
             }
           } catch (error) {
             if (error instanceof APIError) {
@@ -929,8 +924,8 @@ export default function Arena() {
           {/** Leaderboard - SCROLLABLE */}
           <div className="flex h-full flex-1 flex-col gap-[10px] min-w-0 pr-2">
             {!previousArena ||
-            !leaderboard ||
-            leaderboard.leaderboard.length === 0 ? (
+              !leaderboard ||
+              leaderboard.leaderboard.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-[99%] w-full bg-[#f5f5f5] rounded-[20px] border-[#9e9e9e] border-2">
                 <h2
                   className={clsx(

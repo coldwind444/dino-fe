@@ -200,13 +200,13 @@ export default function ExerciseView({
       <div
         className={clsx(
           "bg-[rgba(0,0,0,0.7)] rounded-tr-[20px] rounded-br-[20px]",
-          "h-full w-[300px] flex flex-col pt-[10px] pl-[20px]",
+          "h-full w-[300px] [@media(min-height:900px)]:w-[400px] flex flex-col pt-[10px] pl-[20px]",
         )}
       >
         {/** Exit button */}
         <div
           className={clsx(
-            "h-[40px] w-[120px] items-center relative cursor-pointer",
+            "h-[40px] w-[120px] [@media(min-height:900px)]:h-[50px] [@media(min-height:900px)]:w-[150px] items-center relative cursor-pointer",
             "bg-[#C7434C] rounded-[15px] overflow-hidden",
             "hover:brightness-110 transition-all duration-200",
           )}
@@ -216,7 +216,7 @@ export default function ExerciseView({
             className={clsx(
               "h-full w-full flex flex-row items-center justify-center bg-[#FF5964] text-white",
               "rounded-tl-[60px] rounded-br-[60px] rounded-tr-[20px] rounded-bl-[20px] gap-[10px]",
-              "font-medium",
+              "font-medium [@media(min-height:900px)]:text-[20px]",
             )}
           >
             <FontAwesomeIcon icon={faClose} />
@@ -236,7 +236,7 @@ export default function ExerciseView({
             roboto.className,
           )}
         >
-          <h2 className="max-w-[250px] text-wrap text-[23px] font-bold">
+          <h2 className="max-w-[250px] [@media(min-height:900px)]:max-w-[350px] text-wrap text-[23px] [@media(min-height:900px)]:text-[30px] font-bold">
             {currentLecture?.title}
           </h2>
         </div>
@@ -248,7 +248,7 @@ export default function ExerciseView({
                 if (!doneExercises.includes(idx)) setCurrExIdx(idx);
               }}
               className={clsx(
-                "h-[40px] aspect-square rounded-full cursor-pointer relative font-bold",
+                "h-[40px] [@media(min-height:900px)]:h-[55px] [@media(min-height:900px)]:text-[20px] aspect-square rounded-full cursor-pointer relative font-bold",
                 currExIdx === idx
                   ? "bg-[#1DA492] text-white"
                   : doneExercises.includes(idx)
@@ -262,7 +262,8 @@ export default function ExerciseView({
               <span
                 className={clsx(
                   "absolute left-0 ml-[2px] rotate-45 -translate-y-[10px] translate-x-[22px]",
-                  "h-[7px] w-[12px] rounded-[1000px]",
+                  "[@media(min-height:900px)]:-translate-y-[14px] [@media(min-height:900px)]:translate-x-[30px]",
+                  "h-[7px] w-[12px] [@media(min-height:900px)]:h-[9px] [@media(min-height:900px)]:w-[16px] rounded-[1000px]",
                   "[clip-path:ellipse(50%_50%_at_50%_50%)]",
                   currExIdx === idx || doneExercises.includes(idx)
                     ? "bg-[rgba(255,255,255,0.3)]"
@@ -275,7 +276,7 @@ export default function ExerciseView({
         {/* Submit button */}
         <div
           className={clsx(
-            "h-[60px] w-[230px] bg-amber-700 rounded-[15px]",
+            "h-[60px] w-[230px] [@media(min-height:900px)]:h-[75px] [@media(min-height:900px)]:w-[320px] bg-amber-700 rounded-[15px]",
             isSubmitting
               ? "cursor-not-allowed opacity-70"
               : "cursor-pointer hover:brightness-110",
@@ -288,7 +289,7 @@ export default function ExerciseView({
             className={clsx(
               "h-full w-full bg-amber-600 relative",
               "flex items-center justify-center",
-              "font-bold text-white text-[20px]",
+              "font-bold text-white text-[20px] [@media(min-height:900px)]:text-[25px]",
               "rounded-tl-[40px] rounded-br-[40px]",
             )}
           >
@@ -322,14 +323,14 @@ export default function ExerciseView({
           <div
             className={clsx(
               "text-white font-bold bg-[#1DA492] rounded-full",
-              "px-[20px] py-[5px] w-fit flex items-center justify-center",
+              "px-[20px] py-[5px] [@media(min-height:900px)]:px-[30px] [@media(min-height:900px)]:py-[10px] [@media(min-height:900px)]:text-[24px] w-fit flex items-center justify-center",
             )}
           >
             {`CÂU ${currExIdx + 1}`}
           </div>
         </div>
         {/** Interactive area */}
-        <div className="max-h-[440px] w-full flex items-center justify-center">
+        <div className="flex-1 w-full flex items-center justify-center overflow-hidden">
           <CocosGameWrapper
             data-testid="cocos-game"
             exercises={exercises}
@@ -339,7 +340,7 @@ export default function ExerciseView({
           />
         </div>
         {/** Buttons and Banners */}
-        <div className="flex flex-1 flex-row w-full items-end justify-center">
+        <div className="flex flex-none min-h-[120px] [@media(min-height:900px)]:min-h-[160px] flex-row w-full items-end justify-center">
           <AnimatePresence mode="wait">
             {!showSubmitBanner ? (
               // Check button
@@ -350,7 +351,7 @@ export default function ExerciseView({
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.2, ease: "easeInOut" }}
                 className={clsx(
-                  "h-[50px] w-[250px] bg-[#1DA492] rounded-[15px] cursor-pointer",
+                  "h-[50px] w-[250px] [@media(min-height:900px)]:h-[70px] [@media(min-height:900px)]:w-[350px] bg-[#1DA492] rounded-[15px] cursor-pointer",
                   "hover:brightness-110 transition-all duration-200 overflow-hidden",
                   "font-bold text-white flex items-center mb-10",
                 )}
@@ -360,7 +361,7 @@ export default function ExerciseView({
                   className={clsx(
                     "h-full w-full bg-[#23BEAA] cursor-pointer relative",
                     "flex items-center justify-center",
-                    "font-bold text-white text-[16px]",
+                    "font-bold text-white text-[16px] [@media(min-height:900px)]:text-[22px]",
                     "rounded-tl-[40px] rounded-br-[40px]",
                   )}
                 >
@@ -381,7 +382,7 @@ export default function ExerciseView({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.2, ease: "easeInOut" }}
-                className="h-[90%] relative w-full bg-[rgba(255,255,255,0.15)] border-t-2 border-t-[rgba(255,255,255,0.2)] flex flex-row items-center px-[50px]"
+                className="h-[140px] [@media(min-height:900px)]:h-[180px] relative w-full bg-[rgba(255,255,255,0.15)] border-t-2 border-t-[rgba(255,255,255,0.2)] flex flex-row items-center px-[50px]"
               >
                 <Image
                   src={isAnswerCorrect ? congrats : sadFace}

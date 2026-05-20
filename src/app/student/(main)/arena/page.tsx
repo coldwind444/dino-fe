@@ -289,7 +289,7 @@ export default function Arena() {
             "h-full absolute bg-[#F5DEB3] rounded-[20px] z-0 pl-[374px]",
             "flex flex-col transition-all duration-300 ease-in-out overflow-hidden",
             rulesShow
-              ? "w-[98vw] opacity-100 overflow-x-hidden"
+              ? "w-[calc(100vw-30px)] opacity-100 overflow-x-hidden"
               : "w-0 opacity-0",
           )}
           data-testid="rules-panel"
@@ -297,14 +297,14 @@ export default function Arena() {
           {/* Fade + Slide-in wrapper for all content */}
           <div
             className={clsx(
-              "transition-all duration-500 ease-in-out",
+              "transition-all duration-500 ease-in-out h-full",
               rulesShow
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 -translate-x-6",
             )}
           >
             {/* Header */}
-            <div className="flex flex-row items-center justify-center gap-[200px]">
+            <div className="flex flex-row items-center justify-between px-[60px]">
               {/* Left button */}
               <div
                 className={clsx(
@@ -380,13 +380,13 @@ export default function Arena() {
             {/* Rules content */}
             <div
               className={clsx(
-                "flex-1 flex-row items-center w-full mt-[30px] transition-all duration-300 overflow-hidden",
+                "flex-1 flex-row items-center w-full h-full mt-[30px] transition-all duration-300 overflow-hidden pb-50",
               )}
             >
               {/* PAGE 1 */}
               <div
                 className={clsx(
-                  "flex flex-row h-full flex-1",
+                  "flex flex-row h-full flex-1 justify-center items-center",
                   rulesPage !== 0 && "hidden",
                 )}
               >
@@ -640,7 +640,7 @@ export default function Arena() {
           {/* Collapse button */}
           <div
             className={clsx(
-              "h-[70px] w-[50px] bg-[#C13501] absolute right-0 translate-y-[270px] group cursor-pointer",
+              "h-[70px] w-[50px] bg-[#C13501] absolute right-0 top-1/2 -translate-y-1/2 group cursor-pointer",
               "rounded-tl-[20px] rounded-bl-[20px] flex items-center justify-center text-[white] text-[40px]",
               "shadow-[-4px_0_10px_rgba(0,0,0,0.25)]",
             )}
@@ -833,7 +833,7 @@ export default function Arena() {
           >
             <div
               className={clsx(
-                "h-[99%] w-[345px] bg-white border-3 rounded-[20px]",
+                "h-[99%] w-[calc(100%-5px)] bg-white border-3 rounded-[20px]",
                 "flex flex-col items-center p-[20px]",
               )}
               style={{ borderColor: userRank?.color }}

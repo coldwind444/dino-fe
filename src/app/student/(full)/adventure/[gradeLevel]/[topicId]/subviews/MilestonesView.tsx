@@ -105,7 +105,7 @@ export default function MilestonesView({
           <label
             className={clsx(
               roboto.className,
-              "text-white text-[22px] font-bold text-center text-wrap max-w-[300px]",
+              "text-white text-[22px] font-bold text-center text-wrap max-w-[350px]",
             )}
           >
             {topic?.title || ""}
@@ -130,7 +130,7 @@ export default function MilestonesView({
         )}
         {mode === "select" && (
           // Selection UI - Do exercise or Study
-          <div className="h-full w-full overflow-hidden flex flex-col items-center gap-[100px] relative">
+          <div className="h-full w-full overflow-hidden flex flex-col items-center justify-evenly relative">
             {/* Back button */}
             <button
               data-testid="back-to-milestones-btn"
@@ -139,8 +139,8 @@ export default function MilestonesView({
             >
               <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />
             </button>
-            <h1 className="text-white font-bold text-[25px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
-              {currentLecture?.title}
+            <h1 className="text-white font-bold text-[25px] [@media(min-height:900px)]:text-[35px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
+              {`Bài ${currentLecture?.order ?? "#"}: ${currentLecture?.title}`}
             </h1>
             <div className="flex flex-row items-end justify-center gap-40 w-full">
               <div
@@ -153,13 +153,13 @@ export default function MilestonesView({
                 <Image
                   src={bagOpen}
                   alt=""
-                  height={300}
-                  width={300}
-                  className="group-hover:scale-120 group-hover:drop-shadow-[0_0_15px_rgba(249,173,85,0.8)] transition-all duration-200"
+                  height={400}
+                  width={400}
+                  className="object-contain w-[300px] h-[300px] [@media(min-height:900px)]:w-[400px] [@media(min-height:900px)]:h-[400px] group-hover:scale-120 group-hover:drop-shadow-[0_0_15px_rgba(249,173,85,0.8)] transition-all duration-200"
                 />
                 <label
                   className={clsx(
-                    "text-amber-100 font-bold text-3xl",
+                    "text-amber-100 font-bold text-3xl [@media(min-height:900px)]:text-5xl",
                     sriracha.className,
                   )}
                 >
@@ -174,13 +174,13 @@ export default function MilestonesView({
                 <Image
                   src={map}
                   alt=""
-                  height={280}
-                  width={280}
-                  className="group-hover:scale-120 group-hover:drop-shadow-[0_0_15px_rgba(249,173,85,0.8)] transition-all duration-200"
+                  height={380}
+                  width={380}
+                  className="object-contain w-[280px] h-[280px] [@media(min-height:900px)]:w-[380px] [@media(min-height:900px)]:h-[380px] group-hover:scale-120 group-hover:drop-shadow-[0_0_15px_rgba(249,173,85,0.8)] transition-all duration-200"
                 />
                 <label
                   className={clsx(
-                    "text-amber-100 font-bold text-3xl",
+                    "text-amber-100 font-bold text-3xl [@media(min-height:900px)]:text-5xl",
                     sriracha.className,
                   )}
                 >
@@ -192,7 +192,7 @@ export default function MilestonesView({
         )}
         {mode === "lesson" && (
           // UI to view lesson theory
-          <div className="h-full w-full overflow-hidden flex flex-col items-center gap-4 relative">
+          <div className="h-full w-full overflow-hidden flex flex-col items-center justify-center gap-4 relative">
             {/* Back button */}
             <button
               data-testid="back-to-select-btn"

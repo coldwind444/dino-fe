@@ -252,7 +252,7 @@ export default function LessonsPage({ params }: LessonsPageProps) {
             )}
           />
 
-          <div className="absolute h-full w-full flex flex-col gap-[10px] z-10">
+          <div className="absolute h-full w-full flex flex-col gap-[10px] z-10 pb-[20px]">
             {/* Header */}
             <div className="flex flex-row gap-[10px] p-[15px] items-center">
               <div className="relative px-[25px] py-[6px] bg-[#1DA492] rounded-[15px] text-white font-bold">

@@ -201,94 +201,122 @@ export default function StudentHome() {
           data-testid="assessment-float-btn"
           onClick={() => setIsEntranceTestModalOpened(true)}
         >
-          {/* Ping circle */}
           <div className="absolute inset-0 m-auto h-12 w-12 bg-amber-500 rounded-full animate-ping z-10"></div>
-          {/* Main circle */}
           <div
             className="absolute inset-0 m-auto h-15 w-15 bg-amber-500 rounded-full
-                  flex items-center justify-center text-white shadow-2xl text-xl z-20"
+              flex items-center justify-center text-white shadow-2xl text-xl z-20"
           >
             <FontAwesomeIcon icon={faFlaskVial} />
           </div>
-          {/* Red dot */}
           <div className="absolute top-0 right-0 h-4 w-4 bg-red-600 rounded-full border-2 border-white z-30"></div>
         </div>
       )}
-      <div className="flex flex-col lg:flex-row gap-[21px]">
+
+      <div className="flex flex-col lg:flex-row gap-[21px] h-full">
         <div className="pt-[32px]">
           <TimeCard username={username} />
         </div>
         <div className="flex-1">
-          <div className="relative h-[203px] w-full">
+          {/* Banner — fixed at 203px matching original; trophy overflows via overflow-visible */}
+          <div className="relative w-full h-[203px]" style={{ minHeight: 'clamp(203px, 22vh, 280px)' }}>
+            {/* Shadow layer */}
             <div className="absolute inset-0 bg-[#23BEAA] rounded-[15px] translate-x-[4px] translate-y-[4px]" />
 
+            {/* Banner card — overflow-visible so trophy can pop above */}
             <div
               className={clsx(
-                "relative h-full z-[1]",
+                "absolute inset-0 z-[1]",
                 "border-2 border-[#23BEAA]",
                 "bg-[#F3FFFD]",
                 "rounded-[15px]",
                 "flex items-center gap-6",
+                "overflow-visible",
               )}
             >
-              <div className="w-60 h-60 flex-shrink-0 flex items-center justify-center pb-4 pl-6">
-                <Image src={trophy} alt="trophy" width={300} height={300} />
+              {/* Trophy — positioned to overflow above the banner, matching 125% look */}
+              <div
+                className="flex-shrink-0 flex items-center justify-center pl-6"
+                style={{
+                  width: 'clamp(200px, 18vw, 250px)',
+                  height: 'clamp(200px, 18vw, 250px)',
+                  marginTop: 'clamp(-60px, -5vh, -40px)',
+                }}
+              >
+                <Image
+                  src={trophy}
+                  alt="trophy"
+                  width={300}
+                  height={300}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
               </div>
-              <div className="flex-1 pl-10 flex flex-col gap-[20px]">
-                <h3 className="text-3xl font-medium text-[#23BEAA]">
+
+              <div className="flex-1 pl-6 flex flex-col gap-[20px]">
+                {/* Title */}
+                <h3
+                  className="font-medium text-[#23BEAA]"
+                  style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.875rem)' }}
+                >
                   Luôn nỗ lực mỗi ngày để trở nên giỏi hơn !
                 </h3>
-                <div className="mt-4 flex items-center gap-4">
-                  <div className="relative inline-block h-[90px] w-[180px] rounded-[30px] bg-[#1DA492] overflow-hidden">
+
+                <div className="flex items-center gap-4">
+                  {/* CHỌN LỚP pill */}
+                  <div
+                    className="relative inline-block rounded-[30px] bg-[#1DA492] overflow-hidden flex-shrink-0"
+                    style={{
+                      height: 'clamp(80px, 9vh, 100px)',
+                      width: 'clamp(160px, 14vw, 200px)',
+                    }}
+                  >
                     <span className="absolute top-6 left-6 w-2 h-2 rounded-full bg-white/40" />
                     <span className="absolute bottom-6 right-6 w-3 h-3 rounded-full bg-white/30" />
                     <div
                       className={clsx(
                         "h-full w-full rounded-tl-[50px] rounded-bl-[50px] rounded-br-[50px]",
-                        "bg-[#23BEAA] text-[20px] text-white font-bold flex items-center justify-center",
+                        "bg-[#23BEAA] text-white font-bold flex items-center justify-center",
                       )}
+                      style={{ fontSize: 'clamp(17px, 1.5vw, 22px)' }}
                     >
                       CHỌN LỚP
                     </div>
                   </div>
 
+                  {/* Grade number buttons */}
                   <div className="flex items-center gap-5 ml-[30px]">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button
                         data-testid={`grade-btn-${n}`}
                         key={n}
-                        onClick={() => {
-                          setGradeLevel(n.toString());
-                        }}
+                        onClick={() => setGradeLevel(n.toString())}
                         className={clsx(
-                          "relative aspect-square h-20 rounded-full flex items-center justify-center",
-                          "font-bold text-3xl transition-all hover:scale-105 group cursor-pointer",
-                          "bg-[#C4F1EC] text-[#23BEAA] hover:bg-[#23BEAA] hover:text-white group",
-                          n.toString() === gradeLevel
-                            ? "bg-amber-500 text-white"
-                            : "",
+                          "relative aspect-square rounded-full flex items-center justify-center",
+                          "font-bold transition-all hover:scale-105 group cursor-pointer",
+                          "bg-[#C4F1EC] text-[#23BEAA] hover:bg-[#23BEAA] hover:text-white",
+                          n.toString() === gradeLevel ? "bg-amber-500 text-white" : "",
                           fredoka.className,
                         )}
+                        style={{
+                          width: 'clamp(72px, 6.5vw, 80px)',
+                          height: 'clamp(72px, 6.5vw, 80px)',
+                          fontSize: 'clamp(1.5rem, 2.5vw, 1.7rem)',
+                        }}
                       >
                         <span
                           className={clsx(
                             "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[15px] w-[30px]",
                             "bg-[rgba(255,255,255)] bottom-0 right-0 mb-[13px] mr-[5px] -rotate-45",
                             "group-hover:bg-[rgba(255,255,255,0.5)]",
-                            n.toString() === gradeLevel
-                              ? "bg-[rgba(255,255,255,0.5)]"
-                              : "",
+                            n.toString() === gradeLevel ? "bg-[rgba(255,255,255,0.5)]" : "",
                           )}
-                        ></span>
+                        />
                         <span
                           className={clsx(
                             "absolute [clip-path:ellipse(50%_50%_at_50%_50%)] rounded-full h-[10px] w-[20px]",
                             "bg-[rgba(255,255,255)] left-0 rotate-90 group-hover:bg-[rgba(255,255,255,0.5)]",
-                            n.toString() === gradeLevel
-                              ? "bg-[rgba(255,255,255,0.5)]"
-                              : "",
+                            n.toString() === gradeLevel ? "bg-[rgba(255,255,255,0.5)]" : "",
                           )}
-                        ></span>
+                        />
                         {n}
                       </button>
                     ))}
@@ -300,12 +328,15 @@ export default function StudentHome() {
         </div>
       </div>
 
-      {/* Main Area */}
-      <div className="mt-8 mb-[50px] grid lg:grid-cols-12 gap-6 items-start w-full">
+      {/* Main Area — flex-1 fills all remaining height; pb instead of mb so cards reach near bottom */}
+      <div
+        className="mt-8 pb-18 grid lg:grid-cols-12 gap-6 w-full flex-1"
+        style={{ alignItems: 'stretch' }}
+      >
         {/* Lesson Card */}
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-5 flex flex-col">
           {recentTopic ? (
-            <div className="relative h-[400px]">
+            <div className="relative flex-1" style={{ minHeight: 'clamp(380px, 44vh, 520px)' }}>
               <div className="absolute inset-0 bg-[#9B5DE5] rounded-[15px] translate-x-[4px] translate-y-[4px]" />
               <div
                 className={clsx(
@@ -317,30 +348,34 @@ export default function StudentHome() {
                 <span
                   className={clsx(
                     "absolute top-3.5 right-2.5",
-                    "text-base bg-[#E9D5FF] text-[#6B21A8] font-medium",
+                    "bg-[#E9D5FF] text-[#6B21A8] font-medium",
                     "px-6 py-2 rounded-full",
                   )}
+                  style={{ fontSize: 'clamp(0.875rem, 1.2vw, 1rem)' }}
                 >
                   Đang học
                 </span>
                 <div className="flex-1 flex items-center gap-6">
                   <div
-                    className={clsx(
-                      "flex-shrink-0 w-36 h-36 rounded-xl",
-                      "flex items-center justify-center",
-                    )}
+                    className="flex-shrink-0 rounded-xl flex items-center justify-center"
+                    style={{
+                      width: 'clamp(120px, 10vw, 160px)',
+                      height: 'clamp(120px, 10vw, 160px)',
+                    }}
                   >
                     <Image
                       src={toCloudinaryWebP(recentTopic?.description || "")}
                       alt="rtopic"
                       width={120}
                       height={120}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
                   </div>
                   <div className="flex-1 pl-4">
                     <h4
-                      className="text-3xl font-bold"
+                      className="font-bold"
                       data-testid="recent-topic-title"
+                      style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.875rem)' }}
                     >
                       {recentTopic?.title}
                     </h4>
@@ -348,23 +383,23 @@ export default function StudentHome() {
                 </div>
                 <div
                   className={clsx(
-                    "h-[70px] w-full rounded-[20px] bg-[#5E1C9A] overflow-hidden cursor-pointer",
+                    "w-full rounded-[20px] bg-[#5E1C9A] overflow-hidden cursor-pointer",
                     "hover:opacity-90 group",
                   )}
+                  style={{ height: 'clamp(65px, 7.5vh, 85px)' }}
                   onClick={() => {
                     if (recentTopic) {
-                      router.push(
-                        `/student/adventure/${gradeLevel}/${recentTopic._id}`,
-                      );
+                      router.push(`/student/adventure/${gradeLevel}/${recentTopic._id}`);
                     }
                   }}
                 >
                   <div
                     className={clsx(
                       "flex items-center justify-center",
-                      "h-full w-full relative bg-[#8A2BE2] text-white text-[22px] font-medium",
-                      "rounded-tl-[50px] rounded-br-[60px] relative",
+                      "h-full w-full relative bg-[#8A2BE2] text-white font-medium",
+                      "rounded-tl-[50px] rounded-br-[60px]",
                     )}
+                    style={{ fontSize: 'clamp(1.1rem, 1.6vw, 1.375rem)' }}
                     data-testid="continue-learning-btn"
                   >
                     Tiếp tục học
@@ -375,15 +410,21 @@ export default function StudentHome() {
               </div>
             </div>
           ) : (
-            <div className="relative h-[400px] rounded-[15px] border-2 border-gray-300 gap-2 flex flex-col items-center justify-center">
-              <FontAwesomeIcon
-                icon={faBriefcaseClock}
-                className="text-gray-400 text-[50px]"
-              />
-              <label className="text-gray-400 text-xl font-medium">{`Bạn chưa học chủ đề nào của Lớp ${gradeLevel} gần đây.`}</label>
+            <div
+              className="flex-1 rounded-[15px] border-2 border-gray-300 gap-2 flex flex-col items-center justify-center"
+              style={{ minHeight: 'clamp(380px, 44vh, 520px)' }}
+            >
+              <FontAwesomeIcon icon={faBriefcaseClock} className="text-gray-400 text-[50px]" />
+              <label
+                className="text-gray-400 font-medium"
+                style={{ fontSize: 'clamp(1rem, 1.4vw, 1.25rem)' }}
+              >
+                {`Bạn chưa học chủ đề nào của Lớp ${gradeLevel} gần đây.`}
+              </label>
               <Link
                 href="/student/lessons"
                 className="text-blue-500 cursor-pointer font-medium hover:underline"
+                style={{ fontSize: 'clamp(1rem, 1.4vw, 1.25rem)' }}
               >
                 Học ngay nào !
               </Link>
@@ -392,22 +433,29 @@ export default function StudentHome() {
         </div>
 
         {/* Review Section */}
-        <aside className="lg:col-span-7 h-fit pr-5 ">
+        <aside className="lg:col-span-7 flex flex-col">
           {completedTopic && completedTopic.length > 0 ? (
-            <div className="w-full">
-              <h4 className="font-semibold">Ôn lại kiến thức</h4>
-              <div className="mt-3 flex flex-col gap-3 h-full w-full overflow-y-auto pr-2">
+            <div className="w-full flex-1 flex flex-col">
+              <h4
+                className="font-semibold"
+                style={{ fontSize: 'clamp(1rem, 1.3vw, 1.25rem)' }}
+              >
+                Ôn lại kiến thức
+              </h4>
+              <div className="mt-3 flex flex-col gap-3 flex-1 overflow-y-auto pr-2">
                 {completedTopic.map((val, idx) => (
                   <div
                     key={`review-${idx}`}
                     className={clsx(
                       "flex items-center justify-between p-4 rounded-[20px] w-full",
-                      "bg-[#FFF6F6] border-2 border-[#FF9292] min-h-[80px] pl-[50px]",
+                      "bg-[#FFF6F6] border-2 border-[#FF9292] pl-[50px]",
                     )}
+                    style={{ minHeight: 'clamp(72px, 8vh, 95px)' }}
                   >
                     <div
-                      className="text-xl text-[#FF9292] font-medium"
+                      className="text-[#FF9292] font-medium"
                       data-testid={`complete-topic-title-${idx}`}
+                      style={{ fontSize: 'clamp(1rem, 1.4vw, 1.25rem)' }}
                     >
                       {val.title}
                     </div>
@@ -421,9 +469,7 @@ export default function StudentHome() {
                         "transition-all duration-200 group cursor-pointer",
                       )}
                       onClick={() => {
-                        router.push(
-                          `/student/adventure/${gradeLevel}/${val._id}`,
-                        );
+                        router.push(`/student/adventure/${gradeLevel}/${val._id}`);
                       }}
                     >
                       <FontAwesomeIcon
@@ -436,18 +482,22 @@ export default function StudentHome() {
               </div>
             </div>
           ) : (
-            <div className="h-[398px] w-[830px] rounded-[15px] border-2 border-gray-300 flex flex-col gap-2 items-center justify-center">
-              <FontAwesomeIcon
-                icon={faChalkboard}
-                className="text-gray-400 text-[50px]"
-              />
-              <label className="text-gray-400 text-xl font-medium">
+            <div
+              className="flex-1 w-full rounded-[15px] border-2 border-gray-300 flex flex-col gap-2 items-center justify-center"
+              style={{ minHeight: 'clamp(380px, 44vh, 520px)' }}
+            >
+              <FontAwesomeIcon icon={faChalkboard} className="text-gray-400 text-[50px]" />
+              <label
+                className="text-gray-400 font-medium"
+                style={{ fontSize: 'clamp(1rem, 1.4vw, 1.25rem)' }}
+              >
                 {`Bạn chưa hoàn thành chủ đề nào của Lớp ${gradeLevel}.`}
               </label>
             </div>
           )}
         </aside>
       </div>
+
       {isEntranceTestModalOpened && (
         <EntranceTestPopup
           close={closeEntranceTestModal}

@@ -92,7 +92,7 @@ export function TimeCard({ username }: { username: string }) {
   }, []);
 
   return (
-    <div className="relative w-[270px] h-[170px]">
+    <div className="relative w-[270px] h-full">
       <div
         className="absolute inset-0 rounded-[15px] translate-x-[4px] translate-y-[4px]"
         style={{ backgroundColor: colors.shadow }}
@@ -119,7 +119,7 @@ export function TimeCard({ username }: { username: string }) {
         <div
           className={clsx(
             roboto.className,
-            "absolute top-[100px] right-[37px] text-[19px] font-medium"
+            "absolute top-2/3 -translate-y-3 right-[37px] text-[19px] font-medium"
           )}
           style={{ color: colors.textColor }}
         >

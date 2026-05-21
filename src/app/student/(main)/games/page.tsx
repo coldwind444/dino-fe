@@ -125,9 +125,9 @@ export default function Games() {
         </div>
       </div>
       {/** Main */}
-      <div className="flex flex-row gap-10 w-full">
+      <div className="flex flex-row items-start gap-10 w-full">
         {/** Illustration */}
-        <div className="w-1/3 h-full block relative">
+        <div className="relative shrink-0 w-[clamp(31rem,33vw,40rem)] max-w-[34vw] aspect-[657/682]">
           <motion.div
             initial={{
               opacity: mode === "single" ? 1 : 0,
@@ -138,9 +138,14 @@ export default function Games() {
               scale: mode === "single" ? 1 : 0.9,
             }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute -top-25 left-20 pointer-events-none"
+            className="absolute -top-[13%] left-[45%] z-10 w-[55%] max-w-[22rem] -translate-x-1/2 pointer-events-none"
           >
-            <Image src={single} alt="" height={280} width={280} priority />
+            <Image
+              src={single}
+              alt=""
+              className="h-auto w-full object-contain"
+              priority
+            />
           </motion.div>
           <motion.div
             initial={{
@@ -152,33 +157,34 @@ export default function Games() {
               scale: mode === "pvp" ? 1 : 0.9,
             }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute -top-35 left-20 pointer-events-none"
+            className="absolute -top-[18%] left-1/2 z-10 w-[65%] max-w-[24.25rem] -translate-x-1/2 pointer-events-none"
           >
-            <Image src={pvp} alt="" height={340} width={340} priority />
+            <Image src={pvp} alt="" className="h-auto w-full" priority />
           </motion.div>
+
           {mode === "single" ? (
-            <label className="text-5xl text-[#006E69] font-bold z-10 absolute bottom-45 right-10">
+            <label className="absolute top-[59%] right-[6%] z-10 text-[clamp(2.25rem,2.5vw,3rem)] text-[#006E69] font-bold leading-none">
               Chơi Đơn
             </label>
           ) : (
-            <label className="text-5xl text-[#824738] font-bold z-10 absolute bottom-45 right-10">
+            <label className="absolute top-[59%] right-[6%] z-10 text-[clamp(2.25rem,2.5vw,3rem)] text-[#824738] font-bold leading-none">
               Tương Tác
             </label>
           )}
           {mode === "single" ? (
-            <label className="text-[28px] text-[#23BEAA] font-bold z-10 absolute bottom-13 right-0">
+            <label className="absolute top-[75%] right-[4%] z-10 text-[clamp(1.4rem,1.46vw,1.75rem)] text-[#23BEAA] font-bold leading-[1.65]">
               THỬ THÁCH BẢN THÂN <br /> CHINH PHỤC TOÁN HỌC !
             </label>
           ) : (
-            <label className="text-[28px] text-[#FF9600] font-bold z-10 absolute bottom-13 right-0">
+            <label className="absolute top-[75%] right-[4%] z-10 text-[clamp(1.4rem,1.46vw,1.75rem)] text-[#FF9600] font-bold leading-[1.65]">
               HỢP LỰC HOẶC ĐỐI ĐẦU, <br /> BẠN CHỌN KIỂU NÀO ?
             </label>
           )}
+
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 657 682"
-            width="100%"
-            height="100%"
+            className="absolute inset-0 h-full w-full"
             preserveAspectRatio="xMidYMid meet"
           >
             <path
@@ -187,24 +193,9 @@ export default function Games() {
               fill="url(#paint0_linear_1733_758)"
             />
             <defs>
-              <linearGradient
-                id="paint0_linear_1733_758"
-                x1="328.5"
-                y1="0"
-                x2="328.5"
-                y2="682"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop
-                  offset="0.466346"
-                  style={{ transition: "stop-color 0.3s ease" }}
-                  stopColor={mode === "single" ? "#C4EEDE" : "#FFD3A5"}
-                />
-                <stop
-                  offset="1"
-                  style={{ transition: "stop-color 0.3s ease" }}
-                  stopColor={mode === "single" ? "#C8DBF8" : "#FFFAC5"}
-                />
+              <linearGradient id="paint0_linear_1733_758" x1="328.5" y1="0" x2="328.5" y2="682" gradientUnits="userSpaceOnUse">
+                <stop offset="0.466346" style={{ transition: "stop-color 0.3s ease" }} stopColor={mode === "single" ? "#C4EEDE" : "#FFD3A5"} />
+                <stop offset="1" style={{ transition: "stop-color 0.3s ease" }} stopColor={mode === "single" ? "#C8DBF8" : "#FFFAC5"} />
               </linearGradient>
             </defs>
           </svg>

@@ -18,7 +18,8 @@ import {
   getParticipations,
   upsertAnswers,
   getArena,
-  updateParticipation,
+  submitArena,
+  getUserProfile,
 } from "@/apis";
 import {
   ExerciseResponse,
@@ -73,8 +74,10 @@ export default function ArenaExam({ params }: ArenaExamProps) {
       const { arenaId } = await params;
       try {
         setLoading(true);
+        // 1. Fetch user
+        const user = await getUserProfile();
 
-        // 1. Fetch Arena details
+        // 2. Fetch Arena details
         const arenas = await getArena({ _id: arenaId });
         const currentArena = arenas[0];
         if (!currentArena) {
@@ -83,10 +86,10 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         }
         setArena(currentArena);
 
-        // 2. Fetch or Create Participation
+        // 3. Fetch or Create Participation
         let currParticipation: ParticipationResponse | null = null;
         try {
-          const participations = await getParticipations({ arenaId: arenaId });
+          const participations = await getParticipations({ arenaId: arenaId, userId: user._id });
           if (participations.length > 0) {
             currParticipation = participations[0];
             if (currParticipation.status === "finished") {
@@ -113,7 +116,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
           setParticipation(currParticipation);
         }
 
-        // 3. Fetch Exercises
+        // 4. Fetch Exercises
         const exercisesData = await getExercises({
           arenaId: arenaId,
           page: 1,
@@ -125,7 +128,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
         }
         setExercises(exercisesData.sort((a, b) => a.order - b.order));
 
-        // 4. Fetch Answers
+        // 5. Fetch Answers
         const existingAnswers = await getAnswers({
           participationId: currParticipation._id,
           limit: 100,
@@ -253,13 +256,7 @@ export default function ArenaExam({ params }: ArenaExamProps) {
       await upsertAnswers(cleanedAnswerArray(currentAnswers));
 
       // Update participation status
-      await updateParticipation(participation._id, {
-        timeTaken,
-        status: "graded",
-        score: 0,
-        finishedAt: new Date().toISOString(),
-        correctCount: 0,
-      });
+      await submitArena(participation._id, timeTaken);
 
       toast.success("Nộp bài thành công!", { toasterId: "arena-submit" });
       router.push("/student/arena");

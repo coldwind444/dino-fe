@@ -115,25 +115,26 @@ export default function HistoryDetail({ onBack, record }: HistoryDetailProps) {
   const duration = record?.duration ?? "—";
 
   return (
-    <div className="flex flex-col gap-5 p-5 h-full w-full">
-      {/** Links */}
-      <span className="flex h-fit flex-row gap-2 font-medium ml-3">
-        <Link
-          onClick={onBack}
-          className="text-[rgba(0,0,0,0.5)] cursor-pointer hover:underline"
-          href=""
-        >
-          Lịch sử
-        </Link>
-        <label className="text-[rgba(0,0,0,0.5)]">{">"}</label>
-        <Link className="text-teal-500 cursor-pointer hover:underline" href="">
-          Chi tiết bài làm - {title}
-        </Link>
-      </span>
+    <div className="flex flex-col gap-5 p-5 h-screen w-full">
       {/** Main */}
-      <div className="flex-1 w-full flex flex-row gap-5">
+      <div className="flex-1 w-full flex flex-row gap-5 h-full">
         {/** Statistic */}
         <div className="flex flex-col gap-3 h-full w-1/3">
+          {/** Links */}
+          <span className="flex h-fit flex-row gap-2 font-medium ml-3">
+            <Link
+              onClick={onBack}
+              className="text-[rgba(0,0,0,0.5)] cursor-pointer hover:underline"
+              href=""
+              data-testid="back-link"
+            >
+              Lịch sử
+            </Link>
+            <label className="text-[rgba(0,0,0,0.5)]">{">"}</label>
+            <Link className="text-teal-500 cursor-pointer hover:underline" href="">
+              Chi tiết bài làm - {title}
+            </Link>
+          </span>
           {/** Name */}
           <div
             className="h-30 w-full bg-gradient-to-r from-0% to-100% 
@@ -207,7 +208,7 @@ export default function HistoryDetail({ onBack, record }: HistoryDetailProps) {
           <label className="font-medium text-[17px] text-[rgba(0,0,0,0.5)]">
             Chi tiết bài làm
           </label>
-          <div className="flex flex-col max-h-[550px] w-full pr-10 overflow-y-auto">
+          <div className="flex flex-col w-full pr-10 overflow-y-auto h-[80%]">
             {isLoading ? (
               <p className="text-[rgba(0,0,0,0.5)]">Đang tải...</p>
             ) : answerDetails.length === 0 ? (

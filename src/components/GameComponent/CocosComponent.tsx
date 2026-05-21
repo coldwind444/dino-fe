@@ -395,9 +395,6 @@ const CocosGame = forwardRef<CocosGameRef, CocosGameProps>((props, ref) => {
     <div
       ref={containerRef}
       className="w-full h-full flex items-center justify-center bg-transparent overflow-hidden"
-      style={{
-        minHeight: "500px",
-      }}
     >
       <div
         className="relative bg-transparent"

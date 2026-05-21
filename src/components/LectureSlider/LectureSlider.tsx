@@ -5,13 +5,12 @@ import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from "next/navigation";
 import clsx from "clsx";
 import lock from "../../../public/assets/exercises/lock.png";
 import { LectureResponse } from "@/types";
 import { toCloudinaryWebP } from "@/helpers/utils";
-import { useLessonStore } from "@/stores/lessonStore";
 import {
-  getLectureIndexFromLocalStorage,
   saveLectureIndexToLocalStorage,
 } from "@/helpers/localStorage";
 import { getLectureResults, getUserProfile } from "@/apis";
@@ -20,6 +19,7 @@ type LectureSliderProps = {
   lectures: LectureResponse[];
   doExercise: () => void;
   milestone: string;
+  initialIndex: number;
   onLectureChange: (lecture: LectureResponse) => void;
 };
 
@@ -27,18 +27,28 @@ export default function LectureSlider({
   lectures,
   doExercise,
   milestone,
+  initialIndex,
   onLectureChange,
 }: LectureSliderProps) {
-  const { gradeLevel, storedTopicId } = useLessonStore();
+  const params = useParams();
+  const gradeLevel = params.gradeLevel as string;
+  const topicId = params.topicId as string;
+
   const [translate, setTranslate] = useState(0);
-  const [idx, setIdx] = useState(() => {
-    const data = getLectureIndexFromLocalStorage(gradeLevel, storedTopicId);
-    return data?.index || 0;
-  });
+  const [idx, setIdx] = useState(initialIndex);
   const [unlockedDiffs, setUnlockedDiffs] = useState<string[]>(["easy"]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const ITEM_WIDTH = 520; // roughly 280px image + 200px svg + 20px gap
+  const [windowHeight, setWindowHeight] = useState(1080);
+
+  useEffect(() => {
+    setWindowHeight(window.innerHeight);
+    const handleResize = () => setWindowHeight(window.innerHeight);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const ITEM_WIDTH = windowHeight >= 900 ? 590 : 520; // roughly 350px image + 200px svg + 40px gaps
 
   useEffect(() => {
     if (!lectures || lectures.length === 0) return;
@@ -101,12 +111,12 @@ export default function LectureSlider({
   useEffect(() => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
-      const IMAGE_CENTER_OFFSET = 140; // anchor point within each 500px block
+      const IMAGE_CENTER_OFFSET = windowHeight >= 900 ? 175 : 140; // anchor point within each block
       const newTranslate =
         containerWidth / 2 - (idx * ITEM_WIDTH + IMAGE_CENTER_OFFSET);
       setTranslate(newTranslate);
     }
-  }, [idx]);
+  }, [idx, windowHeight, ITEM_WIDTH]);
 
   const forward = () => {
     if (idx < lectures.length - 1) {
@@ -115,7 +125,7 @@ export default function LectureSlider({
       onLectureChange(lectures[newIdx]);
       saveLectureIndexToLocalStorage(
         gradeLevel,
-        storedTopicId,
+        topicId,
         newIdx,
         lectures[newIdx].difficulty,
       );
@@ -129,7 +139,7 @@ export default function LectureSlider({
       onLectureChange(lectures[newIdx]);
       saveLectureIndexToLocalStorage(
         gradeLevel,
-        storedTopicId,
+        topicId,
         newIdx,
         lectures[newIdx].difficulty,
       );
@@ -137,14 +147,14 @@ export default function LectureSlider({
   };
 
   return (
-    <div className="h-full w-full overflow-hidden flex flex-col items-center gap-[100px]">
+    <div className="h-full w-full overflow-hidden flex flex-col items-center justify-between">
       {/* Header */}
       {unlockedDiffs.includes(lectures[idx].difficulty) ? (
-        <h1 className="text-white font-bold text-[25px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer">
+        <h1 className="text-white font-bold text-[25px] [@media(min-height:900px)]:text-[35px] text-wrap text-center px-[20px] min-h-[70px] w-full select-none cursor-pointer [@media(min-height:900px)]:mt-[20px]">
           {`Bài ${lectures[idx]?.order ?? "#"}: ${lectures[idx]?.title}`}
         </h1>
       ) : (
-        <h1 className="text-2xl font-bold text-[#FFAE5F] min-h-[70px]">
+        <h1 className="text-2xl [@media(min-height:900px)]:text-[30px] font-bold text-[#FFAE5F] min-h-[70px] [@media(min-height:900px)]:mt-[20px]">
           Bài học đang bị khóa
         </h1>
       )}
@@ -168,11 +178,12 @@ export default function LectureSlider({
                 <Image
                   src={toCloudinaryWebP(milestone)}
                   alt=""
-                  width={280}
-                  height={280}
+                  width={350}
+                  height={350}
                   priority={index < 3}
                   className={clsx(
                     "aspect-square flex-shrink-0 object-contain",
+                    "w-[280px] h-[280px] [@media(min-height:900px)]:w-[350px] [@media(min-height:900px)]:h-[350px]",
                     index === idx ? "scale-100" : "scale-75 opacity-60",
                     "transition-all duration-500",
                     !unlockedDiffs.includes(lecture.difficulty)
@@ -184,9 +195,9 @@ export default function LectureSlider({
                   <Image
                     src={lock}
                     alt="X"
-                    width={100}
-                    height={100}
-                    className="absolute"
+                    width={150}
+                    height={150}
+                    className="absolute w-[100px] h-[100px] [@media(min-height:900px)]:w-[150px] [@media(min-height:900px)]:h-[150px]"
                   />
                 )}
               </div>

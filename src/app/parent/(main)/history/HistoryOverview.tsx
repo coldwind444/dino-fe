@@ -33,7 +33,7 @@ interface HistoryOverviewProps {
   onViewDetail: (record: HistoryRecord) => void;
 }
 
-const PAGE_LIMIT = 5;
+const PAGE_LIMIT = 3;
 
 function formatDuration(timeValue: number | undefined | null): string {
   if (timeValue == null || isNaN(timeValue)) return "—";
@@ -96,9 +96,9 @@ function mapLectureResults(
     const accuracy =
       item.totalQuestions > 0
         ? Math.min(
-            Math.round((item.correctCount / item.totalQuestions) * 100),
-            100,
-          )
+          Math.round((item.correctCount / item.totalQuestions) * 100),
+          100,
+        )
         : 0;
     return {
       _id: item._id,

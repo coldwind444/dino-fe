@@ -6,7 +6,6 @@ import {
   RankResponse,
   LeaderboardResponse,
   CreateParticipationRequest,
-  UpdateParticipationRequest,
 } from "@/types/dto.types";
 import { Pagination } from "@/types";
 
@@ -138,12 +137,12 @@ export const createParticipation = async (
   }
 };
 
-export const updateParticipation = async (
+export const submitArena = async (
   id: string,
-  req: UpdateParticipationRequest,
+  timeTaken: number,
 ) => {
   try {
-    await api.put(`/participations/${id}`, req);
+    await api.post(`/participations/submit/${id}`, { timeTaken });
   } catch (error) {
     handleError(error);
     throw error; // Never reached

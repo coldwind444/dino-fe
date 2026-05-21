@@ -213,9 +213,9 @@ export default function LessonsPage() {
   const featuredTopic = recentTopic || firstTopic;
 
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full h-screen min-h-screen">
       <div className="flex gap-6 p-6">
-        <aside className="w-64 flex-shrink-0">
+        <aside className="w-75 flex-shrink-0">
           <button
             data-testid="select-grade-btn"
             onClick={() => setIsSelectGradeOpen(true)}
@@ -384,7 +384,7 @@ export default function LessonsPage() {
             {isLoading || topicsLoading ? (
               // Skeleton loaders
               Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className="relative h-[320px]">
+                <div key={index} className="relative h-80">
                   <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-gray-200" />
                   <div className="relative h-full bg-white rounded-3xl border-[3px] border-gray-200 flex flex-col items-center justify-center p-6 animate-pulse">
                     <div className="w-32 h-32 bg-gray-200 rounded-2xl mb-6" />
@@ -394,7 +394,7 @@ export default function LessonsPage() {
                 </div>
               ))
             ) : topicsWithPremiumRequiredFlag?.length === 0 ? (
-              <div className="col-span-4 relative h-[320px]">
+              <div className="col-span-4 relative h-80">
                 <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-gray-200" />
                 <div className="relative h-full bg-gray-50 rounded-3xl border-[3px] border-gray-200 flex flex-col items-center justify-center p-6">
                   <div className="text-gray-400 mb-6 opacity-60">
@@ -426,7 +426,7 @@ export default function LessonsPage() {
                   return (
                     <div
                       key={index}
-                      className="relative h-[320px] transition-all hover:scale-105 cursor-pointer"
+                      className="relative h-80 transition-all hover:scale-105 cursor-pointer"
                     >
                       <div className="absolute inset-0 rounded-3xl translate-x-[4px] translate-y-[4px] bg-[#FF9600]" />
                       <div
@@ -452,7 +452,7 @@ export default function LessonsPage() {
                     data-testid={`topic-card-${index}`}
                     key={index}
                     className={clsx(
-                      "relative h-[320px] transition-all",
+                      "relative h-80 transition-all",
                       isRedirecting
                         ? "opacity-50 cursor-not-allowed"
                         : "hover:scale-105 cursor-pointer",

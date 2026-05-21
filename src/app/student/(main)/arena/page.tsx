@@ -431,7 +431,7 @@ export default function Arena() {
               {/* PAGE 2 */}
               <div
                 className={clsx(
-                  "flex flex-row gap-[100px] h-full w-full",
+                  "flex flex-row h-full flex-1 justify-center items-center",
                   rulesPage !== 1 && "hidden",
                 )}
               >
@@ -482,7 +482,7 @@ export default function Arena() {
               {/* PAGE 3 */}
               <div
                 className={clsx(
-                  "flex flex-row gap-[50px] h-full w-full",
+                  "flex flex-row h-full flex-1 justify-center items-center",
                   rulesPage !== 2 && "hidden",
                 )}
               >
@@ -523,7 +523,7 @@ export default function Arena() {
               {/* PAGE 4 */}
               <div
                 className={clsx(
-                  "flex flex-row gap-[100px] h-full w-full",
+                  "flex flex-row h-full flex-1 justify-center items-center gap-16",
                   rulesPage !== 3 && "hidden",
                 )}
               >
@@ -592,7 +592,7 @@ export default function Arena() {
               {/* PAGE 5 */}
               <div
                 className={clsx(
-                  "flex flex-row gap-[100px] h-full w-full",
+                  "flex flex-row h-full flex-1 justify-center items-center gap-5",
                   rulesPage !== 4 && "hidden",
                 )}
               >
@@ -620,7 +620,7 @@ export default function Arena() {
                 <div className="relative">
                   <div
                     className={clsx(
-                      "absolute top-1/2 left-1/2 -translate-x-[150px] translate-y-[100px]",
+                      "absolute top-1/2 left-1/2 -translate-x-[150px] translate-y-[3rem]",
                       "h-[100px] w-[350px] bg-[rgba(0,0,0,0.1)] rounded-full blur-md",
                       "[clip-path:ellipse(50%_40%_at_50%_50%)] z-[1]",
                     )}
@@ -628,8 +628,7 @@ export default function Arena() {
                   <Image
                     src={r5}
                     alt=""
-                    width={366}
-                    className="h-[550px] aspect-square contrast-100 ml-[20px] -translate-y-16 relative z-[2]"
+                    className="h-[25rem] w-auto contrast-100 ml-[20px] -translate-y-16 relative z-[2]"
                     priority
                   />
                 </div>

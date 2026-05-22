@@ -180,8 +180,7 @@ export default function LeaderboardContent() {
             {/* 2nd Place */}
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-3 border-4 border-blue-400 relative">
-                {isValidUrl(leaderboardData[1]?.avatarUrl) &&
-                !leaderboardData[1]?.avatarUrl.endsWith(".svg") ? (
+                {isValidUrl(leaderboardData[1]?.avatarUrl) ? (
                   <Image
                     src={toCloudinaryWebP(leaderboardData[1].avatarUrl)}
                     alt="avatar"
@@ -216,8 +215,7 @@ export default function LeaderboardContent() {
             {/* 1st Place */}
             <div className="flex flex-col items-center -mt-8">
               <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-xl mb-3 border-4 border-yellow-400 relative">
-                {isValidUrl(leaderboardData[0]?.avatarUrl) &&
-                !leaderboardData[0]?.avatarUrl.endsWith(".svg") ? (
+                {isValidUrl(leaderboardData[0]?.avatarUrl) ? (
                   <Image
                     src={toCloudinaryWebP(leaderboardData[0].avatarUrl)}
                     alt="avatar"
@@ -252,8 +250,7 @@ export default function LeaderboardContent() {
             {/* 3rd Place */}
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-3 border-4 border-pink-400 relative">
-                {isValidUrl(leaderboardData[2]?.avatarUrl) &&
-                !leaderboardData[2]?.avatarUrl.endsWith(".svg") ? (
+                {isValidUrl(leaderboardData[2]?.avatarUrl) ? (
                   <Image
                     src={toCloudinaryWebP(leaderboardData[2].avatarUrl)}
                     alt="avatar"
@@ -303,8 +300,7 @@ export default function LeaderboardContent() {
                     {index + 4}
                   </div>
                   <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden">
-                    {isValidUrl(user?.avatarUrl) &&
-                    !user?.avatarUrl.endsWith(".svg") ? (
+                    {isValidUrl(user?.avatarUrl) ? (
                       <Image
                         src={toCloudinaryWebP(user?.avatarUrl)}
                         alt="avatar"

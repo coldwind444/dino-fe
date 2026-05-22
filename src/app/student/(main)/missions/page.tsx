@@ -8,7 +8,7 @@ import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faClose } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { APIError } from "@/apis/config";
 
 export default function MissionPage() {
@@ -277,14 +277,15 @@ export default function MissionPage() {
         </div>
       </main>
 
-      <AnimatePresence>
-        {showRewardModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center"
-          >
+      <motion.div
+        initial={false}
+        animate={{ opacity: showRewardModal ? 1 : 0 }}
+        aria-hidden={!showRewardModal}
+        className={clsx(
+          "fixed inset-0 z-[100] flex items-center justify-center",
+          showRewardModal ? "pointer-events-auto" : "pointer-events-none",
+        )}
+      >
             {/* Overlay */}
             <div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -293,9 +294,11 @@ export default function MissionPage() {
 
             {/* Modal Content */}
             <motion.div
-              initial={{ scale: 0.5, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.5, y: 20 }}
+              initial={false}
+              animate={{
+                scale: showRewardModal ? 1 : 0.5,
+                y: showRewardModal ? 0 : 20,
+              }}
               className="relative z-10 w-[600px] flex flex-col items-center"
             >
               {/* Close Button */}
@@ -325,18 +328,18 @@ export default function MissionPage() {
                 </span>{" "}
               </h2>
 
-              {/* Lottie Animation Iframe */}
+              {/* Lottie Animation Iframe (preloaded — always in DOM) */}
               <div className="w-[500px] h-[500px] bg-transparent flex items-center justify-center">
                 <iframe
                   src="https://lottie.host/embed/71b1f83a-1673-4146-b8df-d0cfc6fe3d2f/QfO0slGk89.lottie"
-                  className="w-full h-full border-none pointer-events-none"
+                  className="w-full h-full border-0"
                   title="Reward Animation"
                 />
               </div>
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
+
+      {/* Preloaded Lottie iframe — always mounted, visually hidden when modal is closed */}
 
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {

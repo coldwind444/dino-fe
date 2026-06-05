@@ -26,6 +26,7 @@ import ExplainModal, {
 import { useLessonStore } from "@/stores/lessonStore";
 import { cleanedAnswerArray } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
+import BlobModal from "@/components/BlobModal/BlobModal";
 
 interface ExerciseViewProps {
   currentLecture: LectureResponse;
@@ -72,6 +73,9 @@ export default function ExerciseView({
   const [answers, setAnswers] = useState<AnswerResponse[]>([]);
   const [currExIdx, setCurrExIdx] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // show blob modal
+  const [showBlobModal, setShowBlobModal] = useState(false);
 
   // Functions
   const handleCheckAnswer = () => {
@@ -136,7 +140,7 @@ export default function ExerciseView({
   // Currently working on this
   const submitLectureResult = async () => {
     if (doneExercises.length !== exercises.length) {
-      alert("Vui lòng hoàn thành tất cả các câu hỏi!");
+      setShowBlobModal(true);
       return;
     }
     if (isSubmitting) return;
@@ -483,6 +487,15 @@ export default function ExerciseView({
           explanation={exercises[currExIdx]?.explanation}
           isOpen={showExplainModal}
           onClose={() => setShowExplainModal(false)}
+        />
+
+        {/* Blob Modal */}
+        <BlobModal
+          isOpen={showBlobModal}
+          onClose={() => setShowBlobModal(false)}
+          title="Chờ một chút !!"
+          content="Hình như bạn vẫn còn câu hỏi chưa hoàn thành!"
+          buttonText="Làm tiếp"
         />
       </div>
     </motion.div>

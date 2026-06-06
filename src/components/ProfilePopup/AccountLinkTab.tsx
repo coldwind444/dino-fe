@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faUser, faCheck, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { UserProfileResponse } from "@/types";
 import { getFamilyCode, getUsers, getMyFamilyMembers } from "@/apis";
 import Image from "next/image";
 import { APIError } from "@/apis/config";
 import { toCloudinaryWebP } from "@/helpers/utils";
+import { Toaster, toast } from "react-hot-toast";
 
 type AccountLinkTabProps = {
   profile: UserProfileResponse;
@@ -20,6 +21,7 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
   );
   const [parent, setParent] = useState<UserProfileResponse>();
   const [copied, setCopied] = useState(false);
+  const [copyIcon, setCopyIcon] = useState<IconDefinition>(faCopy);
 
   const isParent = profile.role === "parent";
 
@@ -88,11 +90,17 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
   const handleCopy = () => {
     navigator.clipboard.writeText(familyCode);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopyIcon(faCheck);
+    setTimeout(() => {
+      setCopied(false);
+      setCopyIcon(faCopy);
+    }, 2000);
+    toast.success("Đã sao chép mã liên kết");
   };
 
   return (
     <>
+      <Toaster position="top-right" />
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
         Liên kết tài khoản
       </h2>
@@ -106,7 +114,7 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
             </h4>
             <div className="bg-white border border-gray-200 rounded-lg p-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-[#C5EDE5] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden">
                   {parent?.avatarUrl ? (
                     <Image
                       width={64}
@@ -117,7 +125,7 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-2xl">👤</span>
+                    <span className="text-2xl text-gray-400"><FontAwesomeIcon icon={faUser} className="w-8 h-8" /></span>
                   )}
                 </div>
                 <div className="flex-1">
@@ -138,7 +146,7 @@ export default function AccountLinkTab({ profile }: AccountLinkTabProps) {
                       onClick={handleCopy}
                       className={`${copied ? "text-[#16A085]" : "text-[#1ABC9C] hover:text-[#16A085]"} cursor-pointer transition-colors`}
                     >
-                      <FontAwesomeIcon icon={faCopy} className="w-4 h-4" />
+                      <FontAwesomeIcon icon={copyIcon} className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

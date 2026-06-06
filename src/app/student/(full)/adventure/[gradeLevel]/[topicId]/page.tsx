@@ -101,15 +101,18 @@ export default function LessonsPage({ params }: LessonsPageProps) {
 
         // Init state dependent on fetched data
         const data = getLectureIndexFromLocalStorage(gradeLevel, topicId);
-        if (lands.length > 0) {
-          const land =
-            lands.find((land) => land.difficulty === data?.diff) || lands[0];
-          setCurrLand(land);
-        }
+        let initialLecture: LectureResponse | null = null;
         if (lectures.length > 0) {
           const safeIndex =
             data?.index >= 0 && data?.index < lectures.length ? data.index : 0;
-          setCurrentLecture(lectures[safeIndex]);
+          initialLecture = lectures[safeIndex];
+          setCurrentLecture(initialLecture);
+        }
+        if (lands.length > 0) {
+          const targetDifficulty = initialLecture?.difficulty || data?.diff;
+          const land =
+            lands.find((land) => land.difficulty === targetDifficulty) || lands[0];
+          setCurrLand(land);
         }
       } catch (error) {
         if (error instanceof APIError) {

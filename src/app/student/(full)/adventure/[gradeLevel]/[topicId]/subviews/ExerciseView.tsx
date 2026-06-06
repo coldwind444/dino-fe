@@ -119,14 +119,24 @@ export default function ExerciseView({
     setShowSubmitBanner(false);
     setShowExplainButton(false);
 
-    if (
-      doneExercises.length < exercises.length &&
-      currExIdx < exercises.length - 1
-    ) {
+    if (currExIdx < exercises.length - 1 && !doneExercises.includes(currExIdx + 1)) {
       setCurrExIdx(currExIdx + 1);
     } else {
-      onFinish(exercises.length);
-      await submitLectureResult();
+      if (doneExercises.length === exercises.length) {
+        onFinish(exercises.length);
+        await submitLectureResult();
+      } else {
+        const sortedDoneIndex = doneExercises.sort((a, b) => a - b);
+        let backIndex = 0;
+        for (let i = 1; i < doneExercises.length; i++) {
+          if (sortedDoneIndex[i] - sortedDoneIndex[i - 1] !== 1) {
+            backIndex = sortedDoneIndex[i - 1] + 1;
+            break;
+          }
+        }
+        setCurrExIdx(backIndex);
+        if (currExIdx === exercises.length - 1) setShowBlobModal(true);
+      }
     }
   };
 
@@ -344,7 +354,7 @@ export default function ExerciseView({
           />
         </div>
         {/** Buttons and Banners */}
-        <div className="flex flex-none min-h-[120px] [@media(min-height:900px)]:min-h-[160px] flex-row w-full items-end justify-center">
+        <div className="flex flex-none h-[140px] [@media(min-height:900px)]:h-[180px] flex-row w-full items-end justify-center">
           <AnimatePresence mode="wait">
             {!showSubmitBanner ? (
               // Check button

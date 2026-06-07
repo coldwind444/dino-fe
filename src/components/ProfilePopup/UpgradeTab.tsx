@@ -82,7 +82,7 @@ export default function UpgradeTab({
       });
       if (res.paymentUrl) {
         setTransaction(res);
-        window.open(res.paymentUrl, "_blank");
+        window.location.href = res.paymentUrl;
         setPaymentStatus("pending");
         startPolling(res.transactionId);
       }

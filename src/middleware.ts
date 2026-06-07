@@ -5,19 +5,22 @@ import type { NextRequest } from "next/server";
 const PUBLIC_ROUTES = ["/auth", "/login"];
 
 const EXACT_PUBLIC_ROUTES = ["/"];
+const PAYMENT_SUCCESS_ROUTE = "/parent/payment/success";
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, search, searchParams } = request.nextUrl;
 
-  // Route guard for payment success page to prevent direct access without VNPay parameters
-  if (pathname === "/parent/payment/success") {
-    const { searchParams } = request.nextUrl;
+  // VNPay returns to this route from an external site. The auth cookie may not
+  // be sent on that cross-site navigation, so allow signed callbacks through.
+  if (pathname === PAYMENT_SUCCESS_ROUTE) {
     const vnpResponseCode = searchParams.get("vnp_ResponseCode");
     const vnpSecureHash = searchParams.get("vnp_SecureHash");
 
     if (!vnpResponseCode || !vnpSecureHash) {
       return NextResponse.redirect(new URL("/parent/dashboard", request.url));
     }
+
+    return NextResponse.next();
   }
 
   const isPublicRoute =
@@ -28,7 +31,7 @@ export function middleware(request: NextRequest) {
 
   if (!isPublicRoute && !token) {
     const loginUrl = new URL("/auth", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
+    loginUrl.searchParams.set("redirect", `${pathname}${search}`);
     return NextResponse.redirect(loginUrl);
   }
 

@@ -44,6 +44,7 @@ export default function Onboarding() {
   const router = useRouter();
 
   const [mascotLoaded, setMascotLoaded] = useState(false);
+  const [systemAvatarsLoaded, setSystemAvatarsLoaded] = useState(false);
   const [pose, setPose] = useState<keyof typeof POSES>("IDLE");
   const [message, setMessage] = useState(MESSAGES.ASK_NAME);
   const [step, setStep] = useState(STEPS.NAME);
@@ -71,7 +72,8 @@ export default function Onboarding() {
       .then((data: string[]) => {
         setSystemAvatars(data);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error))
+      .finally(() => setSystemAvatarsLoaded(true));
   }, []);
 
   // Open image select dialog
@@ -235,10 +237,18 @@ export default function Onboarding() {
     };
   }, [step, mascotLoaded]);
 
+  const resourcesLoaded = mascotLoaded && systemAvatarsLoaded;
+
   return (
-    <div className="flex flex-row w-screen h-screen overflow-hidden">
-      {!mascotLoaded && <ScreenLoader />}
-      <Toaster position="bottom-left" reverseOrder={false} />
+    <>
+      {!resourcesLoaded && <ScreenLoader />}
+      <div
+        className={clsx(
+          "flex flex-row w-screen h-screen overflow-hidden",
+          !resourcesLoaded && "invisible",
+        )}
+      >
+        <Toaster position="bottom-left" reverseOrder={false} />
       <div
         className="absolute h-8 w-fit px-5 rounded-2xl text-white font-medium bg-red-400 z-50
                             flex items-center justify-center gap-3 hover:opacity-90 top-4 right-1/3 cursor-pointer"
@@ -598,6 +608,7 @@ export default function Onboarding() {
           height={780}
         />
       </div>
-    </div>
+      </div>
+    </>
   );
 }

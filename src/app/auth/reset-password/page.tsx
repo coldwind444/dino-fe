@@ -163,10 +163,18 @@ export default function ResetPassword() {
     }
   }, [imagesLoaded, mascotLoaded]);
 
+  const resourcesLoaded = imagesLoaded && mascotLoaded;
+
   return (
-    <div className="h-screen w-screen flex flex-row p-[20px]">
-      {(!imagesLoaded || !mascotLoaded) && <ScreenLoader />}
-      {/** Process bar */}
+    <>
+      {!resourcesLoaded && <ScreenLoader />}
+      <div
+        className={clsx(
+          "h-screen w-screen flex flex-row p-[20px]",
+          !resourcesLoaded && "invisible",
+        )}
+      >
+        {/** Process bar */}
       <div className="w-1/4 h-full border-2 border-[rgba(0,0,0,0.1)] rounded-[20px] flex flex-col justify-between">
         {STEPS.map((val, idx) => (
           // Steps
@@ -380,6 +388,7 @@ export default function ResetPassword() {
           width={150}
         />
       </Link>
-    </div>
+      </div>
+    </>
   );
 }

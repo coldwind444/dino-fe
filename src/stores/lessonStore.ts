@@ -11,7 +11,6 @@ export interface LectureStoreState {
 
 export const useLessonStore = create<LectureStoreState>()(
     persist(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (set) => ({
             gradeLevel: '',
             storedTopicId: '',

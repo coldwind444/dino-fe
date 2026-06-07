@@ -35,6 +35,7 @@ export default function ResetPassword() {
 
   // UI states
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [mascotLoaded, setMascotLoaded] = useState(false);
   const [currStep, setCurrStep] = useState(0);
   const [pose, setPose] = useState<"IDLE" | "TALKING" | "WRITING">("IDLE");
   const [msg, setMsg] = useState(MESSAGES.INPUT_IDENTIFIER);
@@ -156,10 +157,15 @@ export default function ResetPassword() {
     });
   }, []);
 
-  if (!imagesLoaded) return <ScreenLoader />;
+  useEffect(() => {
+    if (imagesLoaded && mascotLoaded) {
+      showMessage(MESSAGES.INPUT_IDENTIFIER);
+    }
+  }, [imagesLoaded, mascotLoaded]);
 
   return (
     <div className="h-screen w-screen flex flex-row p-[20px]">
+      {(!imagesLoaded || !mascotLoaded) && <ScreenLoader />}
       {/** Process bar */}
       <div className="w-1/4 h-full border-2 border-[rgba(0,0,0,0.1)] rounded-[20px] flex flex-col justify-between">
         {STEPS.map((val, idx) => (
@@ -251,7 +257,7 @@ export default function ResetPassword() {
         <div className="flex flex-row gap-[50px] h-fit">
           {/** Mascot */}
           <div className="flex flex-row justify-between h-[250px] overflow-hidden">
-            <MascotWriting pose={pose} />
+            <MascotWriting pose={pose} onLoaded={() => setMascotLoaded(true)} />
             <div className="w-fit px-[20px] py-[8px] h-fit border-2 border-amber-600 rounded-[20px] -ml-[100px]">
               <p className="max-w-[250px] text-wrap text-amber-600 font-medium">
                 {msg}

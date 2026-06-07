@@ -12,6 +12,7 @@ import { Toaster, toast } from "react-hot-toast";
 import Loader from "@/components/Loader/Loader";
 import dinoWizard from "../../../public/assets/onboarding/wizard.webp";
 import MascotWriting, { POSES } from "@/components/MascotWriting/MascotWriting";
+import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { toCloudinaryWebP } from "@/helpers/utils";
@@ -40,10 +41,9 @@ const AVATAR_OPTIONS = {
 export default function Onboarding() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const isFirstRender = useRef(true);
   const router = useRouter();
 
-  // UI states
+  const [mascotLoaded, setMascotLoaded] = useState(false);
   const [pose, setPose] = useState<keyof typeof POSES>("IDLE");
   const [message, setMessage] = useState(MESSAGES.ASK_NAME);
   const [step, setStep] = useState(STEPS.NAME);
@@ -215,10 +215,7 @@ export default function Onboarding() {
 
   // Update mascot message and pose when step changes
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    if (!mascotLoaded) return;
 
     const messageMap = {
       [STEPS.NAME]: MESSAGES.ASK_NAME,
@@ -236,10 +233,11 @@ export default function Onboarding() {
       clearTimeout(talkingTimer);
       clearTimeout(idleTimer);
     };
-  }, [step]);
+  }, [step, mascotLoaded]);
 
   return (
     <div className="flex flex-row w-screen h-screen overflow-hidden">
+      {!mascotLoaded && <ScreenLoader />}
       <Toaster position="bottom-left" reverseOrder={false} />
       <div
         className="absolute h-8 w-fit px-5 rounded-2xl text-white font-medium bg-red-400 z-50
@@ -252,7 +250,7 @@ export default function Onboarding() {
       <div className="w-[55%] h-full">
         {/** Mascot area */}
         <div className="flex flex-row h-[250px] pl-[20px] pt-[20px] relative overflow-hidden">
-          <MascotWriting pose={pose} />
+          <MascotWriting pose={pose} onLoaded={() => setMascotLoaded(true)} />
           <div
             className={clsx(
               "h-fit w-fit p-[20px] rounded-[20px] border-2 border-[#F1A12E] text-[#F1A12E] font-medium text-[16px]",

@@ -1,9 +1,10 @@
 'use client'
 
 import { Suspense } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import PaymentSuccessModal from "@/components/PaymentSuccessModal/PaymentSuccessModal";
-import treasureBg from '../../../../../../public/assets/payment/treasure.jpg';
+import treasureBg from '../../../../../../public/assets/payment/treasure.webp';
 
 function PaymentSuccessContent() {
     const router = useRouter();
@@ -25,16 +26,24 @@ function PaymentSuccessContent() {
 
 export default function PaymentSuccessPage() {
     return (
-        <div className="h-screen w-screen flex items-center justify-center"
-            style={{
-                backgroundImage: `url(${treasureBg.src})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-            }}>
-            <Suspense fallback={<div className="text-white text-lg">Đang tải...</div>}>
-                <PaymentSuccessContent />
-            </Suspense>
+        <div className="relative h-screen w-screen flex items-center justify-center">
+            <Image
+                src={treasureBg}
+                alt="Treasure Background"
+                fill
+                priority
+                placeholder="blur"
+                sizes="100vw"
+                style={{
+                    objectFit: "cover",
+                    objectPosition: "center",
+                }}
+            />
+            <div className="relative z-10">
+                <Suspense fallback={<div className="text-white text-lg">Đang tải...</div>}>
+                    <PaymentSuccessContent />
+                </Suspense>
+            </div>
         </div>
     );
 };

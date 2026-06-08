@@ -12,6 +12,8 @@ import { getUserProfile, getStudentStats, getUsers, getRankById } from "@/apis";
 import ScreenLoader from "@/components/ScreenLoader/ScreenLoader";
 import { formatNumberAbbreviation, toCloudinaryWebP } from "@/helpers/utils";
 import { APIError } from "@/apis/config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBoxesAlt } from "@fortawesome/free-solid-svg-icons";
 
 export default function Dashboard() {
   // Data state
@@ -109,7 +111,6 @@ export default function Dashboard() {
     return <ScreenLoader />;
   }
 
-  // ── Skeleton card ──────────────────────────────────────────────────────────
   const SkeletonCard = ({ extraClass = "" }: { extraClass?: string }) => (
     <div className={`animate-pulse rounded-2xl bg-gray-200 ${extraClass}`}>
       <div className="flex h-[97%] w-[98%] flex-col items-center justify-center gap-5 rounded-2xl py-2">
@@ -119,17 +120,12 @@ export default function Dashboard() {
     </div>
   );
 
-  // ── Empty state ────────────────────────────────────────────────────────────
   const EmptyState = () => (
-    <div className="flex flex-col items-center justify-center gap-4 py-16 animate-[fadeIn_0.4s_ease-in-out]">
-      <span className="animate-bounce text-6xl">📊</span>
-      <p className="text-xl font-bold text-gray-500">
-        Chưa có dữ liệu thống kê
-      </p>
-      <p className="max-w-xs text-center text-sm leading-relaxed text-gray-400">
-        Vui lòng chọn <strong>học sinh</strong> và{" "}
-        <strong>khoảng thời gian</strong> ở bộ lọc bên trái để xem thống kê.
-      </p>
+    <div className="flex w-full items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 py-12">
+      <div className="flex flex-col items-center gap-3">
+        <FontAwesomeIcon icon={faBoxesAlt} className="text-5xl text-gray-300" />
+        <p className="text-base font-medium text-gray-400">Chưa có dữ liệu thống kê</p>
+      </div>
     </div>
   );
 
@@ -225,7 +221,9 @@ export default function Dashboard() {
                 <SkeletonCard extraClass="h-38 w-[48%]" />
               </div>
             </div>
-          ) : !studentStats ? null : (
+          ) : !studentStats ? (
+            <EmptyState />
+          ) : (
             <div className="flex flex-1 flex-row gap-5 w-full">
               {/** Rank */}
               <div

@@ -18,6 +18,7 @@ function PaymentSuccessContent() {
         if (!searchParams.size) return
 
         const confirmPaymentWithParams = async () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const params: Record<string, any> = {}
             searchParams.forEach((value, key) => {
                 params[key] = value

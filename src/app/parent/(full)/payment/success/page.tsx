@@ -1,6 +1,7 @@
 'use client'
 
-import { Suspense } from "react";
+import { confirmPayment } from "@/apis/payment";
+import { Suspense, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import PaymentSuccessModal from "@/components/PaymentSuccessModal/PaymentSuccessModal";
@@ -12,6 +13,23 @@ function PaymentSuccessContent() {
 
     const responseCode = searchParams.get("vnp_ResponseCode");
     const isSuccess = responseCode === "00";
+
+    useEffect(() => {
+        if (!searchParams.size) return
+
+        const confirmPaymentWithParams = async () => {
+            const params: Record<string, any> = {}
+            searchParams.forEach((value, key) => {
+                params[key] = value
+            })
+            try {
+                await confirmPayment(params)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        confirmPaymentWithParams()
+    }, [searchParams])
 
     return (
         <PaymentSuccessModal

@@ -11,9 +11,9 @@ export const purchasePremium = async (req: PurchasePremiumRequest): Promise<Tran
     }
 }
 
-export const confirmPayment = async (transId: string) => {
+export const confirmPayment = async (params: Record<string, any>) => {
     try {
-        await api.post(`payments/complete/${transId}`)
+        await api.get(`payments/vnp-return`, { params })
     } catch (error) {
         handleError(error)
         throw error

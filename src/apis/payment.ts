@@ -14,7 +14,7 @@ export const purchasePremium = async (req: PurchasePremiumRequest): Promise<Tran
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const confirmPayment = async (params: Record<string, any>) => {
     try {
-        await api.get(`payments/vnp-return`, { params })
+        await api.get(`payments/vnpay-return`, { params })
     } catch (error) {
         handleError(error)
         throw error
